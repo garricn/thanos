@@ -7,12 +7,12 @@ export default defineConfig({
       cypressDir: 'src',
       bundler: 'vite',
       webServerCommands: {
-        default: 'npx nx run thanos:dev',
-        production: 'npx nx run thanos:preview'
+        default: 'npx nx run web:serve',
+        production: 'npx nx run web:serve:production'
       },
-      ciWebServerCommand: 'npx nx run thanos:preview',
+      ciWebServerCommand: 'npx nx run web:serve:production',
       ciBaseUrl: 'http://localhost:4300'
     }),
-    baseUrl: 'http://localhost:4200'
+    baseUrl: 'http://localhost:4201'
   }
 });
