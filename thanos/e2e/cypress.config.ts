@@ -8,11 +8,11 @@ export default defineConfig({
       bundler: 'vite',
       webServerCommands: {
         default: 'npx nx run thanos:dev',
-        production: 'npx nx run thanos:preview',
+        production: 'npx nx run thanos:preview'
       },
       ciWebServerCommand: 'npx nx run thanos:preview',
-      ciBaseUrl: 'http://localhost:4300',
+      ciBaseUrl: 'http://localhost:4300'
     }),
-    baseUrl: 'http://localhost:4200',
-  },
+    baseUrl: 'http://localhost:4200'
+  }
 });

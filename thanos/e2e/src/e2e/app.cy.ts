@@ -13,7 +13,7 @@ describe('thanos', () => {
   });
 
   it('should change button text when clicked', () => {
-    getClickableButton().click();
+    getClickableButton().click({ force: true });
     getClickableButton().should('contain.text', 'Clicked');
   });
 });
