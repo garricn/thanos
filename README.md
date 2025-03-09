@@ -1,9 +1,11 @@
 # Web - A Test-Driven React App
 
 ## Description
+
 Web is a test-driven development (TDD) React application built with Nx, featuring a Button component that demonstrates UI testing. The project showcases best practices for testing React components at different levels.
 
 ## Tech Stack
+
 - React
 - TypeScript
 - Vite
@@ -11,6 +13,7 @@ Web is a test-driven development (TDD) React application built with Nx, featurin
 - Shadcn UI
 - Node.js
 - Express
+- SQLite (for database storage)
 - Jest (for unit and snapshot tests)
 - Cypress (for UI tests)
 - ESLint
@@ -19,17 +22,17 @@ Web is a test-driven development (TDD) React application built with Nx, featurin
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `nx serve web` | Run the website locally |
-| `nx serve api` | Run the backend API server |
-| `nx test web` | Run frontend unit tests |
-| `nx test api` | Run backend unit tests |
-| `nx test web --test-file=Button.snapshot.test.tsx` | Run snapshot tests |
-| `nx e2e web-e2e` | Run UI tests |
-| `nx e2e web-e2e --watch` | Run UI tests in watch mode |
-| `nx lint web` | Run linting |
-| `nx format:write` | Run formatting |
+| Command                                            | Description                |
+| -------------------------------------------------- | -------------------------- |
+| `nx serve web`                                     | Run the website locally    |
+| `nx serve api`                                     | Run the backend API server |
+| `nx test web`                                      | Run frontend unit tests    |
+| `nx test api`                                      | Run backend unit tests     |
+| `nx test web --test-file=Button.snapshot.test.tsx` | Run snapshot tests         |
+| `nx e2e web-e2e`                                   | Run UI tests               |
+| `nx e2e web-e2e --watch`                           | Run UI tests in watch mode |
+| `nx lint web`                                      | Run linting                |
+| `nx format:write`                                  | Run formatting             |
 
 ## Installation
 
@@ -40,26 +43,30 @@ Web is a test-driven development (TDD) React application built with Nx, featurin
    ```
 
 **Prerequisites:**
+
 - Node.js 22+
 - npm
 
 ## Usage
 
 1. Start the backend API server:
+
    ```
    nx serve api
    ```
 
 2. In a separate terminal, start the frontend development server:
+
    ```
    nx serve web
    ```
 
 3. Open http://localhost:4200 in your browser to see the frontend
-   
 4. Visit http://localhost:4200/api/health to see the backend API response
 
-5. Click the Button to see 'Clicked' state
+5. Visit http://localhost:4200/api/hello to see the backend response with database logging
+
+6. Click the Button to see 'Clicked' state
 
 ## Project Structure
 
@@ -128,4 +135,4 @@ SOFTWARE.
 
 ---
 
-*Note: This project is a learning exercise for Test-Driven Development (TDD) with an AI agent (Cline).*
+_Note: This project is a learning exercise for Test-Driven Development (TDD) with an AI agent (Cline)._
