@@ -1,7 +1,7 @@
-# Thanos - A Test-Driven React App
+# Web - A Test-Driven React App
 
 ## Description
-Thanos is a test-driven development (TDD) React application built with Nx, featuring a Button component that demonstrates UI testing. The project showcases best practices for testing React components at different levels.
+Web is a test-driven development (TDD) React application built with Nx, featuring a Button component that demonstrates UI testing. The project showcases best practices for testing React components at different levels.
 
 ## Tech Stack
 - React
@@ -21,14 +21,14 @@ Thanos is a test-driven development (TDD) React application built with Nx, featu
 
 | Command | Description |
 |---------|-------------|
-| `nx serve thanos` | Run the website locally |
+| `nx serve web` | Run the website locally |
 | `nx serve api` | Run the backend API server |
-| `nx test thanos` | Run frontend unit tests |
+| `nx test web` | Run frontend unit tests |
 | `nx test api` | Run backend unit tests |
-| `nx test thanos --test-file=Button.snapshot.test.tsx` | Run snapshot tests |
-| `nx e2e thanos-e2e` | Run UI tests |
-| `nx e2e thanos-e2e --watch` | Run UI tests in watch mode |
-| `nx lint thanos` | Run linting |
+| `nx test web --test-file=Button.snapshot.test.tsx` | Run snapshot tests |
+| `nx e2e web-e2e` | Run UI tests |
+| `nx e2e web-e2e --watch` | Run UI tests in watch mode |
+| `nx lint web` | Run linting |
 | `nx format:write` | Run formatting |
 
 ## Installation
@@ -52,7 +52,7 @@ Thanos is a test-driven development (TDD) React application built with Nx, featu
 
 2. In a separate terminal, start the frontend development server:
    ```
-   nx serve thanos
+   nx serve web
    ```
 
 3. Open http://localhost:4200 in your browser to see the frontend
@@ -65,19 +65,19 @@ Thanos is a test-driven development (TDD) React application built with Nx, featu
 
 ```
 thanos/
-├── apps/                # API backend application
-│   ├── src/             # API source code
-│   │   └── main.ts      # Express server entry point
-│   └── src/main.spec.ts # API unit tests
-├── apps-e2e/            # API end-to-end tests
-├── src/
-│   ├── app/             # Frontend application components
-│   ├── components/      # Reusable UI components
-│   │   ├── ui/          # Shadcn UI components
-│   │   └── __snapshots__/ # Jest snapshot tests
-│   ├── assets/          # Static assets
-│   └── lib/             # Utility functions
-└── e2e/                 # Frontend end-to-end test configuration
+├── apps/
+│   ├── web/             # Frontend React application
+│   │   ├── src/         # Frontend source code
+│   │   │   ├── app/     # Frontend application components
+│   │   │   ├── components/ # Reusable UI components
+│   │   │   ├── assets/  # Static assets
+│   │   │   └── lib/     # Utility functions
+│   │   └── e2e/         # Frontend end-to-end tests
+│   └── api/             # Backend API application
+│       ├── src/         # API source code
+│       │   └── main.ts  # Express server entry point
+│       └── e2e/         # API end-to-end tests
+└── [config files]       # Various configuration files at root level
 ```
 
 ## Contributing
@@ -116,7 +116,7 @@ SOFTWARE.
 ## Troubleshooting
 
 - **Issue**: If `nx e2e` fails, ensure `nx serve` is running on port 4200.
-  **Solution**: Run `nx serve thanos` in a separate terminal before running e2e tests.
+  **Solution**: Run `nx serve web` in a separate terminal before running e2e tests.
 
 - **Issue**: Component tests failing with style-related errors.
   **Solution**: Make sure Tailwind CSS is properly configured and imported.

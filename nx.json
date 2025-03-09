@@ -66,7 +66,7 @@
       "inputs": ["production", "^production"]
     }
   },
-  "defaultProject": "thanos",
+  "defaultProject": "web",
   "generators": {
     "@nx/react": {
       "application": {
