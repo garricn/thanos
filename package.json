@@ -1,12 +1,15 @@
 {
-  "name": "@web/source",
+  "name": "thanos",
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
   "scripts": {
     "start": "concurrently --kill-others-on-fail \"nx serve api\" \"nx serve web\"",
     "build": "nx build",
-    "test": "nx test"
+    "test": "nx test",
+    "test:all": "nx run-many -t test && nx run-many -t e2e",
+    "lint:all": "nx run-many -t lint --projects=web,api,web-e2e,api-e2e,api-tests",
+    "format": "nx format:write"
   },
   "nx": {
     "includedScripts": []
