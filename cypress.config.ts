@@ -1,12 +1,19 @@
-import { defineConfig } from "cypress";
+import { nxE2EPreset } from '@nx/cypress/plugins/cypress-preset';
+import { defineConfig } from 'cypress';
 
 export default defineConfig({
   e2e: {
-    setupNodeEvents(on, config) {
-      // implement node event listeners here
-    },
-    supportFile: "e2e/src/support/e2e.ts",
-    specPattern: "e2e/src/e2e/**/*.cy.{js,jsx,ts,tsx}",
-    baseUrl: "http://localhost:4200"
-  }
+    ...nxE2EPreset(__filename, {
+      cypressDir: 'cypress',
+      bundler: 'vite',
+      webServerCommands: {
+        default: 'npx nx run web:serve',
+        production: 'npx nx run web:serve:production',
+      },
+      ciWebServerCommand: 'npx nx run web:serve:production',
+      ciBaseUrl: 'http://localhost:4300',
+    }),
+    baseUrl: 'http://localhost:4200',
+    specPattern: 'cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
+  },
 });
