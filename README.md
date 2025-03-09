@@ -1,8 +1,8 @@
-# Web - A Test-Driven React App
+# Thanos - A Nx Monorepo Scaffolding Template
 
 ## Description
 
-Web is a test-driven development (TDD) React application built with Nx, featuring a Button component that demonstrates UI testing. The project showcases best practices for testing React components at different levels.
+Thanos is a scaffolding template for creating new Nx monorepo projects with a pre-configured React frontend and Express backend. It provides a solid foundation with testing infrastructure already set up, including unit tests, snapshot tests, and E2E tests. This template helps you quickly bootstrap new projects with best practices for testing and project structure.
 
 ## Tech Stack
 
@@ -37,21 +37,54 @@ Web is a test-driven development (TDD) React application built with Nx, featurin
 | `npm run lint:all`                                 | Run linting for all projects                               |
 | `npm run format`                                   | Run formatting for all files                               |
 | `npm run test:all`                                 | Run all unit and e2e tests for the project                 |
+| `npm run generate`                                 | Generate a new project from this template                  |
 
-## Installation
+## Using This Template
 
-1. Clone the repository
+### Prerequisites
+
+- Node.js 22+
+- npm
+
+### Generating a New Project
+
+1. Clone this repository:
+   ```
+   git clone https://github.com/yourusername/thanos.git
+   cd thanos
+   ```
+
 2. Install dependencies:
    ```
    npm install
    ```
 
-**Prerequisites:**
+3. Run the generator script:
+   ```
+   npm run generate
+   ```
+   or
+   ```
+   node generate.js
+   ```
 
-- Node.js 22+
-- npm
+4. Follow the prompts to specify your new project name (defaults to "my-thanos")
 
-## Usage
+5. The script will:
+   - Create a new directory with your project name
+   - Copy all necessary files
+   - Update references to "thanos" with your project name
+   - Initialize a new Git repository
+   - Provide instructions for next steps
+
+6. Navigate to your new project and get started:
+   ```
+   cd your-project-name
+   npm install
+   npm start
+   ```
+
+## Using the Generated Project
 
 1. Start both the backend API server and frontend development server with a single command:
 
@@ -69,11 +102,9 @@ Web is a test-driven development (TDD) React application built with Nx, featurin
    ```
 
 2. Open http://localhost:4200 in your browser to see the frontend
-4. Visit http://localhost:4200/api/health to see the backend API response
-
-5. Visit http://localhost:4200/api/hello to see the backend response with database logging
-
-6. Click the Button to see 'Clicked' state
+3. Visit http://localhost:4200/api/health to see the backend API response
+4. Visit http://localhost:4200/api/hello to see the backend response with database logging
+5. Click the Button to see 'Clicked' state
 
 ## Project Structure
 
@@ -142,4 +173,4 @@ SOFTWARE.
 
 ---
 
-_Note: This project is a learning exercise for Test-Driven Development (TDD) with an AI agent (Cline)._
+_Note: This project was originally a learning exercise for Test-Driven Development (TDD) with an AI agent (Cline) and has been transformed into a reusable scaffolding template._
