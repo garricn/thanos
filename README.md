@@ -1,5 +1,7 @@
 # Thanos - A Nx Monorepo Scaffolding Template
 
+[![CI](https://github.com/garricn/thanos/actions/workflows/ci.yml/badge.svg)](https://github.com/garricn/thanos/actions/workflows/ci.yml)
+
 ## Description
 
 Thanos is a scaffolding template for creating new Nx monorepo projects with a pre-configured React frontend and Express backend. It provides a solid foundation with testing infrastructure already set up, including unit tests, snapshot tests, and E2E tests. This template helps you quickly bootstrap new projects with best practices for testing and project structure.
@@ -53,7 +55,7 @@ Follow these steps to create a new project using Thanos:
 1. **Clone the Thanos repository** (you only need to do this once):
    
    ```bash
-   git clone https://github.com/yourusername/thanos.git
+   git clone https://github.com/garricn/thanos.git
    ```
 
 2. **Make the generator script executable** (if not already):
