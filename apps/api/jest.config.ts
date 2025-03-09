@@ -7,4 +7,5 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/apps/api',
+  testMatch: ['<rootDir>/tests/src/**/*.test.ts', '<rootDir>/tests/src/**/*.spec.ts']
 };

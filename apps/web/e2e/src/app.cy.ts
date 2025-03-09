@@ -1,4 +1,4 @@
-import { getGreeting, getClickableButton } from '../support/app.po';
+import { getGreeting, getClickableButton } from './support/app.po';
 
 describe('web', () => {
   beforeEach(() => cy.visit('/'));

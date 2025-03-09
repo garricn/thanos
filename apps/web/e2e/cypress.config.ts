@@ -13,6 +13,7 @@ export default defineConfig({
       ciWebServerCommand: 'npx nx run web:serve:production',
       ciBaseUrl: 'http://localhost:4300'
     }),
-    baseUrl: 'http://localhost:4201'
+    baseUrl: 'http://localhost:4201',
+    specPattern: 'src/**/*.cy.{js,jsx,ts,tsx}'
   }
 });

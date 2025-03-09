@@ -12,5 +12,5 @@ export default {
     '<rootDir>/src/**/*(*.)@(spec|test).[jt]s?(x)',
     '<rootDir>/tests/**/*(*.)@(spec|test).[jt]s?(x)'
   ],
-  setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts']
+  setupFilesAfterEnv: ['<rootDir>/tests/test-setup.ts']
 };
