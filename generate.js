@@ -100,13 +100,19 @@ async function main() {
     console.error(error.message);
   }
   
+  // Create .npmrc file with legacy-peer-deps setting
+  fs.writeFileSync(
+    path.join(targetDir, '.npmrc'),
+    'legacy-peer-deps=true\n'
+  );
+  
   // Success message
   console.log(`
 ✅ Project ${projectName} generated successfully at ${targetDir}
 
 To get started:
   cd ${projectName}
-  npm install
+  npm install --legacy-peer-deps
   npm start
 
 Available commands:
@@ -119,6 +125,9 @@ Available commands:
   npm run lint:all  # Run linting for all projects
   npm run format    # Run formatting for all files
   npm run test:all  # Run all unit and e2e tests
+
+Note: This project uses the --legacy-peer-deps flag to resolve dependency conflicts
+between Cypress 14.x and @nx/cypress. An .npmrc file has been created with this setting.
 `);
 }
 

@@ -80,9 +80,11 @@ Thanos is a scaffolding template for creating new Nx monorepo projects with a pr
 6. Navigate to your new project and get started:
    ```
    cd your-project-name
-   npm install
+   npm install --legacy-peer-deps
    npm start
    ```
+
+   > **Note**: The `--legacy-peer-deps` flag is required due to a dependency conflict between Cypress 14.x and @nx/cypress. An `.npmrc` file with this setting is automatically created in your project.
 
 ## Using the Generated Project
 
@@ -165,6 +167,9 @@ SOFTWARE.
 
 - **Issue**: Component tests failing with style-related errors.
   **Solution**: Make sure Tailwind CSS is properly configured and imported.
+
+- **Issue**: Dependency conflicts during `npm install` with errors about Cypress versions.
+  **Solution**: Use the `--legacy-peer-deps` flag: `npm install --legacy-peer-deps`. This is automatically configured in the generated project via the .npmrc file.
 
 ## Acknowledgements
 
