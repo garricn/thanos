@@ -171,6 +171,15 @@ SOFTWARE.
 - **Issue**: Dependency conflicts during `npm install` with errors about Cypress versions.
   **Solution**: Use the `--legacy-peer-deps` flag: `npm install --legacy-peer-deps`. This is automatically configured in the generated project via the .npmrc file.
 
+- **Issue**: Nx daemon errors when running commands in a generated project.
+  **Solution**: Run `npx nx reset` to clear the Nx cache and restart the daemon.
+
+- **Issue**: Path references to the original Thanos project in error messages.
+  **Solution**: The generator script attempts to replace all absolute paths, but if you encounter any remaining references, check the specific files mentioned in the error messages and update the paths manually.
+
+- **Issue**: Git shows changes in .nx directory files after running commands.
+  **Solution**: The .nx directory should be gitignored in generated projects. If you see these files in git status, run `git rm -r --cached .nx` to untrack them.
+
 ## Acknowledgements
 
 - Built with [Nx](https://nx.dev/)

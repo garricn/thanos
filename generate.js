@@ -4,10 +4,106 @@ const inquirer = require('inquirer');
 const fs = require('fs-extra');
 const path = require('path');
 const { execSync } = require('child_process');
+const glob = require('glob');
 
 // Get the current directory name (thanos)
 const currentDir = path.basename(process.cwd());
 const parentDir = path.dirname(process.cwd());
+const currentDirFullPath = process.cwd();
+
+// Function to replace absolute paths in files
+async function replaceAbsolutePaths(targetDir, originalPath, projectName) {
+  console.log('Replacing absolute paths in files...');
+  
+  // Files that might contain absolute paths
+  const filesToCheck = [
+    // Vite config files
+    'vite.config.ts',
+    'apps/web/vite.config.ts',
+    // Nx config files
+    'nx.json',
+    // Cypress config files
+    'apps/web/e2e/cypress.config.ts',
+    // Any JSON files that might have paths
+    'package.json',
+    'project.json',
+    'apps/web/project.json',
+    'apps/api/project.json',
+    // TypeScript config files
+    'tsconfig.json',
+    'apps/web/tsconfig.json',
+    'apps/api/tsconfig.json'
+  ];
+  
+  for (const file of filesToCheck) {
+    const filePath = path.join(targetDir, file);
+    if (fs.existsSync(filePath)) {
+      let content = fs.readFileSync(filePath, 'utf8');
+      
+      // Replace absolute paths with relative paths
+      const regex = new RegExp(originalPath.replace(/\//g, '\\/').replace(/\./g, '\\.'), 'g');
+      if (content.match(regex)) {
+        console.log(`  Replacing paths in ${file}`);
+        content = content.replace(regex, path.join(parentDir, projectName));
+        fs.writeFileSync(filePath, content);
+      }
+      
+      // Replace the project name in any paths
+      const projectRegex = new RegExp(`/${currentDir}/`, 'g');
+      if (content.match(projectRegex)) {
+        console.log(`  Replacing project name in ${file}`);
+        content = content.replace(projectRegex, `/${projectName}/`);
+        fs.writeFileSync(filePath, content);
+      }
+    }
+  }
+}
+
+// Function to update .gitignore
+function updateGitignore(targetDir) {
+  console.log('Updating .gitignore...');
+  const gitignorePath = path.join(targetDir, '.gitignore');
+  
+  if (fs.existsSync(gitignorePath)) {
+    let content = fs.readFileSync(gitignorePath, 'utf8');
+    
+    // Make sure .nx directory is properly ignored
+    if (!content.includes('.nx/')) {
+      content += '\n# Nx cache\n.nx/\n';
+    }
+    
+    fs.writeFileSync(gitignorePath, content);
+  }
+}
+
+// Function to run setup commands
+async function runSetupCommands(targetDir) {
+  console.log('Running setup commands...');
+  
+  try {
+    // Create a clean .nx directory
+    const nxDir = path.join(targetDir, '.nx');
+    if (fs.existsSync(nxDir)) {
+      fs.removeSync(nxDir);
+    }
+    
+    // Untrack .nx directory from git
+    execSync('git rm -r --cached .nx 2>/dev/null || true', { cwd: targetDir });
+    
+    // Add a .gitkeep file to ensure the directory exists
+    fs.mkdirSync(path.join(targetDir, '.nx'), { recursive: true });
+    fs.writeFileSync(path.join(targetDir, '.nx', '.gitkeep'), '');
+    
+    // Commit the changes
+    execSync('git add .gitignore .nx/.gitkeep', { cwd: targetDir });
+    execSync('git commit -m "Ensure clean git state with proper gitignore"', { cwd: targetDir });
+    
+    console.log('Setup commands completed successfully.');
+  } catch (error) {
+    console.warn('Warning: Setup commands failed. You may need to run them manually.');
+    console.error(error.message);
+  }
+}
 
 async function main() {
   // Prompt for project name
@@ -88,6 +184,18 @@ async function main() {
     fs.writeFileSync(licensePath, licenseContent);
   }
   
+  // Replace absolute paths in files
+  await replaceAbsolutePaths(targetDir, currentDirFullPath, projectName);
+  
+  // Update .gitignore
+  updateGitignore(targetDir);
+  
+  // Create .npmrc file with legacy-peer-deps setting
+  fs.writeFileSync(
+    path.join(targetDir, '.npmrc'),
+    'legacy-peer-deps=true\n'
+  );
+  
   // Initialize git repository
   try {
     console.log('Initializing Git repository...');
@@ -95,16 +203,13 @@ async function main() {
     execSync('git add .', { cwd: targetDir });
     execSync('git commit -m "Initial commit from Thanos scaffold"', { cwd: targetDir });
     console.log('Git repository initialized with initial commit.');
+    
+    // Run additional setup commands
+    await runSetupCommands(targetDir);
   } catch (error) {
     console.warn('Warning: Git initialization failed. You may need to initialize Git manually.');
     console.error(error.message);
   }
-  
-  // Create .npmrc file with legacy-peer-deps setting
-  fs.writeFileSync(
-    path.join(targetDir, '.npmrc'),
-    'legacy-peer-deps=true\n'
-  );
   
   // Success message
   console.log(`
@@ -126,8 +231,11 @@ Available commands:
   npm run format    # Run formatting for all files
   npm run test:all  # Run all unit and e2e tests
 
-Note: This project uses the --legacy-peer-deps flag to resolve dependency conflicts
-between Cypress 14.x and @nx/cypress. An .npmrc file has been created with this setting.
+Notes:
+- This project uses the --legacy-peer-deps flag to resolve dependency conflicts
+  between Cypress 14.x and @nx/cypress. An .npmrc file has been created with this setting.
+- If you encounter any Nx daemon issues, try running: npx nx reset
+- Your git repository should be in a clean state. The .nx directory is gitignored.
 `);
 }
 
