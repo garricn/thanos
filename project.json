@@ -4,29 +4,34 @@
   "projectType": "application",
   "sourceRoot": ".",
   "targets": {
-    "lint": {
-      "executor": "@nx/eslint:lint",
-      "outputs": ["{options.outputFile}"],
+    "build": {
+      "executor": "@nx/nx/none",
       "options": {
-        "lintFilePatterns": ["{projectRoot}/**/*.{ts,tsx,js,jsx}"]
+        "skip": true
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "executor": "@nx/nx/none",
       "options": {
-        "passWithNoTests": true
+        "skip": true
       }
     },
-    "build": {
-      "executor": "nx:run-commands",
-      "dependsOn": ["^build"],
+    "e2e": {
+      "executor": "@nx/nx/none",
       "options": {
-        "commands": [
-          "nx run api:build",
-          "nx run web:build"
-        ],
-        "parallel": false
+        "skip": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/nx/none",
+      "options": {
+        "skip": true
+      }
+    },
+    "format": {
+      "executor": "@nx/nx/none",
+      "options": {
+        "skip": true
       }
     }
   },
