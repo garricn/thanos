@@ -9,6 +9,8 @@ Thanos is a test-driven development (TDD) React application built with Nx, featu
 - Vite
 - Tailwind CSS
 - Shadcn UI
+- Node.js
+- Express
 - Jest (for unit and snapshot tests)
 - Cypress (for UI tests)
 - ESLint
@@ -20,7 +22,9 @@ Thanos is a test-driven development (TDD) React application built with Nx, featu
 | Command | Description |
 |---------|-------------|
 | `nx serve thanos` | Run the website locally |
-| `nx test thanos` | Run unit tests |
+| `nx serve api` | Run the backend API server |
+| `nx test thanos` | Run frontend unit tests |
+| `nx test api` | Run backend unit tests |
 | `nx test thanos --test-file=Button.snapshot.test.tsx` | Run snapshot tests |
 | `nx e2e thanos-e2e` | Run UI tests |
 | `nx e2e thanos-e2e --watch` | Run UI tests in watch mode |
@@ -41,28 +45,39 @@ Thanos is a test-driven development (TDD) React application built with Nx, featu
 
 ## Usage
 
-1. Start the development server:
+1. Start the backend API server:
+   ```
+   nx serve api
+   ```
+
+2. In a separate terminal, start the frontend development server:
    ```
    nx serve thanos
    ```
-2. Open http://localhost:4200 in your browser
-3. Click the Button to see 'Clicked' state
+
+3. Open http://localhost:4200 in your browser to see the frontend
+   
+4. Visit http://localhost:4200/api/health to see the backend API response
+
+5. Click the Button to see 'Clicked' state
 
 ## Project Structure
 
 ```
 thanos/
-├── apps/
-│   ├── thanos/          # Main React application
-│   └── thanos-e2e/      # Cypress end-to-end tests
+├── apps/                # API backend application
+│   ├── src/             # API source code
+│   │   └── main.ts      # Express server entry point
+│   └── src/main.spec.ts # API unit tests
+├── apps-e2e/            # API end-to-end tests
 ├── src/
-│   ├── app/             # Application components
+│   ├── app/             # Frontend application components
 │   ├── components/      # Reusable UI components
 │   │   ├── ui/          # Shadcn UI components
 │   │   └── __snapshots__/ # Jest snapshot tests
 │   ├── assets/          # Static assets
 │   └── lib/             # Utility functions
-└── e2e/                 # End-to-end test configuration
+└── e2e/                 # Frontend end-to-end test configuration
 ```
 
 ## Contributing
