@@ -7,9 +7,6 @@ export default {
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: './coverage/thanos',
-  testMatch: [
-    '<rootDir>/src/**/__tests__/**/*.[jt]s?(x)',
-    '<rootDir>/src/**/*(*.)@(spec|test).[jt]s?(x)'
-  ],
-  setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts']
+  projects: ['<rootDir>/apps/*/jest.config.ts'],
+  testMatch: []
 };
