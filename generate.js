@@ -76,6 +76,18 @@ async function main() {
   
   fs.writeFileSync(readmePath, readmeContent);
   
+  // Update LICENSE file with current year
+  const licensePath = path.join(targetDir, 'LICENSE');
+  if (fs.existsSync(licensePath)) {
+    let licenseContent = fs.readFileSync(licensePath, 'utf8');
+    const currentYear = new Date().getFullYear();
+    
+    // Update copyright year
+    licenseContent = licenseContent.replace(/Copyright \(c\) \d{4}/, `Copyright (c) ${currentYear}`);
+    
+    fs.writeFileSync(licensePath, licenseContent);
+  }
+  
   // Initialize git repository
   try {
     console.log('Initializing Git repository...');
