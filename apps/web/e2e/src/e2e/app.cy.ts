@@ -1,10 +1,10 @@
 import { getGreeting, getClickableButton } from '../support/app.po';
 
-describe('thanos', () => {
+describe('web', () => {
   beforeEach(() => cy.visit('/'));
 
   it('should display the app title', () => {
-    getGreeting().contains('Thanos App');
+    getGreeting().contains('Web App');
   });
 
   it('should display the button with initial text', () => {

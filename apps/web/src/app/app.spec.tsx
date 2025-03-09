@@ -8,9 +8,9 @@ describe('App', () => {
     expect(baseElement).toBeTruthy();
   });
 
-  it('should have "Thanos App" as the title', () => {
+  it('should have "Web App" as the title', () => {
     const { getByText } = render(<App />);
-    expect(getByText('Thanos App')).toBeTruthy();
+    expect(getByText('Web App')).toBeTruthy();
   });
 
   it('should render the ClickableButton component', () => {
