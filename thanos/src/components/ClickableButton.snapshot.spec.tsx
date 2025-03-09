@@ -8,12 +8,16 @@ describe('ClickableButton Snapshot', () => {
   });
 
   it('should match snapshot with custom initial text', () => {
-    const { container } = render(<ClickableButton initialText="Custom Button" />);
+    const { container } = render(
+      <ClickableButton initialText="Custom Button" />
+    );
     expect(container).toMatchSnapshot();
   });
 
   it('should match snapshot with custom clicked text', () => {
-    const { container } = render(<ClickableButton clickedText="Custom Clicked" />);
+    const { container } = render(
+      <ClickableButton clickedText="Custom Clicked" />
+    );
     expect(container).toMatchSnapshot();
   });
 });

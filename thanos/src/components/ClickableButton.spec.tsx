@@ -13,25 +13,29 @@ describe('ClickableButton', () => {
   });
 
   it('should display custom initial text when provided', () => {
-    const { getByTestId } = render(<ClickableButton initialText="Test Button" />);
+    const { getByTestId } = render(
+      <ClickableButton initialText="Test Button" />
+    );
     expect(getByTestId('clickable-button')).toHaveTextContent('Test Button');
   });
 
   it('should change text to "Clicked" when clicked', () => {
     const { getByTestId } = render(<ClickableButton />);
     const button = getByTestId('clickable-button');
-    
+
     fireEvent.click(button);
-    
+
     expect(button).toHaveTextContent('Clicked');
   });
 
   it('should change text to custom clicked text when provided and clicked', () => {
-    const { getByTestId } = render(<ClickableButton clickedText="Button Clicked!" />);
+    const { getByTestId } = render(
+      <ClickableButton clickedText="Button Clicked!" />
+    );
     const button = getByTestId('clickable-button');
-    
+
     fireEvent.click(button);
-    
+
     expect(button).toHaveTextContent('Button Clicked!');
   });
 });
