@@ -5,31 +5,31 @@
   "sourceRoot": ".",
   "targets": {
     "build": {
-      "executor": "@nx/nx/none",
+      "executor": "nx:noop",
       "options": {
         "skip": true
       }
     },
     "test": {
-      "executor": "@nx/nx/none",
+      "executor": "nx:noop",
       "options": {
         "skip": true
       }
     },
     "e2e": {
-      "executor": "@nx/nx/none",
+      "executor": "nx:noop",
       "options": {
         "skip": true
       }
     },
     "lint": {
-      "executor": "@nx/nx/none",
+      "executor": "nx:noop",
       "options": {
         "skip": true
       }
     },
     "format": {
-      "executor": "@nx/nx/none",
+      "executor": "nx:noop",
       "options": {
         "skip": true
       }
