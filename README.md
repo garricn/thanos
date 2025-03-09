@@ -25,6 +25,7 @@ Thanos is a scaffolding template for creating new Nx monorepo projects with a pr
 | Command                                            | Description                                                |
 | -------------------------------------------------- | ---------------------------------------------------------- |
 | `npm run start`                                    | Run both API and web servers concurrently                  |
+| `npm run start:no-daemon`                          | Run without the NX daemon (use if you encounter daemon issues) |
 | `nx serve web`                                     | Run the website locally                                    |
 | `nx serve api`                                     | Run the backend API server                                 |
 | `nx test web`                                      | Run frontend unit tests                                    |
@@ -37,7 +38,6 @@ Thanos is a scaffolding template for creating new Nx monorepo projects with a pr
 | `npm run lint:all`                                 | Run linting for all projects                               |
 | `npm run format`                                   | Run formatting for all files                               |
 | `npm run test:all`                                 | Run all unit and e2e tests for the project                 |
-| `npm run generate`                                 | Generate a new project from this template                  |
 
 ## Using This Template
 
@@ -48,43 +48,61 @@ Thanos is a scaffolding template for creating new Nx monorepo projects with a pr
 
 ### Generating a New Project
 
-1. Clone this repository:
-   ```
+Follow these steps to create a new project using Thanos:
+
+1. **Clone the Thanos repository** (you only need to do this once):
+   
+   ```bash
    git clone https://github.com/yourusername/thanos.git
-   cd thanos
    ```
 
-2. Install dependencies:
-   ```
-   npm install
+2. **Make the generator script executable** (if not already):
+
+   ```bash
+   chmod +x /path/to/thanos/generate.js
    ```
 
-3. Run the generator script:
-   ```
-   npm run generate
-   ```
-   or
-   ```
-   node generate.js
+3. **Create and navigate to a new empty directory** for your project:
+
+   ```bash
+   mkdir my-new-project
+   cd my-new-project
    ```
 
-4. Follow the prompts to specify your new project name (defaults to "my-thanos")
+4. **Run the generator script** using the full path to the script:
 
-5. The script will:
-   - Create a new directory with your project name
-   - Copy all necessary files
+   ```bash
+   /full/path/to/thanos/generate.js
+   ```
+   
+   For example, if you cloned thanos to your home directory:
+
+   ```bash
+   ~/thanos/generate.js
+   ```
+   
+   Or using a relative path:
+
+   ```bash
+   ../thanos/generate.js
+   ```
+
+5. **Follow the prompts** to specify your project name (defaults to the current directory name)
+
+6. The script will:
+   - Copy all necessary files to your current directory
    - Update references to "thanos" with your project name
    - Initialize a new Git repository
-   - Provide instructions for next steps
+   - Install dependencies automatically
+   - Create an initial commit with a clean git state
 
-6. Navigate to your new project and get started:
-   ```
-   cd your-project-name
-   npm install --legacy-peer-deps
+7. **Start your new project**:
+
+   ```bash
    npm run start
    ```
 
-   > **Note**: The `--legacy-peer-deps` flag is required due to a dependency conflict between Cypress 14.x and @nx/cypress. An `.npmrc` file with this setting is automatically created in your project.
+> **Note**: The `--legacy-peer-deps` flag is required due to a dependency conflict between Cypress 14.x and @nx/cypress. An `.npmrc` file with this setting is automatically created in your project.
 
 ## Using the Generated Project
 
@@ -172,7 +190,28 @@ SOFTWARE.
   **Solution**: Use the `--legacy-peer-deps` flag: `npm install --legacy-peer-deps`. This is automatically configured in the generated project via the .npmrc file.
 
 - **Issue**: Nx daemon errors when running commands in a generated project.
-  **Solution**: Run `npx nx reset` to clear the Nx cache and restart the daemon.
+  **Solution**: Try the following options:
+  
+  **Option 1**: Run without the daemon (recommended)
+  ```bash
+  # Use the no-daemon script
+  npm run start:no-daemon
+  ```
+  
+  **Option 2**: Reset the daemon
+  ```bash
+  # 1. Reset the NX cache
+  npx nx reset
+  
+  # 2. If that doesn't work, kill any running NX processes
+  pkill -f "nx"
+  
+  # 3. Remove socket files that might be causing conflicts
+  find /var/folders -name "d.sock" -delete
+  
+  # 4. Reset NX again
+  npx nx reset
+  ```
 
 - **Issue**: Path references to the original Thanos project in error messages.
   **Solution**: The generator script attempts to replace all absolute paths, but if you encounter any remaining references, check the specific files mentioned in the error messages and update the paths manually.

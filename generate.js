@@ -5,13 +5,16 @@ const fs = require('fs-extra');
 const path = require('path');
 const { execSync } = require('child_process');
 
-// Get the current directory name (thanos)
-const currentDir = path.basename(process.cwd());
-const parentDir = path.dirname(process.cwd());
-const currentDirFullPath = process.cwd();
+// Get the script directory (where thanos is installed)
+const scriptPath = process.argv[1];
+const scriptDir = path.dirname(scriptPath);
+const thanosDir = scriptDir;
+
+// Get the target directory (where the user is running the script from)
+const targetDir = process.cwd();
 
 // Function to replace absolute paths in files
-async function replaceAbsolutePaths(targetDir, originalPath, projectName) {
+async function replaceAbsolutePaths(targetDir, projectName) {
   console.log('Replacing absolute paths in files...');
   
   // Files that might contain absolute paths
@@ -39,19 +42,19 @@ async function replaceAbsolutePaths(targetDir, originalPath, projectName) {
     if (fs.existsSync(filePath)) {
       let content = fs.readFileSync(filePath, 'utf8');
       
-      // Replace absolute paths with relative paths
-      const regex = new RegExp(originalPath.replace(/\//g, '\\/').replace(/\./g, '\\.'), 'g');
-      if (content.match(regex)) {
-        console.log(`  Replacing paths in ${file}`);
-        content = content.replace(regex, path.join(parentDir, projectName));
-        fs.writeFileSync(filePath, content);
-      }
-      
-      // Replace the project name in any paths
-      const projectRegex = new RegExp(`/${currentDir}/`, 'g');
+          // Replace the project name in any paths
+      const projectRegex = new RegExp(`/thanos/`, 'g');
       if (content.match(projectRegex)) {
         console.log(`  Replacing project name in ${file}`);
         content = content.replace(projectRegex, `/${projectName}/`);
+        fs.writeFileSync(filePath, content);
+      }
+      
+      // Replace "Thanos" with project name
+      const nameRegex = new RegExp(`Thanos`, 'g');
+      if (content.match(nameRegex)) {
+        console.log(`  Replacing "Thanos" with "${projectName}" in ${file}`);
+        content = content.replace(nameRegex, projectName);
         fs.writeFileSync(filePath, content);
       }
     }
@@ -104,38 +107,83 @@ async function runSetupCommands(targetDir) {
   }
 }
 
+// Function to update app title in React components
+async function updateAppTitle(targetDir, projectName) {
+  console.log('Updating app title in React components...');
+  
+  // Update title in app.tsx
+  const appTsxPath = path.join(targetDir, 'apps/web/src/app/app.tsx');
+  if (fs.existsSync(appTsxPath)) {
+    let content = fs.readFileSync(appTsxPath, 'utf8');
+    
+    // Replace "Web App" with project name
+    const titleRegex = /<h1[^>]*>Web App<\/h1>/;
+    if (content.match(titleRegex)) {
+      console.log(`  Updating title in app.tsx`);
+      content = content.replace(titleRegex, `<h1 className="text-3xl font-bold mb-6">${projectName}</h1>`);
+      fs.writeFileSync(appTsxPath, content);
+    }
+  }
+  
+  // Update title in index.html
+  const indexHtmlPath = path.join(targetDir, 'apps/web/index.html');
+  if (fs.existsSync(indexHtmlPath)) {
+    let content = fs.readFileSync(indexHtmlPath, 'utf8');
+    
+    // Replace "Thanos" with project name in title tag
+    const titleRegex = /<title>Thanos<\/title>/;
+    if (content.match(titleRegex)) {
+      console.log(`  Updating title in index.html`);
+      content = content.replace(titleRegex, `<title>${projectName}</title>`);
+      fs.writeFileSync(indexHtmlPath, content);
+    }
+  }
+}
+
+// Function to check if directory is empty or get confirmation to proceed
+async function checkDirectoryAndConfirm() {
+  const files = fs.readdirSync(targetDir).filter(f => !f.startsWith('.') && f !== 'node_modules');
+  
+  if (files.length > 0) {
+    const { proceed } = await inquirer.prompt([{
+      type: 'confirm',
+      name: 'proceed',
+      message: 'Current directory is not empty. Proceed anyway? This may overwrite existing files.',
+      default: false
+    }]);
+    
+    if (!proceed) {
+      console.log('Operation cancelled.');
+      process.exit(0);
+    }
+  }
+}
+
 async function main() {
-  // Prompt for project name
+  // Check if current directory is empty or get confirmation
+  await checkDirectoryAndConfirm();
+  
+  // Prompt for project name (default to current directory name)
+  const defaultName = path.basename(targetDir);
   const { projectName } = await inquirer.prompt([
     {
       type: 'input',
       name: 'projectName',
-      message: 'What is the name of your new project?',
-      default: 'my-thanos'
+      message: 'What is the name of your project?',
+      default: defaultName
     }
   ]);
-
-  // Create the target directory
-  const targetDir = path.join(parentDir, projectName);
   
-  // Check if directory already exists
-  if (fs.existsSync(targetDir)) {
-    console.error(`Error: Directory ${targetDir} already exists.`);
-    process.exit(1);
-  }
-  
-  // Create the directory
-  fs.mkdirSync(targetDir);
-  
-  // Copy files, excluding node_modules, .git, and generate.js
-  console.log(`Copying files to ${targetDir}...`);
-  fs.copySync(process.cwd(), targetDir, {
+  // Copy files from thanos template to current directory
+  console.log(`Copying files from template to current directory...`);
+  fs.copySync(thanosDir, targetDir, {
     filter: (src) => {
-      const relativePath = path.relative(process.cwd(), src);
+      const relativePath = path.relative(thanosDir, src);
       return !relativePath.startsWith('node_modules') && 
              !relativePath.startsWith('.git') && 
              relativePath !== 'generate.js';
-    }
+    },
+    overwrite: true
   });
   
   // Update package.json
@@ -155,11 +203,17 @@ async function main() {
     delete packageJson.scripts.generate;
   }
   
+  // Add a start:no-daemon script
+  if (packageJson.scripts) {
+    packageJson.scripts['start:no-daemon'] = 'NX_DAEMON=false npm run start';
+  }
+  
   // Write updated package.json
   fs.writeFileSync(
     packageJsonPath,
     JSON.stringify(packageJson, null, 2)
   );
+  console.log('Updated package.json with project name and added start:no-daemon script');
   
   // Update README.md
   const readmePath = path.join(targetDir, 'README.md');
@@ -183,8 +237,11 @@ async function main() {
     fs.writeFileSync(licensePath, licenseContent);
   }
   
-  // Replace absolute paths in files
-  await replaceAbsolutePaths(targetDir, currentDirFullPath, projectName);
+  // Replace paths and update names
+  await replaceAbsolutePaths(targetDir, projectName);
+  
+  // Update app title in React components
+  await updateAppTitle(targetDir, projectName);
   
   // Ensure all important hidden files exist
   console.log('Checking for important hidden files...');
@@ -276,41 +333,61 @@ Thumbs.db
   try {
     console.log('Initializing Git repository...');
     execSync('git init', { cwd: targetDir });
+    
+    // Create proper .gitignore before installing dependencies
+    updateGitignore(targetDir);
+    
+    // Install dependencies
+    console.log('Installing dependencies (this may take a few minutes)...');
+    execSync('npm install --legacy-peer-deps', { cwd: targetDir, stdio: 'inherit' });
+    
+    // Make initial commit with clean state
+    console.log('Creating initial commit...');
     execSync('git add .', { cwd: targetDir });
     execSync('git commit -m "Initial commit from Thanos scaffold"', { cwd: targetDir });
-    console.log('Git repository initialized with initial commit.');
     
     // Run additional setup commands
     await runSetupCommands(targetDir);
   } catch (error) {
-    console.warn('Warning: Git initialization failed. You may need to initialize Git manually.');
+    console.warn('Warning: Git initialization or dependency installation failed.');
     console.error(error.message);
   }
   
+
   // Success message
   console.log(`
-✅ Project ${projectName} generated successfully at ${targetDir}
-
-To get started:
-  cd ${projectName}
-  npm install --legacy-peer-deps
-  npm run start
+✅ Project ${projectName} generated successfully!
 
 Available commands:
-  npm run start     # Run both API and web servers concurrently
-  nx serve web      # Run the website locally
-  nx serve api      # Run the backend API server
-  nx test web       # Run frontend unit tests
-  nx test api       # Run backend unit tests
-  nx e2e web-e2e    # Run UI tests
-  npm run lint:all  # Run linting for all projects
-  npm run format    # Run formatting for all files
-  npm run test:all  # Run all unit and e2e tests
+  npm run start           # Run both API and web servers concurrently
+  npm run start:no-daemon # Run without the NX daemon (use if you encounter daemon issues)
+  nx serve web            # Run the website locally
+  nx serve api            # Run the backend API server
+  nx test web             # Run frontend unit tests
+  nx test api             # Run backend unit tests
+  nx e2e web-e2e          # Run UI tests
+  npm run lint:all        # Run linting for all projects
+  npm run format          # Run formatting for all files
+  npm run test:all        # Run all unit and e2e tests for the project
+
+Troubleshooting:
+  If you encounter NX daemon issues, try these options:
+  
+  Option 1: Run without the daemon
+  # Use the no-daemon script
+  npm run start:no-daemon
+  
+  Option 2: Reset the daemon
+  # Kill any running NX processes
+  pkill -f "nx"
+  # Remove socket files
+  find /var/folders -name "d.sock" -delete
+  # Reset NX
+  npx nx reset
 
 Notes:
 - This project uses the --legacy-peer-deps flag to resolve dependency conflicts
   between Cypress 14.x and @nx/cypress. An .npmrc file has been created with this setting.
-- If you encounter any Nx daemon issues, try running: npx nx reset
 - Your git repository should be in a clean state. The .nx directory is gitignored.
 `);
 }

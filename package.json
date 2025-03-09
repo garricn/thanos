@@ -9,8 +9,7 @@
     "test": "nx test",
     "test:all": "nx run-many -t test --projects=web,api && nx run-many -t e2e --projects=web-e2e,api-e2e",
     "lint:all": "nx run-many -t lint --projects=web,api,web-e2e,api-e2e",
-    "format": "nx format:write",
-    "generate": "node generate.js"
+    "format": "nx format:write"
   },
   "nx": {
     "includedScripts": []
