@@ -1,82 +1,116 @@
-# Thanos
+# Thanos - A Test-Driven React App
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+## Description
+Thanos is a test-driven development (TDD) React application built with Nx, featuring a Button component that demonstrates UI testing. The project showcases best practices for testing React components at different levels.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is almost ready ✨.
+## Tech Stack
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- Shadcn UI
+- Jest (for unit and snapshot tests)
+- Cypress (for UI tests)
+- ESLint
+- Prettier
+- Nx (monorepo tool)
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/react-standalone-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+## Commands
 
-## Finish your CI setup
+| Command | Description |
+|---------|-------------|
+| `nx serve thanos` | Run the website locally |
+| `nx test thanos` | Run unit tests |
+| `nx test thanos --test-file=Button.snapshot.test.tsx` | Run snapshot tests |
+| `nx e2e thanos-e2e` | Run UI tests |
+| `nx e2e thanos-e2e --watch` | Run UI tests in watch mode |
+| `nx lint thanos` | Run linting |
+| `nx format:write` | Run formatting |
 
-[Click here to finish setting up your workspace!](https://cloud.nx.app/connect/WEOABEl3Yc)
+## Installation
 
+1. Clone the repository
+2. Install dependencies:
+   ```
+   npm install
+   ```
 
-## Run tasks
+**Prerequisites:**
+- Node.js 22+
+- npm
 
-To run the dev server for your app, use:
+## Usage
 
-```sh
-npx nx serve thanos
+1. Start the development server:
+   ```
+   nx serve thanos
+   ```
+2. Open http://localhost:4200 in your browser
+3. Click the Button to see 'Clicked' state
+
+## Project Structure
+
+```
+thanos/
+├── apps/
+│   ├── thanos/          # Main React application
+│   └── thanos-e2e/      # Cypress end-to-end tests
+├── src/
+│   ├── app/             # Application components
+│   ├── components/      # Reusable UI components
+│   │   ├── ui/          # Shadcn UI components
+│   │   └── __snapshots__/ # Jest snapshot tests
+│   ├── assets/          # Static assets
+│   └── lib/             # Utility functions
+└── e2e/                 # End-to-end test configuration
 ```
 
-To create a production bundle:
+## Contributing
 
-```sh
-npx nx build thanos
-```
+Contributions are welcome! Here's how you can contribute:
 
-To see all available targets to run for a project, run:
+1. Fork this repository
+2. Create a new branch for your feature
+3. Make your changes
+4. Submit a pull request
 
-```sh
-npx nx show project thanos
-```
+## License
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+MIT License
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Copyright (c) 2025 Garric
 
-## Add new projects
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-Use the plugin's generator to create new projects.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
-To generate a new application, use:
+## Troubleshooting
 
-```sh
-npx nx g @nx/react:app demo
-```
+- **Issue**: If `nx e2e` fails, ensure `nx serve` is running on port 4200.
+  **Solution**: Run `nx serve thanos` in a separate terminal before running e2e tests.
 
-To generate a new library, use:
+- **Issue**: Component tests failing with style-related errors.
+  **Solution**: Make sure Tailwind CSS is properly configured and imported.
 
-```sh
-npx nx g @nx/react:lib mylib
-```
+## Acknowledgements
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+- Built with [Nx](https://nx.dev/)
+- Tested with [Cline](https://github.com/saoudrizwan/cline) by Saoud Rizwan
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+---
 
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/react-standalone-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+*Note: This project is a learning exercise for Test-Driven Development (TDD) with an AI agent (Cline).*
