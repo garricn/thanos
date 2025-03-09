@@ -186,11 +186,13 @@ async function main() {
   // Replace absolute paths in files
   await replaceAbsolutePaths(targetDir, currentDirFullPath, projectName);
   
-  // Ensure .gitignore exists and is properly configured
+  // Ensure all important hidden files exist
+  console.log('Checking for important hidden files...');
+  
+  // .gitignore
   const gitignorePath = path.join(targetDir, '.gitignore');
   if (!fs.existsSync(gitignorePath)) {
     console.log('Creating .gitignore file...');
-    // Create a basic .gitignore file if it doesn't exist
     fs.writeFileSync(gitignorePath, `# See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
 # compiled output
@@ -233,6 +235,31 @@ Thumbs.db
 
 # Nx
 .nx/
+`);
+  }
+  
+  // Check for .prettierrc and .prettierignore
+  const prettierrcPath = path.join(targetDir, '.prettierrc');
+  const prettierignorePath = path.join(targetDir, '.prettierignore');
+  
+  if (!fs.existsSync(prettierrcPath)) {
+    console.log('Creating .prettierrc file...');
+    // Create a basic .prettierrc file if it doesn't exist
+    fs.writeFileSync(prettierrcPath, `{
+  "singleQuote": true,
+  "trailingComma": "all",
+  "printWidth": 80
+}
+`);
+  }
+  
+  if (!fs.existsSync(prettierignorePath)) {
+    console.log('Creating .prettierignore file...');
+    // Create a basic .prettierignore file if it doesn't exist
+    fs.writeFileSync(prettierignorePath, `# Add files here to ignore them from prettier formatting
+/dist
+/coverage
+/.nx
 `);
   }
   
