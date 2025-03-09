@@ -12,8 +12,14 @@
     "includedScripts": []
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.1.2",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.479.0",
     "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react-dom": "19.0.0",
+    "shadcn-ui": "^0.9.5",
+    "tailwind-merge": "^3.0.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.8.0",
@@ -22,7 +28,7 @@
     "@nx/eslint-plugin": "20.5.0",
     "@nx/jest": "20.5.0",
     "@nx/js": "20.5.0",
-    "@nx/react": "20.5.0",
+    "@nx/react": "^20.5.0",
     "@nx/vite": "20.5.0",
     "@nx/web": "20.5.0",
     "@nx/workspace": "20.5.0",
@@ -31,6 +37,7 @@
     "@swc/core": "~1.5.7",
     "@swc/helpers": "~0.5.11",
     "@testing-library/dom": "10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "16.1.0",
     "@types/jest": "^29.5.12",
     "@types/node": "18.16.9",
@@ -38,6 +45,7 @@
     "@types/react-dom": "19.0.0",
     "@vitejs/plugin-react": "^4.2.0",
     "@vitest/ui": "^3.0.0",
+    "autoprefixer": "^10.4.20",
     "babel-jest": "^29.7.0",
     "cypress": "^13.13.0",
     "eslint": "^9.8.0",
@@ -52,7 +60,9 @@
     "jiti": "2.4.2",
     "jsdom": "~22.1.0",
     "nx": "20.5.0",
+    "postcss": "^8.5.3",
     "prettier": "^2.6.2",
+    "tailwindcss": "^4.0.12",
     "ts-jest": "^29.1.0",
     "ts-node": "10.9.1",
     "tslib": "^2.3.0",

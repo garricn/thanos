@@ -8,10 +8,13 @@ describe('App', () => {
     expect(baseElement).toBeTruthy();
   });
 
-  it('should have a greeting as the title', () => {
-    const { getAllByText } = render(<App />);
-    expect(
-      getAllByText(new RegExp('Welcome thanos', 'gi')).length > 0
-    ).toBeTruthy();
+  it('should have "Thanos App" as the title', () => {
+    const { getByText } = render(<App />);
+    expect(getByText('Thanos App')).toBeTruthy();
+  });
+
+  it('should render the ClickableButton component', () => {
+    const { getByTestId } = render(<App />);
+    expect(getByTestId('clickable-button')).toBeTruthy();
   });
 });

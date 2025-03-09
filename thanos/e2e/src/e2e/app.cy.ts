@@ -1,13 +1,19 @@
-import { getGreeting } from '../support/app.po';
+import { getGreeting, getClickableButton } from '../support/app.po';
 
-describe('e2e', () => {
+describe('thanos', () => {
   beforeEach(() => cy.visit('/'));
 
-  it('should display welcome message', () => {
-    // Custom command example, see `../support/commands.ts` file
-    cy.login('my-email@something.com', 'myPassword');
+  it('should display the app title', () => {
+    getGreeting().contains('Thanos App');
+  });
 
-    // Function helper example, see `../support/app.po.ts` file
-    getGreeting().contains(/Welcome/);
+  it('should display the button with initial text', () => {
+    getClickableButton().should('be.visible');
+    getClickableButton().should('contain.text', 'Click Me');
+  });
+
+  it('should change button text when clicked', () => {
+    getClickableButton().click();
+    getClickableButton().should('contain.text', 'Clicked');
   });
 });
