@@ -4,7 +4,6 @@ const inquirer = require('inquirer');
 const fs = require('fs-extra');
 const path = require('path');
 const { execSync } = require('child_process');
-const glob = require('glob');
 
 // Get the current directory name (thanos)
 const currentDir = path.basename(process.cwd());
