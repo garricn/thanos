@@ -16,7 +16,14 @@
         "bundle": false,
         "main": "apps/api/src/main.ts",
         "tsConfig": "apps/api/tsconfig.app.json",
-        "assets": ["apps/api/src/assets"],
+        "assets": [
+          "apps/api/src/assets",
+          {
+            "glob": "**/*",
+            "input": "apps/api/db",
+            "output": "db"
+          }
+        ],
         "generatePackageJson": true,
         "esbuildOptions": {
           "sourcemap": true,

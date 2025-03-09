@@ -1,24 +1,20 @@
 import express from 'express';
 import request from 'supertest';
 
-// Mock the log model
-jest.mock('../db/models/log', () => ({
+// Create mock log model
+const logModel = {
   insertLog: jest.fn().mockResolvedValue(1), // Mock returns ID 1
-  getLogs: jest
-    .fn()
-    .mockResolvedValue([
-      { id: 1, timestamp: '2025-03-08T00:00:00.000Z', endpoint: '/api/hello' },
-    ]),
-  getLogsByEndpoint: jest
-    .fn()
-    .mockResolvedValue([
-      { id: 1, timestamp: '2025-03-08T00:00:00.000Z', endpoint: '/api/hello' },
-    ]),
-  closeDb: jest.fn(),
-}));
+  getLogs: jest.fn().mockResolvedValue([
+    { id: 1, timestamp: '2025-03-08T00:00:00.000Z', endpoint: '/api/hello' }
+  ]),
+  getLogsByEndpoint: jest.fn().mockResolvedValue([
+    { id: 1, timestamp: '2025-03-08T00:00:00.000Z', endpoint: '/api/hello' }
+  ]),
+  closeDb: jest.fn()
+};
 
-// Import the log model after mocking
-const logModel = require('../db/models/log');
+// Mock the require function
+jest.mock('../../../db/models/log', () => logModel, { virtual: true });
 
 // Create a test app with the hello endpoint
 const app = express();

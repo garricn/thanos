@@ -1,7 +1,7 @@
 import express from 'express';
 
 // Import the log model
-const logModel = require('../db/models/log');
+const logModel = require('../../../db/models/log');
 
 const host = process.env.HOST ?? 'localhost';
 const port = process.env.PORT ? Number(process.env.PORT) : 3000;
