@@ -4,7 +4,7 @@
   "private": true,
   "license": "MIT",
   "scripts": {
-    "start": "nx serve",
+    "start": "concurrently --kill-others-on-fail \"nx serve api\" \"nx serve web\"",
     "build": "nx build",
     "test": "nx test"
   },
@@ -55,6 +55,7 @@
     "@vitest/ui": "^3.0.0",
     "autoprefixer": "^10.4.20",
     "babel-jest": "^29.7.0",
+    "concurrently": "^9.1.2",
     "cypress": "^14.1.0",
     "esbuild": "^0.19.2",
     "eslint": "^9.8.0",

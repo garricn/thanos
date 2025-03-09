@@ -3,6 +3,10 @@ import { getGreeting, getClickableButton } from '../support/app.po';
 describe('web', () => {
   beforeEach(() => cy.visit('/'));
 
+  it('should have a root element to prevent blank screens', () => {
+    cy.get('div#root').should('exist');
+  });
+
   it('should display the app title', () => {
     getGreeting().contains('Web App');
   });

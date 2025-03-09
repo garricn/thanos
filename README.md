@@ -22,17 +22,18 @@ Web is a test-driven development (TDD) React application built with Nx, featurin
 
 ## Commands
 
-| Command                                            | Description                |
-| -------------------------------------------------- | -------------------------- |
-| `nx serve web`                                     | Run the website locally    |
-| `nx serve api`                                     | Run the backend API server |
-| `nx test web`                                      | Run frontend unit tests    |
-| `nx test api`                                      | Run backend unit tests     |
-| `nx test web --test-file=Button.snapshot.test.tsx` | Run snapshot tests         |
-| `nx e2e web-e2e`                                   | Run UI tests               |
-| `nx e2e web-e2e --watch`                           | Run UI tests in watch mode |
-| `nx lint web`                                      | Run linting                |
-| `nx format:write`                                  | Run formatting             |
+| Command                                            | Description                                                |
+| -------------------------------------------------- | ---------------------------------------------------------- |
+| `npm run start`                                    | Run both API and web servers concurrently                  |
+| `nx serve web`                                     | Run the website locally                                    |
+| `nx serve api`                                     | Run the backend API server                                 |
+| `nx test web`                                      | Run frontend unit tests                                    |
+| `nx test api`                                      | Run backend unit tests                                     |
+| `nx test web --test-file=Button.snapshot.test.tsx` | Run snapshot tests                                         |
+| `nx e2e web-e2e`                                   | Run UI tests                                               |
+| `nx e2e web-e2e --watch`                           | Run UI tests in watch mode                                 |
+| `nx lint web`                                      | Run linting                                                |
+| `nx format:write`                                  | Run formatting                                             |
 
 ## Installation
 
@@ -49,19 +50,22 @@ Web is a test-driven development (TDD) React application built with Nx, featurin
 
 ## Usage
 
-1. Start the backend API server:
+1. Start both the backend API server and frontend development server with a single command:
 
    ```
-   nx serve api
+   npm run start
    ```
 
-2. In a separate terminal, start the frontend development server:
+   This command runs both servers concurrently and will automatically kill both servers if one fails.
+
+   Alternatively, you can start each server separately:
 
    ```
-   nx serve web
+   nx serve api    # Start the backend API server
+   nx serve web    # Start the frontend development server (in a separate terminal)
    ```
 
-3. Open http://localhost:4200 in your browser to see the frontend
+2. Open http://localhost:4200 in your browser to see the frontend
 4. Visit http://localhost:4200/api/health to see the backend API response
 
 5. Visit http://localhost:4200/api/hello to see the backend response with database logging

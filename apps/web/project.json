@@ -39,6 +39,26 @@
           "hmr": false
         }
       }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "apps/web/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "pretest": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "jest --config apps/web/jest.config.ts apps/web/tests/structure.test.ts"
+      }
     }
   }
 }
