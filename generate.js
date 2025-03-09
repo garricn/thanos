@@ -113,10 +113,10 @@ async function main() {
 To get started:
   cd ${projectName}
   npm install --legacy-peer-deps
-  npm start
+  npm run start
 
 Available commands:
-  npm start         # Run both API and web servers concurrently
+  npm run start     # Run both API and web servers concurrently
   nx serve web      # Run the website locally
   nx serve api      # Run the backend API server
   nx test web       # Run frontend unit tests
