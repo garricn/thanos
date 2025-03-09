@@ -32,6 +32,7 @@ Web is a test-driven development (TDD) React application built with Nx, featurin
 | `nx test web --test-file=Button.snapshot.test.tsx` | Run snapshot tests                                         |
 | `nx e2e web-e2e`                                   | Run UI tests                                               |
 | `nx e2e web-e2e --headed`                          | Run UI tests in watch mode                                 |
+| `nx run web-e2e:run-headed`                        | Run UI tests with Cypress UI visible                       |
 | `nx lint web`                                      | Run linting for web project                                |
 | `npm run lint:all`                                 | Run linting for all projects                               |
 | `npm run format`                                   | Run formatting for all files                               |
