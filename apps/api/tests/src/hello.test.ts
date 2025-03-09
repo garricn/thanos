@@ -13,8 +13,11 @@ const logModel = {
   closeDb: jest.fn()
 };
 
-// Mock the require function
+// Mock the database module
 jest.mock('../../../db/models/log', () => logModel, { virtual: true });
+
+// Mock console.error to prevent noise in test output
+let consoleErrorSpy: jest.SpyInstance;
 
 // Create a test app with the hello endpoint
 const app = express();
@@ -30,8 +33,14 @@ app.get('/api/hello', async (req, res) => {
 });
 
 describe('Hello API Endpoint', () => {
+  beforeEach(() => {
+    // Mock console.error before each test
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { /* empty function to suppress console output */ });
+  });
+  
   afterEach(() => {
     jest.clearAllMocks();
+    consoleErrorSpy.mockRestore();
   });
 
   describe('GET /api/hello', () => {
@@ -60,6 +69,13 @@ describe('Hello API Endpoint', () => {
       // Check that we get a 500 error
       expect(response.status).toBe(500);
       expect(response.body).toEqual({ error: 'Internal server error' });
+      
+      // Verify that the error was logged
+      expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+      expect(consoleErrorSpy).toHaveBeenCalledWith(
+        'Error logging request:',
+        expect.objectContaining({ message: 'Database error' })
+      );
     });
   });
 
