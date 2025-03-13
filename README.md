@@ -16,8 +16,9 @@ Thanos is a scaffolding template for creating new Nx monorepo projects with a pr
 - Comprehensive test setup with Jest and Cypress
 - Code quality tools including ESLint, Prettier, and TypeScript
 - CI/CD workflow with GitHub Actions
-- Code coverage reporting with Codecov
+- Code coverage reporting with Codecov integration
 - Validation scripts for linting, testing, and type checking
+- Automated quality checks for pull requests
 
 ## Tech Stack
 
