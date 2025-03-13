@@ -81,7 +81,7 @@
     "babel-jest": "^29.7.0",
     "concurrently": "^9.1.2",
     "cypress": "^14.1.0",
-    "esbuild": "^0.25.1",
+    "esbuild": "^0.19.12",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-cypress": "^3.5.0",
