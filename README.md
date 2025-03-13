@@ -1,6 +1,10 @@
 # Thanos - A Nx Monorepo Scaffolding Template
 
 [![CI](https://github.com/garricn/thanos/actions/workflows/ci.yml/badge.svg)](https://github.com/garricn/thanos/actions/workflows/ci.yml)
+[![Lint](https://github.com/garricn/thanos/actions/workflows/ci.yml/badge.svg?branch=main&event=push&label=lint)](https://github.com/garricn/thanos/actions/workflows/ci.yml)
+[![Type Check](https://github.com/garricn/thanos/actions/workflows/ci.yml/badge.svg?branch=main&event=push&label=types)](https://github.com/garricn/thanos/actions/workflows/ci.yml)
+[![Tests](https://github.com/garricn/thanos/actions/workflows/ci.yml/badge.svg?branch=main&event=push&label=tests)](https://github.com/garricn/thanos/actions/workflows/ci.yml)
+[![Coverage](https://codecov.io/gh/garricn/thanos/branch/main/graph/badge.svg)](https://codecov.io/gh/garricn/thanos)
 
 ## Description
 
