@@ -172,6 +172,80 @@ thanos/
 └── [config files]       # Various configuration files at root level
 ```
 
+## Code Coverage
+
+This project is configured with comprehensive code coverage reporting using Jest and Codecov.
+
+### Viewing Coverage Reports
+
+You can view code coverage reports in several ways:
+
+1. **Codecov Dashboard**:
+
+   - Visit [codecov.io/gh/garricn/thanos](https://codecov.io/gh/garricn/thanos)
+   - View overall coverage metrics, file-by-file breakdown, and historical trends
+   - Explore uncovered lines and branches
+
+2. **Local HTML Reports**:
+
+   ```bash
+   # Generate HTML coverage reports
+   npm run coverage:report
+
+   # Open the reports in your browser
+   open coverage/apps/web/index.html
+   open coverage/apps/api/index.html
+   ```
+
+3. **Terminal Summary**:
+
+   ```bash
+   # Generate coverage reports with terminal summary
+   npm run coverage
+   ```
+
+### Understanding Coverage Reports
+
+Coverage reports provide the following metrics:
+
+- **Statements**: Percentage of code statements executed
+- **Branches**: Percentage of code branches (if/else, switch) executed
+- **Functions**: Percentage of functions called
+- **Lines**: Percentage of code lines executed
+
+Color coding in HTML reports:
+
+- **Green**: Fully covered
+- **Yellow/Orange**: Partially covered
+- **Red**: Not covered
+
+### Coverage Thresholds
+
+This project enforces minimum coverage thresholds:
+
+```javascript
+// From jest.config.ts
+coverageThreshold: {
+  global: {
+    branches: 70,
+    functions: 70,
+    lines: 70,
+    statements: 70
+  }
+}
+```
+
+The CI pipeline will fail if coverage drops below these thresholds.
+
+### Improving Coverage
+
+To improve code coverage:
+
+1. Run `npm run coverage` to identify uncovered code
+2. Focus on adding tests for critical business logic first
+3. Use the HTML reports to find specific uncovered lines
+4. Add tests for error handling paths and edge cases
+
 ## Contributing
 
 Contributions are welcome! Here's how you can contribute:
