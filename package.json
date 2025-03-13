@@ -8,6 +8,7 @@
     "build": "nx build",
     "test": "nx test",
     "test:all": "nx run-many -t test --projects=web,api && nx run-many -t e2e --projects=web-e2e,api-e2e",
+    "test:unit": "nx run-many -t test --projects=web,api",
     "lint:all": "nx run-many -t lint --projects=web,api,web-e2e,api-e2e",
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "lint:md:fix": "markdownlint-cli2 --fix \"**/*.md\"",
@@ -23,7 +24,8 @@
     "sonar": "sonarqube-scanner",
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch",
-    "validate": "npm-run-all --parallel lint:all test:all coverage type-check security:check"
+    "validate": "npm-run-all --parallel lint:all test:unit coverage type-check",
+    "validate:full": "npm-run-all --parallel lint:all test:all coverage type-check security:check"
   },
   "nx": {
     "includedScripts": []
