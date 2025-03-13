@@ -47,6 +47,13 @@ Thanos is a scaffolding template for creating new Nx monorepo projects with a pr
 | `npm run format`                                   | Run formatting for all files                                   |
 | `npm run format:md`                                | Run formatting for markdown files only                         |
 | `npm run test:all`                                 | Run all unit and e2e tests for the project                     |
+| `npm run test:unit`                                | Run only unit tests (no e2e tests)                             |
+| `npm run coverage`                                 | Generate code coverage reports                                 |
+| `npm run coverage:report`                          | Generate detailed HTML coverage reports                        |
+| `npm run type-check`                               | Run TypeScript type checking                                   |
+| `npm run clean`                                    | Remove all generated files and caches                          |
+| `npm run validate`                                 | Run all critical checks (lint, test, coverage, type-check)     |
+| `npm run validate:full`                            | Run all checks including E2E tests and security                |
 
 ## Using This Template
 
