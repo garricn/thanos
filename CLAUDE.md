@@ -2,15 +2,27 @@
 
 This file contains instructions for working with Claude in this project.
 
-## Commit Messages
+## ⚠️ IMPORTANT: Commit Messages ⚠️
 
-When Claude makes changes to the codebase, commit messages should be prefixed with "Claude:" to clearly identify changes made by the AI assistant.
+**ALL** commit messages made by Claude **MUST** be prefixed with "Claude:" to clearly identify changes made by the AI assistant. This is a strict requirement with no exceptions.
 
-Example:
+### ✅ CORRECT Format
 
 ```
-Claude: Add markdown linting and formatting, fix ESLint issues, disable Nx Cloud
+Claude: Add markdown linting and formatting
+Claude: Fix ESLint issues in components
+Claude: Update README with new documentation
 ```
+
+### ❌ INCORRECT Format
+
+```
+Add markdown linting and formatting
+Fix ESLint issues in components
+Update README with new documentation
+```
+
+The "Claude:" prefix helps team members easily identify which changes were made by the AI assistant versus human developers. This is crucial for tracking, auditing, and understanding the project's history.
 
 ## Code Style
 
