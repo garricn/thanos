@@ -8,7 +8,8 @@ const checkApiAvailability = async () => {
   try {
     await axios.get(`${API_URL}/api/health`, { timeout: 1000 });
     return true;
-  } catch (error) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  } catch (_error) {
     console.log('API server is not running. Skipping e2e tests.');
     return false;
   }

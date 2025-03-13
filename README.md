@@ -24,22 +24,25 @@ Thanos is a scaffolding template for creating new Nx monorepo projects with a pr
 
 ## Commands
 
-| Command                                            | Description                                                |
-| -------------------------------------------------- | ---------------------------------------------------------- |
-| `npm run start`                                    | Run both API and web servers concurrently                  |
+| Command                                            | Description                                                    |
+| -------------------------------------------------- | -------------------------------------------------------------- |
+| `npm run start`                                    | Run both API and web servers concurrently                      |
 | `npm run start:no-daemon`                          | Run without the NX daemon (use if you encounter daemon issues) |
-| `nx serve web`                                     | Run the website locally                                    |
-| `nx serve api`                                     | Run the backend API server                                 |
-| `nx test web`                                      | Run frontend unit tests                                    |
-| `nx test api`                                      | Run backend unit tests                                     |
-| `nx test web --test-file=Button.snapshot.test.tsx` | Run snapshot tests                                         |
-| `nx e2e web-e2e`                                   | Run UI tests                                               |
-| `nx e2e web-e2e --headed`                          | Run UI tests in watch mode                                 |
-| `nx run web-e2e:run-headed`                        | Run UI tests with Cypress UI visible                       |
-| `nx lint web`                                      | Run linting for web project                                |
-| `npm run lint:all`                                 | Run linting for all projects                               |
-| `npm run format`                                   | Run formatting for all files                               |
-| `npm run test:all`                                 | Run all unit and e2e tests for the project                 |
+| `nx serve web`                                     | Run the website locally                                        |
+| `nx serve api`                                     | Run the backend API server                                     |
+| `nx test web`                                      | Run frontend unit tests                                        |
+| `nx test api`                                      | Run backend unit tests                                         |
+| `nx test web --test-file=Button.snapshot.test.tsx` | Run snapshot tests                                             |
+| `nx e2e web-e2e`                                   | Run UI tests                                                   |
+| `nx e2e web-e2e --headed`                          | Run UI tests in watch mode                                     |
+| `nx run web-e2e:run-headed`                        | Run UI tests with Cypress UI visible                           |
+| `nx lint web`                                      | Run linting for web project                                    |
+| `npm run lint:all`                                 | Run linting for all projects                                   |
+| `npm run lint:md`                                  | Run markdown linting                                           |
+| `npm run lint:md:fix`                              | Run markdown linting and fix issues automatically              |
+| `npm run format`                                   | Run formatting for all files                                   |
+| `npm run format:md`                                | Run formatting for markdown files only                         |
+| `npm run test:all`                                 | Run all unit and e2e tests for the project                     |
 
 ## Using This Template
 
@@ -53,7 +56,7 @@ Thanos is a scaffolding template for creating new Nx monorepo projects with a pr
 Follow these steps to create a new project using Thanos:
 
 1. **Clone the Thanos repository** (you only need to do this once):
-   
+
    ```bash
    git clone https://github.com/garricn/thanos.git
    ```
@@ -76,13 +79,13 @@ Follow these steps to create a new project using Thanos:
    ```bash
    /full/path/to/thanos/generate.js
    ```
-   
+
    For example, if you cloned thanos to your home directory:
 
    ```bash
    ~/thanos/generate.js
    ```
-   
+
    Or using a relative path:
 
    ```bash
@@ -92,6 +95,7 @@ Follow these steps to create a new project using Thanos:
 5. **Follow the prompts** to specify your project name (defaults to the current directory name)
 
 6. The script will:
+
    - Copy all necessary files to your current directory
    - Update references to "thanos" with your project name
    - Initialize a new Git repository
@@ -123,9 +127,9 @@ Follow these steps to create a new project using Thanos:
    nx serve web    # Start the frontend development server (in a separate terminal)
    ```
 
-2. Open http://localhost:4200 in your browser to see the frontend
-3. Visit http://localhost:4200/api/health to see the backend API response
-4. Visit http://localhost:4200/api/hello to see the backend response with database logging
+2. Open <http://localhost:4200> in your browser to see the frontend
+3. Visit <http://localhost:4200/api/health> to see the backend API response
+4. Visit <http://localhost:4200/api/hello> to see the backend response with database logging
 5. Click the Button to see 'Clicked' state
 
 ## Project Structure
@@ -193,24 +197,26 @@ SOFTWARE.
 
 - **Issue**: Nx daemon errors when running commands in a generated project.
   **Solution**: Try the following options:
-  
+
   **Option 1**: Run without the daemon (recommended)
+
   ```bash
   # Use the no-daemon script
   npm run start:no-daemon
   ```
-  
+
   **Option 2**: Reset the daemon
+
   ```bash
   # 1. Reset the NX cache
   npx nx reset
-  
+
   # 2. If that doesn't work, kill any running NX processes
   pkill -f "nx"
-  
+
   # 3. Remove socket files that might be causing conflicts
   find /var/folders -name "d.sock" -delete
-  
+
   # 4. Reset NX again
   npx nx reset
   ```

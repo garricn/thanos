@@ -9,7 +9,10 @@
     "test": "nx test",
     "test:all": "nx run-many -t test --projects=web,api && nx run-many -t e2e --projects=web-e2e,api-e2e",
     "lint:all": "nx run-many -t lint --projects=web,api,web-e2e,api-e2e",
-    "format": "nx format:write"
+    "lint:md": "markdownlint-cli2 \"**/*.md\"",
+    "lint:md:fix": "markdownlint-cli2 --fix \"**/*.md\"",
+    "format": "nx format:write",
+    "format:md": "prettier --write \"**/*.md\""
   },
   "nx": {
     "includedScripts": []
@@ -77,6 +80,7 @@
     "jest-environment-node": "^29.7.0",
     "jiti": "2.4.2",
     "jsdom": "~22.1.0",
+    "markdownlint-cli2": "^0.17.2",
     "nx": "20.5.0",
     "postcss": "^8.5.3",
     "prettier": "^2.6.2",
