@@ -12,7 +12,8 @@
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "lint:md:fix": "markdownlint-cli2 --fix \"**/*.md\"",
     "format": "nx format:write",
-    "format:md": "prettier --write \"**/*.md\""
+    "format:md": "prettier --write \"**/*.md\"",
+    "clean": "rm -rf dist tmp node_modules/.cache .nx/cache"
   },
   "nx": {
     "includedScripts": []
