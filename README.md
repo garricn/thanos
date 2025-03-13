@@ -10,6 +10,15 @@
 
 Thanos is a scaffolding template for creating new Nx monorepo projects with a pre-configured React frontend and Express backend. It provides a solid foundation with testing infrastructure already set up, including unit tests, snapshot tests, and E2E tests. This template helps you quickly bootstrap new projects with best practices for testing and project structure.
 
+## Features
+
+- Pre-configured monorepo structure with frontend and backend
+- Comprehensive test setup with Jest and Cypress
+- Code quality tools including ESLint, Prettier, and TypeScript
+- CI/CD workflow with GitHub Actions
+- Code coverage reporting with Codecov
+- Validation scripts for linting, testing, and type checking
+
 ## Tech Stack
 
 - React
