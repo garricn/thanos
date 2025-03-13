@@ -23,6 +23,8 @@
     "pre-commit": "lint-staged",
     "security:check": "snyk test",
     "security:fix": "snyk wizard",
+    "update:deps": "npm audit fix && npm install && git add package.json package-lock.json && git commit -m 'Claude: Update dependencies and sync package-lock.json'",
+    "update:deps:force": "npm audit fix --force && npm install && git add package.json package-lock.json && git commit -m 'Claude: Update dependencies with breaking changes and sync package-lock.json'",
     "sonar": "sonarqube-scanner",
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch",
