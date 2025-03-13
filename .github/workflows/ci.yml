@@ -23,6 +23,15 @@ jobs:
         run: npm run lint:all
       - name: Lint markdown
         run: npm run lint:md
+      - name: Upload logs on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: lint-logs
+          path: |
+            ./**/*.log
+            ./npm-debug.log*
+          retention-days: 7
 
   type-check:
     name: Type Check
@@ -45,6 +54,15 @@ jobs:
         run: npm ci
       - name: Check types
         run: npm run type-check
+      - name: Upload logs on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: type-check-logs
+          path: |
+            ./**/*.log
+            ./npm-debug.log*
+          retention-days: 7
 
   test:
     name: Unit Tests
@@ -67,6 +85,16 @@ jobs:
         run: npm ci
       - name: Run tests
         run: npm run test:unit
+      - name: Upload logs on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: unit-test-logs
+          path: |
+            ./**/*.log
+            ./npm-debug.log*
+            ./junit.xml
+          retention-days: 7
 
   coverage:
     name: Code Coverage
@@ -100,6 +128,16 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
           verbose: true # Add verbose flag for more detailed output
+      - name: Upload logs on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-logs
+          path: |
+            ./**/*.log
+            ./npm-debug.log*
+            ./coverage/**/*
+          retention-days: 7
 
   e2e:
     name: E2E Tests
@@ -130,6 +168,17 @@ jobs:
         run: npm run test:all
         # Allow this step to fail without failing the job
         continue-on-error: true
+      - name: Upload logs on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: e2e-logs
+          path: |
+            ./**/*.log
+            ./npm-debug.log*
+            ./cypress/screenshots/**/*
+            ./cypress/videos/**/*
+          retention-days: 7
 
   # This job depends on all required checks passing
   validate:
@@ -161,15 +210,66 @@ jobs:
           fi
       - name: Install dependencies
         run: npm ci
-      - name: Check if SNYK_TOKEN is set
+      - name: Run security audit
+        run: npm audit --audit-level=high
+      - name: Upload logs on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-logs
+          path: |
+            ./**/*.log
+            ./npm-debug.log*
+            ./npm-audit.json
+          retention-days: 7
+
+  # Upload logs as artifacts when any job fails
+  upload-logs:
+    name: Upload Logs
+    runs-on: ubuntu-latest
+    if: ${{ always() && (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) }}
+    needs: [lint, type-check, test, coverage, e2e, security]
+    steps:
+      - name: Create logs directory
+        run: mkdir -p logs
+
+      - name: Collect GitHub Actions logs
         run: |
-          if [ -z "$SNYK_TOKEN" ]; then
-            echo "::warning::SNYK_TOKEN is not set. Please add it to your repository secrets to enable security scanning."
-            exit 0
-          fi
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      - name: Run Snyk
-        run: npx snyk test --severity-threshold=high
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          echo "Collecting GitHub Actions logs for run ${{ github.run_id }}"
+          echo "Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" > logs/run_info.txt
+          echo "Workflow: ${{ github.workflow }}" >> logs/run_info.txt
+          echo "Event: ${{ github.event_name }}" >> logs/run_info.txt
+          echo "Ref: ${{ github.ref }}" >> logs/run_info.txt
+          echo "SHA: ${{ github.sha }}" >> logs/run_info.txt
+
+          # Collect job status information
+          echo "Job Status Summary:" >> logs/job_status.txt
+          echo "Lint: ${{ needs.lint.result }}" >> logs/job_status.txt
+          echo "Type Check: ${{ needs.type-check.result }}" >> logs/job_status.txt
+          echo "Unit Tests: ${{ needs.test.result }}" >> logs/job_status.txt
+          echo "Code Coverage: ${{ needs.coverage.result }}" >> logs/job_status.txt
+          echo "E2E Tests: ${{ needs.e2e.result }}" >> logs/job_status.txt
+          echo "Security Check: ${{ needs.security.result }}" >> logs/job_status.txt
+
+      - name: Upload logs as artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: workflow-logs-${{ github.run_id }}
+          path: logs/
+          retention-days: 7
+
+      - name: Create comment with logs link
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const artifactUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts`;
+            const runUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## CI Workflow Failed ❌\n\nSome jobs in the CI workflow failed. You can view the detailed logs here:\n\n- [Workflow Run](${ runUrl })\n- [Workflow Artifacts](${ artifactUrl })\n\n### Job Status\n\n- Lint: ${{ needs.lint.result }}\n- Type Check: ${{ needs.type-check.result }}\n- Unit Tests: ${{ needs.test.result }}\n- Code Coverage: ${{ needs.coverage.result }}\n- E2E Tests: ${{ needs.e2e.result }}\n- Security Check: ${{ needs.security.result }}`
+            });
