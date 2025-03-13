@@ -94,6 +94,10 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
+      - name: Start API server in background
+        run: |
+          npm run start:api &
+          sleep 10 # Give the API server time to start
       - name: Run E2E tests
         run: npm run test:all
         # Allow this step to fail without failing the job
@@ -122,7 +126,15 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: npm ci
+      - name: Check if SNYK_TOKEN is set
+        run: |
+          if [ -z "$SNYK_TOKEN" ]; then
+            echo "::warning::SNYK_TOKEN is not set. Please add it to your repository secrets to enable security scanning."
+            exit 0
+          fi
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
       - name: Run Snyk
-        run: npx snyk test --severity-threshold=high || true
+        run: npx snyk test --severity-threshold=high
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}

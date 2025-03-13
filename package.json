@@ -5,6 +5,8 @@
   "license": "MIT",
   "scripts": {
     "start": "concurrently --kill-others-on-fail \"nx serve api\" \"nx serve web\"",
+    "start:api": "nx serve api",
+    "start:web": "nx serve web",
     "build": "nx build",
     "test": "nx test",
     "test:all": "nx run-many -t test --projects=web,api && nx run-many -t e2e --projects=web-e2e,api-e2e",
@@ -77,7 +79,7 @@
     "babel-jest": "^29.7.0",
     "concurrently": "^9.1.2",
     "cypress": "^14.1.0",
-    "esbuild": "^0.19.2",
+    "esbuild": "^0.25.1",
     "eslint": "^9.8.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-cypress": "^3.5.0",
