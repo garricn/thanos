@@ -127,18 +127,54 @@ The project README includes SonarCloud badges that show the current status of co
 
 ## Local Analysis
 
-You can run SonarCloud analysis locally using the following command:
+You can run SonarCloud analysis locally using the following npm scripts:
 
 ```bash
+# Basic SonarCloud analysis
 npm run sonar
+
+# Run coverage tests and then SonarCloud analysis
+npm run sonar:local
+
+# Run analysis on a specific branch
+npm run sonar:branch
+
+# Generate a basic report with key metrics
+npm run sonar:report
+
+# Generate a detailed markdown report
+npm run sonar:detailed-report
+
+# Generate actionable tasks from SonarCloud analysis
+npm run sonar:tasks
+
+# Update TASKS.md with SonarCloud findings and format the file
+npm run sonar:update-tasks:formatted
 ```
 
-Note that you need to set the `SONAR_TOKEN` environment variable before running this command:
+Note that you need to set the `SONAR_TOKEN` environment variable before running these commands:
 
 ```bash
 export SONAR_TOKEN=your_sonar_token
-npm run sonar
 ```
+
+### Understanding the Reports
+
+The different report types provide various levels of detail:
+
+1. **Basic Report (`sonar:report`)**: Shows key metrics like code quality, bugs, vulnerabilities, and code smells in the terminal.
+
+2. **Detailed Report (`sonar:detailed-report`)**: Creates a comprehensive markdown file with:
+
+   - Project overview metrics
+   - Issues by severity and type
+   - Detailed issue descriptions with file locations
+   - Security hotspots
+   - Recommended improvement tasks
+
+3. **Tasks Report (`sonar:tasks`)**: Generates a markdown file with actionable tasks organized by priority.
+
+4. **TASKS.md Integration (`sonar:update-tasks:formatted`)**: Updates the project's TASKS.md file with SonarCloud findings and formats it properly.
 
 ## Viewing Results
 

@@ -1,8 +1,24 @@
 # Project Tasks
 
-This document tracks ongoing tasks, improvements, and future enhancements for the project.
+## SonarCloud Tasks
 
-## CI/CD Improvements
+### High Priority Issues
+
+### Medium Priority Issues
+
+### Security Hotspots
+
+- [ ] Review security hotspot: This framework implicitly discloses version information by default. Make sure it is safe here. in apps/api/src/main.ts (line 9)
+
+### Technical Debt
+
+### Coverage Improvements
+
+- [ ] Increase overall test coverage (currently 0.0%)
+- [ ] Focus on adding tests for core components
+- [ ] Ensure all new code has at least 80% test coverage
+
+CI/CD Improvements
 
 - [x] Fix indentation in CI workflow file
 - [x] Add log upload job to CI workflow for better debugging
@@ -29,6 +45,12 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [ ] Add port conflict detection to CI pipeline
 - [ ] Enhance CI logging to capture server startup information and port usage
 - [x] Add quality gates in CI to enforce minimum code quality standards
+- [ ] Optimize SonarCloud analysis job to reduce CI execution time
+- [ ] Implement caching for SonarCloud scanner to speed up analysis
+- [ ] Add SonarCloud quality gate status to GitHub commit status checks
+- [ ] Configure SonarCloud to analyze only changed files in PRs for faster feedback
+- [ ] Set up scheduled full SonarCloud analysis for comprehensive weekly reports
+- [ ] Implement SonarCloud custom rules specific to project requirements
 
 ## Code Quality
 
@@ -49,6 +71,14 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [ ] Add maintainability index tracking
 - [x] Implement technical debt quantification and tracking
 - [ ] Set up automated code reviews in PRs
+- [ ] Create SonarCloud quality gate dashboard for team visibility
+- [ ] Document SonarCloud quality gate rules and thresholds
+- [ ] Set up SonarCloud webhook integration with Slack/Teams for alerts
+- [x] Configure SonarCloud branch analysis for feature branches
+- [ ] Implement SonarCloud issue assignment workflow
+- [ ] Create custom SonarCloud quality reports for stakeholders
+- [ ] Set up periodic SonarCloud quality trend analysis
+- [x] Add npm scripts for running SonarCloud analysis locally
 
 ## Testing Improvements
 
@@ -92,6 +122,11 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [ ] Document complete environment setup process
 - [ ] Create test strategy document
 - [x] Document security practices and policies
+- [ ] Create SonarCloud onboarding guide for new team members
+- [ ] Document SonarCloud quality metrics interpretation guide
+- [ ] Create troubleshooting guide for common SonarCloud issues
+- [ ] Document process for addressing SonarCloud-reported issues
+- [ ] Create SonarCloud integration maintenance guide
 
 ## Performance
 

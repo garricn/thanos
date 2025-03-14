@@ -68,6 +68,13 @@ Thanos is a scaffolding template for creating new Nx monorepo projects with a pr
 | `npm run clean`                                    | Remove all generated files and caches                          |
 | `npm run validate`                                 | Run all critical checks (lint, test, coverage, type-check)     |
 | `npm run validate:full`                            | Run all checks including E2E tests and security                |
+| `npm run sonar`                                    | Run SonarCloud analysis                                        |
+| `npm run sonar:local`                              | Run coverage tests and then SonarCloud analysis                |
+| `npm run sonar:branch`                             | Run SonarCloud analysis on the current git branch              |
+| `npm run sonar:report`                             | Generate a basic SonarCloud metrics report                     |
+| `npm run sonar:detailed-report`                    | Generate a detailed SonarCloud analysis report                 |
+| `npm run sonar:tasks`                              | Generate actionable tasks from SonarCloud analysis             |
+| `npm run sonar:update-tasks:formatted`             | Update TASKS.md with SonarCloud findings                       |
 
 ## Using This Template
 
