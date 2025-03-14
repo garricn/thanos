@@ -14,6 +14,17 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [ ] Add status badges to README.md for CI status
 - [x] Fix E2E tests in CI - web server fails to start within timeout period
 - [x] Configure Snyk authentication for Security Check job in CI
+- [ ] Monitor E2E test reliability over time and track flaky tests
+- [ ] Make Security Check job required by adding it to the Validate job dependencies
+- [ ] Remove continue-on-error from Security Check job once Snyk authentication is set up
+- [ ] Add E2E tests to Validate job dependencies once they're consistently passing
+- [ ] Set up proper Snyk authentication in GitHub repository secrets
+- [ ] Create a dashboard or report for tracking E2E test stability
+- [ ] Standardize port usage across all environments (align ciBaseUrl with local port)
+- [ ] Add pre-flight checks in CI to verify services are running correctly
+- [ ] Implement automatic retries for E2E tests in CI
+- [ ] Add port conflict detection to CI pipeline
+- [ ] Enhance CI logging to capture server startup information and port usage
 
 ## Code Quality
 
@@ -23,6 +34,19 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [ ] Add more comprehensive unit tests
 - [ ] Improve test coverage to >90%
 - [ ] Set up SonarQube for code quality analysis
+
+## Testing Improvements
+
+- [x] Fix baseUrl in Cypress config to match actual web server port
+- [ ] Create a pre-test script that verifies the web server is running on expected port
+- [ ] Use environment variables for port configuration instead of hardcoding
+- [ ] Add health check endpoints to services for E2E test verification
+- [ ] Configure Cypress to run tests in parallel
+- [ ] Add visual regression testing
+- [ ] Tag tests as "smoke", "critical", or "extended"
+- [ ] Create a helper script that starts all required services and runs tests
+- [ ] Add VS Code tasks for common testing operations
+- [ ] Create a troubleshooting guide for common E2E test issues
 
 ## Security
 
@@ -39,6 +63,10 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [ ] Create API documentation
 - [ ] Add contributing guidelines
 - [ ] Document deployment process
+- [ ] Document port configurations for all services in all environments
+- [ ] Create architecture diagram showing all services and their port configurations
+- [ ] Document complete environment setup process
+- [ ] Create test strategy document
 
 ## Performance
 
@@ -55,6 +83,8 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [ ] Set up monitoring and alerting
 - [ ] Implement blue/green deployment strategy
 - [ ] Create disaster recovery plan
+- [ ] Use Docker Compose for local development to ensure consistent environments
+- [ ] Fix NVM compatibility warning with npm config prefix
 
 ## Features
 
