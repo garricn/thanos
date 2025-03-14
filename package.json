@@ -20,7 +20,7 @@
     "coverage": "nx run-many -t test --projects=web,api --coverage --coverageReporters=lcov",
     "coverage:report": "nx run-many -t test --projects=web,api --coverage --coverageReporters=text-summary,html,lcov",
     "prepare": "[ -n \"$CI\" ] || [ -n \"$HUSKY\" -a \"$HUSKY\" = \"0\" ] || husky",
-    "preinstall": "npx npm-force-resolutions",
+    "preinstall": "command -v npx >/dev/null && npx --no-install npm-force-resolutions || echo 'Skipping npm-force-resolutions'",
     "pre-commit": "lint-staged",
     "security:check": "snyk test",
     "security:fix": "snyk wizard",
