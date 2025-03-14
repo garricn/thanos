@@ -10,8 +10,8 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [x] Add a CI-specific script in package.json that explicitly disables husky
 - [x] Set up a global environment variable in the CI workflow file
 - [x] Integrate SonarCloud analysis into CI workflow
-- [ ] Make CI fail when SonarCloud quality gates fail
-- [ ] Add SonarCloud analysis results as a comment on PRs
+- [x] Make CI fail when SonarCloud quality gates fail
+- [x] Add SonarCloud analysis results as a comment on PRs
 - [ ] Create a .huskyrc.json file to configure husky behavior in different environments
 - [ ] Implement caching for node_modules to speed up CI builds
 - [ ] Add status badges to README.md for CI status
@@ -40,9 +40,9 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [x] Set up SonarQube for code quality analysis
 - [x] Configure SonarQube quality gates and quality profiles
 - [x] Set up SonarCloud integration with GitHub Actions
-- [ ] Add SonarCloud badges to README.md
+- [x] Add SonarCloud badges to README.md
 - [ ] Configure SonarCloud notifications for quality alerts
-- [ ] Set up SonarCloud PR decoration for automated code reviews
+- [x] Set up SonarCloud PR decoration for automated code reviews
 - [ ] Create custom quality profiles in SonarCloud for project-specific rules
 - [ ] Implement code complexity metrics tracking
 - [x] Set up code duplication detection
