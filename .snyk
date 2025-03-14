@@ -1,0 +1,12 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.25.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  SNYK-JS-INFLIGHT-6095116:
+    - '*':
+        reason: >-
+          Inflight is a transitive dependency with no direct upgrade path
+          available
+        expires: 2025-12-31T00:00:00.000Z
+        created: 2025-03-14T23:22:18.807Z
+patch: {}
