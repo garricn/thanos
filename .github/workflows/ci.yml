@@ -163,19 +163,27 @@ jobs:
           path: coverage/
       - name: SonarCloud Scan
         if: ${{ github.event_name != 'pull_request' }}
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, PR decoration, and automatic analysis
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Generate a token on SonarCloud.io, add to GitHub secrets
+        with:
+          args: >
+            -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
+            -Dsonar.organization=${{ github.repository_owner }}
+            -Dsonar.host.url=https://sonarcloud.io
       - name: SonarCloud Scan with PR Decoration
         if: ${{ github.event_name == 'pull_request' }}
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, PR decoration, and automatic analysis
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Generate a token on SonarCloud.io, add to GitHub secrets
         with:
           # Additional arguments for PR decoration
           args: >
+            -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
+            -Dsonar.organization=${{ github.repository_owner }}
+            -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
             -Dsonar.pullrequest.branch=${{ github.head_ref }}
             -Dsonar.pullrequest.base=${{ github.base_ref }}
