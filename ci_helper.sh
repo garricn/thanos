@@ -63,7 +63,7 @@ monitor_run() {
     echo -e "\nRun completed with conclusion: $RUN_CONCLUSION"
   fi
   
-  # If the run failed, check for artifacts
+  # If the run failed, check for artifacts and download full logs
   if [ "$RUN_CONCLUSION" == "failure" ]; then
     echo -e "${RED}CI run failed!${NC}"
     
@@ -76,6 +76,13 @@ monitor_run() {
     echo -e "${YELLOW}Failed jobs:${NC}"
     echo "$JOBS" | grep -A 1 '"conclusion": "failure"' | grep '"name":' | awk -F'"' '{print $4}'
     
+    # Create logs directory if it doesn't exist
+    LOGS_DIR="logs_${run_id}"
+    mkdir -p "$LOGS_DIR"
+    
+    # Download full logs for all jobs
+    download_full_logs "$run_id" "$LOGS_DIR"
+    
     # Check for artifacts
     echo "Checking for artifacts..."
     ARTIFACTS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
@@ -85,10 +92,6 @@ monitor_run() {
     
     if [ "$ARTIFACT_COUNT" -gt 0 ]; then
       echo -e "${GREEN}Found $ARTIFACT_COUNT artifacts!${NC}"
-      
-      # Create logs directory if it doesn't exist
-      LOGS_DIR="logs_${run_id}"
-      mkdir -p "$LOGS_DIR"
       
       # Extract artifact URLs and download them
       echo "$ARTIFACTS" | grep -o '"archive_download_url": "[^"]*"' | awk -F'"' '{print $4}' | while read -r URL; do
@@ -110,6 +113,83 @@ monitor_run() {
   elif [ "$RUN_CONCLUSION" == "success" ]; then
     echo -e "${GREEN}CI run completed successfully!${NC}"
   fi
+}
+
+# Function to download full logs for all jobs in a run
+download_full_logs() {
+  local run_id=$1
+  local logs_dir=$2
+  
+  echo -e "${BLUE}Downloading full logs for all jobs...${NC}"
+  
+  # Create a directory for full logs
+  mkdir -p "${logs_dir}/full_logs"
+  
+  # Get all jobs for this run
+  JOBS=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+    "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/runs/${run_id}/jobs?per_page=100")
+  
+  # Extract job IDs and names
+  echo "$JOBS" | jq -r '.jobs[] | "\(.id) \(.name)"' 2>/dev/null | while read -r JOB_ID JOB_NAME; do
+    if [ -z "$JOB_ID" ]; then
+      # If jq is not available, use grep and awk as fallback
+      JOB_IDS=($(echo "$JOBS" | grep -o '"id": [0-9]*' | awk '{print $2}'))
+      JOB_NAMES=($(echo "$JOBS" | grep -o '"name": "[^"]*"' | awk -F'"' '{print $4}' | sed 's/ /_/g'))
+      
+      for i in "${!JOB_IDS[@]}"; do
+        JOB_ID=${JOB_IDS[$i]}
+        JOB_NAME=${JOB_NAMES[$i]}
+        
+        # Sanitize job name for filename
+        JOB_NAME=$(echo "$JOB_NAME" | tr -cd '[:alnum:]_-')
+        
+        echo "Downloading logs for job: $JOB_NAME (ID: $JOB_ID)"
+        
+        # Download logs using the API
+        HTTP_STATUS=$(curl -s -w "%{http_code}" -o "${logs_dir}/full_logs/${JOB_NAME}_${JOB_ID}.log" \
+          -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Accept: application/vnd.github.v3+json" \
+          -L "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/jobs/${JOB_ID}/logs")
+        
+        if [ "$HTTP_STATUS" -ne 200 ]; then
+          echo -e "${YELLOW}Failed to download logs for job $JOB_NAME (HTTP status: $HTTP_STATUS)${NC}"
+        fi
+      done
+      
+      break
+    fi
+    
+    # Sanitize job name for filename
+    JOB_NAME=$(echo "$JOB_NAME" | tr -cd '[:alnum:]_-')
+    
+    echo "Downloading logs for job: $JOB_NAME (ID: $JOB_ID)"
+    
+    # Download logs using the API
+    HTTP_STATUS=$(curl -s -w "%{http_code}" -o "${logs_dir}/full_logs/${JOB_NAME}_${JOB_ID}.log" \
+      -H "Authorization: token $GITHUB_TOKEN" \
+      -H "Accept: application/vnd.github.v3+json" \
+      -L "https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/actions/jobs/${JOB_ID}/logs")
+    
+    if [ "$HTTP_STATUS" -ne 200 ]; then
+      echo -e "${YELLOW}Failed to download logs for job $JOB_NAME (HTTP status: $HTTP_STATUS)${NC}"
+    fi
+  done
+  
+  echo -e "${GREEN}Full logs downloaded to ${logs_dir}/full_logs/${NC}"
+  
+  # Create a summary file with links to the logs
+  echo "# CI Run Logs Summary" > "${logs_dir}/logs_summary.md"
+  echo "Run ID: $run_id" >> "${logs_dir}/logs_summary.md"
+  echo "Run URL: https://github.com/${REPO_OWNER}/${REPO_NAME}/actions/runs/${run_id}" >> "${logs_dir}/logs_summary.md"
+  echo "" >> "${logs_dir}/logs_summary.md"
+  echo "## Job Logs" >> "${logs_dir}/logs_summary.md"
+  
+  for log_file in "${logs_dir}"/full_logs/*.log; do
+    if [ -f "$log_file" ]; then
+      base_name=$(basename "$log_file")
+      echo "- [$base_name]($log_file)" >> "${logs_dir}/logs_summary.md"
+    fi
+  done
 }
 
 # Function to get the latest workflow run
@@ -212,6 +292,17 @@ main() {
         monitor_run "$2" true
       fi
       ;;
+    logs)
+      if [ -z "$2" ]; then
+        echo -e "${YELLOW}Error: Run ID is required for downloading logs.${NC}"
+        echo "Usage: ./ci_helper.sh logs <run_id>"
+        exit 1
+      else
+        LOGS_DIR="logs_${2}"
+        mkdir -p "$LOGS_DIR"
+        download_full_logs "$2" "$LOGS_DIR"
+      fi
+      ;;
     trigger)
       trigger_workflow "$2" "$3"
       ;;
@@ -221,6 +312,7 @@ main() {
     *)
       echo -e "${YELLOW}Usage:${NC}"
       echo "  ./ci_helper.sh monitor [run_id]  - Monitor a CI run (latest if no ID provided)"
+      echo "  ./ci_helper.sh logs <run_id>     - Download full logs for a CI run"
       echo "  ./ci_helper.sh trigger [branch] [workflow_id]  - Trigger a new workflow run"
       echo "  ./ci_helper.sh push \"Commit message\" [files_to_add]  - Push changes and monitor CI"
       ;;
