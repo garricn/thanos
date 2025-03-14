@@ -9,10 +9,10 @@
 ### Security Hotspots
 
 - [ ] Review security hotspot: This framework implicitly discloses version information by default. Make sure it is safe here. in apps/api/src/main.ts (line 9)
-- [ ] Fix Cross-site Scripting (XSS) vulnerability in vite@5.1.4 by upgrading to vite@5.4.12
-- [ ] Fix Origin Validation Error in vite@5.1.4 by upgrading to vite@5.4.12
-- [ ] Fix Information Exposure vulnerability in vite@5.1.4 by upgrading to vite@5.4.12
-- [ ] Fix Improper Access Control in vite@5.1.4 by upgrading to vite@5.4.12
+- [x] Fix Cross-site Scripting (XSS) vulnerability in vite@5.1.4 by upgrading to vite@5.4.12
+- [x] Fix Origin Validation Error in vite@5.1.4 by upgrading to vite@5.4.12
+- [x] Fix Information Exposure vulnerability in vite@5.1.4 by upgrading to vite@5.4.12
+- [x] Fix Improper Access Control in vite@5.1.4 by upgrading to vite@5.4.12
 - [ ] Fix Missing Release of Resource vulnerability in inflight@1.0.6 (from sqlite3 dependency)
 
 ### Technical Debt
