@@ -21,6 +21,7 @@ NC='\033[0m' # No Color
 check_token() {
   if [ -z "$GITHUB_TOKEN" ]; then
     echo -e "${RED}Error: GITHUB_TOKEN is not set. Please set it in your environment.${NC}"
+    echo "Run: source ~/.github_token_temp"
     exit 1
   fi
 }
@@ -159,6 +160,44 @@ trigger_workflow() {
   fi
 }
 
+# Function to push changes and monitor CI
+push_and_monitor() {
+  local commit_message=$1
+  local files_to_add=$2
+  
+  if [ -z "$commit_message" ]; then
+    echo -e "${RED}Error: Commit message is required.${NC}"
+    echo "Usage: ./ci_helper.sh push \"Commit message\" [files_to_add]"
+    exit 1
+  fi
+  
+  echo -e "${BLUE}Pushing changes and monitoring CI...${NC}"
+  
+  # Add files to git
+  if [ -z "$files_to_add" ]; then
+    echo "Adding all changed files..."
+    git add .
+  else
+    echo "Adding specified files: $files_to_add"
+    git add $files_to_add
+  fi
+  
+  # Commit changes
+  echo "Committing with message: $commit_message"
+  git commit -m "$commit_message"
+  
+  # Push changes
+  echo "Pushing changes..."
+  git push
+  
+  # Wait a moment for the workflow to start
+  echo "Waiting for CI to start..."
+  sleep 5
+  
+  # Monitor the CI run
+  get_latest_run
+}
+
 # Main function
 main() {
   echo -e "${BLUE}CI Helper Script${NC}"
@@ -176,10 +215,14 @@ main() {
     trigger)
       trigger_workflow "$2" "$3"
       ;;
+    push)
+      push_and_monitor "$2" "$3"
+      ;;
     *)
       echo -e "${YELLOW}Usage:${NC}"
       echo "  ./ci_helper.sh monitor [run_id]  - Monitor a CI run (latest if no ID provided)"
       echo "  ./ci_helper.sh trigger [branch] [workflow_id]  - Trigger a new workflow run"
+      echo "  ./ci_helper.sh push \"Commit message\" [files_to_add]  - Push changes and monitor CI"
       ;;
   esac
 }
