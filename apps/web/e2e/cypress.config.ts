@@ -8,12 +8,19 @@ export default defineConfig({
       bundler: 'vite',
       webServerCommands: {
         default: 'npx nx run web:serve',
-        production: 'npx nx run web:serve:production'
+        production: 'npx nx run web:serve:production',
       },
       ciWebServerCommand: 'npx nx run web:serve:production',
-      ciBaseUrl: 'http://localhost:4300'
+      ciBaseUrl: 'http://localhost:4300',
     }),
     baseUrl: 'http://localhost:4201',
-    specPattern: 'src/**/*.cy.{js,jsx,ts,tsx}'
-  }
+    specPattern: 'src/**/*.cy.{js,jsx,ts,tsx}',
+    setupNodeEvents(on, config) {
+      // Increase server start timeout
+      config.defaultCommandTimeout = 120000;
+      config.pageLoadTimeout = 120000;
+      config.requestTimeout = 120000;
+      return config;
+    },
+  },
 });

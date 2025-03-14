@@ -154,10 +154,17 @@ jobs:
           HUSKY=0 npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
       - name: Install dependencies
         run: HUSKY=0 npm ci
-      - name: Start API server in background
+      - name: Build API and Web
+        run: |
+          npm run build -- --projects=api,web
+      - name: Start servers in background
         run: |
           npm run start:api &
-          sleep 10 # Give the API server time to start
+          echo "API server started, waiting for it to be ready..."
+          sleep 20
+          npm run start:web &
+          echo "Web server started, waiting for it to be ready..."
+          sleep 20
       - name: Run E2E tests
         run: npm run test:all
         continue-on-error: true
@@ -202,8 +209,22 @@ jobs:
           HUSKY=0 npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
       - name: Install dependencies
         run: HUSKY=0 npm ci
-      - name: Run security audit
+      - name: Check for Snyk token
+        id: check-snyk
+        run: |
+          if [ -n "${{ secrets.SNYK_TOKEN }}" ]; then
+            echo "has_snyk_token=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_snyk_token=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Run Snyk security audit
+        if: steps.check-snyk.outputs.has_snyk_token == 'true'
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         run: npm run security:check
+      - name: Run npm audit as fallback
+        if: steps.check-snyk.outputs.has_snyk_token != 'true'
+        run: npm audit --audit-level=high
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
