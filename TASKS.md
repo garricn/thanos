@@ -25,6 +25,7 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [ ] Implement automatic retries for E2E tests in CI
 - [ ] Add port conflict detection to CI pipeline
 - [ ] Enhance CI logging to capture server startup information and port usage
+- [ ] Add quality gates in CI to enforce minimum code quality standards
 
 ## Code Quality
 
@@ -34,6 +35,12 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [ ] Add more comprehensive unit tests
 - [ ] Improve test coverage to >90%
 - [ ] Set up SonarQube for code quality analysis
+- [ ] Configure SonarQube quality gates and quality profiles
+- [ ] Implement code complexity metrics tracking
+- [ ] Set up code duplication detection
+- [ ] Add maintainability index tracking
+- [ ] Implement technical debt quantification and tracking
+- [ ] Set up automated code reviews in PRs
 
 ## Testing Improvements
 
@@ -55,6 +62,13 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [ ] Create a security policy document
 - [ ] Implement automated secret scanning
 - [ ] Add SAST (Static Application Security Testing) to CI pipeline
+- [ ] Set up Software Composition Analysis (SCA) for third-party dependencies
+- [ ] Implement license compliance checking for dependencies
+- [ ] Configure security-focused ESLint rules
+- [ ] Set up Dependabot alerts and security PRs
+- [ ] Implement security headers in the application
+- [ ] Add pre-commit hooks for secret detection
+- [ ] Configure GitHub secret scanning
 
 ## Documentation
 
@@ -67,6 +81,7 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [ ] Create architecture diagram showing all services and their port configurations
 - [ ] Document complete environment setup process
 - [ ] Create test strategy document
+- [ ] Document security practices and policies
 
 ## Performance
 
