@@ -8,6 +8,9 @@ const port = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 const app = express();
 
+// Disable X-Powered-By header to prevent information disclosure
+app.disable('x-powered-by');
+
 app.get('/', (req, res) => {
   res.send({ message: 'Hello API' });
 });
