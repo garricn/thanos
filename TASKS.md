@@ -12,6 +12,8 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [ ] Create a .huskyrc.json file to configure husky behavior in different environments
 - [ ] Implement caching for node_modules to speed up CI builds
 - [ ] Add status badges to README.md for CI status
+- [ ] Fix E2E tests in CI - web server fails to start within timeout period
+- [ ] Configure Snyk authentication for Security Check job in CI
 
 ## Code Quality
 
