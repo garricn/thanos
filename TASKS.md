@@ -7,8 +7,8 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [x] Fix indentation in CI workflow file
 - [x] Add log upload job to CI workflow for better debugging
 - [x] Fix "husky not found" error in CI by setting HUSKY=0 environment variable
-- [ ] Add a CI-specific script in package.json that explicitly disables husky
-- [ ] Set up a global environment variable in the CI workflow file
+- [x] Add a CI-specific script in package.json that explicitly disables husky
+- [x] Set up a global environment variable in the CI workflow file
 - [ ] Create a .huskyrc.json file to configure husky behavior in different environments
 - [ ] Implement caching for node_modules to speed up CI builds
 - [ ] Add status badges to README.md for CI status

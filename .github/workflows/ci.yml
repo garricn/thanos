@@ -6,6 +6,9 @@ name: CI
   pull_request:
     branches:
       - main
+env:
+  CI: true
+  HUSKY: 0
 jobs:
   lint:
     name: Lint

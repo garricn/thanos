@@ -19,7 +19,7 @@
     "clean": "rm -rf dist tmp node_modules/.cache .nx/cache",
     "coverage": "nx run-many -t test --projects=web,api --coverage --coverageReporters=lcov",
     "coverage:report": "nx run-many -t test --projects=web,api --coverage --coverageReporters=text-summary,html,lcov",
-    "prepare": "husky",
+    "prepare": "[ -n \"$CI\" ] || [ -n \"$HUSKY\" -a \"$HUSKY\" = \"0\" ] || husky",
     "pre-commit": "lint-staged",
     "security:check": "snyk test",
     "security:fix": "snyk wizard",
