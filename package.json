@@ -43,7 +43,7 @@
     "includedScripts": []
   },
   "resolutions": {
-    "inflight": "^1.0.6"
+    "inflight": "1.0.6"
   },
   "dependencies": {
     "@nx/esbuild": "20.5.0",
@@ -55,7 +55,7 @@
     "esbuild": "^0.19.12",
     "eslint": "^8.57.0",
     "express": "^4.19.2",
-    "inflight": "^1.0.6",
+    "inflight": "1.0.6",
     "js-yaml": "^4.1.0",
     "lucide-react": "^0.479.0",
     "react": "^18.2.0",
