@@ -141,6 +141,40 @@ jobs:
             ./npm-debug.log*
             ./coverage/**/*
           retention-days: 7
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+    needs: [coverage]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Shallow clones should be disabled for better relevancy of analysis
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Install dependencies
+        run: HUSKY=0 npm ci
+      - name: Download coverage reports
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage-reports
+          path: coverage/
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Generate a token on SonarCloud.io, add to GitHub secrets
+      - name: Upload logs on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: sonarcloud-logs
+          path: |
+            ./**/*.log
+            ./npm-debug.log*
+          retention-days: 7
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
@@ -192,7 +226,7 @@ jobs:
       - type-check
       - test
       - coverage
-      - sonarqube
+      - sonarcloud
     runs-on: ubuntu-latest
     steps:
       - name: All checks passed
@@ -253,7 +287,7 @@ jobs:
       - coverage
       - e2e
       - security
-      - sonarqube
+      - sonarcloud
     steps:
       - uses: actions/checkout@v4
         with:
@@ -331,6 +365,8 @@ jobs:
           echo "E2E Tests: ${{ needs.e2e.result || 'unknown' }}" >> logs/job_status.txt
 
           echo "Security Check: ${{ needs.security.result || 'unknown' }}" >> logs/job_status.txt
+
+          echo "SonarCloud Analysis: ${{ needs.sonarcloud.result || 'unknown' }}" >> logs/job_status.txt
       - name: Upload logs as artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -353,42 +389,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `## CI Workflow Failed ❌\n\nSome jobs in the CI workflow failed. You can view the detailed logs here:\n\n- [Workflow Run](${ runUrl })\n- [Workflow Artifacts](${ artifactUrl })\n\n### Job Status\n\n- Lint: ${{ needs.lint.result }}\n- Type Check: ${{ needs.type-check.result }}\n- Unit Tests: ${{ needs.test.result }}\n- Code Coverage: ${{ needs.coverage.result }}\n- E2E Tests: ${{ needs.e2e.result }}\n- Security Check: ${{ needs.security.result }}\n- SonarQube Analysis: ${{ needs.sonarqube.result }}`
+              body: `## CI Workflow Failed ❌\n\nSome jobs in the CI workflow failed. You can view the detailed logs here:\n\n- [Workflow Run](${ runUrl })\n- [Workflow Artifacts](${ artifactUrl })\n\n### Job Status\n\n- Lint: ${{ needs.lint.result }}\n- Type Check: ${{ needs.type-check.result }}\n- Unit Tests: ${{ needs.test.result }}\n- Code Coverage: ${{ needs.coverage.result }}\n- E2E Tests: ${{ needs.e2e.result }}\n- Security Check: ${{ needs.security.result }}\n- SonarCloud Analysis: ${{ needs.sonarcloud.result }}`
             });
-
-  sonarqube:
-    name: SonarQube Analysis
-    runs-on: ubuntu-latest
-    needs:
-      - coverage
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Shallow clones should be disabled for better relevancy of analysis
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: npm
-      - name: Install dependencies
-        run: HUSKY=0 npm ci
-      - name: Download coverage reports
-        uses: actions/download-artifact@v4
-        with:
-          name: coverage-reports
-          path: coverage
-      - name: SonarQube Scan
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-        run: npm run sonar
-        if: env.SONAR_TOKEN != '' && env.SONAR_HOST_URL != ''
-      - name: Upload logs on failure
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: sonarqube-logs
-          path: |
-            ./**/*.log
-            ./npm-debug.log*
-          retention-days: 7
