@@ -9,8 +9,17 @@
 ### Security Hotspots
 
 - [ ] Review security hotspot: This framework implicitly discloses version information by default. Make sure it is safe here. in apps/api/src/main.ts (line 9)
+- [ ] Fix Cross-site Scripting (XSS) vulnerability in vite@5.1.4 by upgrading to vite@5.4.12
+- [ ] Fix Origin Validation Error in vite@5.1.4 by upgrading to vite@5.4.12
+- [ ] Fix Information Exposure vulnerability in vite@5.1.4 by upgrading to vite@5.4.12
+- [ ] Fix Improper Access Control in vite@5.1.4 by upgrading to vite@5.4.12
+- [ ] Fix Missing Release of Resource vulnerability in inflight@1.0.6 (from sqlite3 dependency)
 
 ### Technical Debt
+
+- [ ] Review and update all outdated dependencies
+- [ ] Implement automated dependency updates with version constraints
+- [ ] Set up regular security audit schedule
 
 ### Coverage Improvements
 
@@ -30,14 +39,14 @@ CI/CD Improvements
 - [x] Add SonarCloud analysis results as a comment on PRs
 - [ ] Create a .huskyrc.json file to configure husky behavior in different environments
 - [ ] Implement caching for node_modules to speed up CI builds
-- [ ] Add status badges to README.md for CI status
+- [x] Add status badges to README.md for CI status
 - [x] Fix E2E tests in CI - web server fails to start within timeout period
 - [x] Configure Snyk authentication for Security Check job in CI
 - [ ] Monitor E2E test reliability over time and track flaky tests
-- [ ] Make Security Check job required by adding it to the Validate job dependencies
-- [ ] Remove continue-on-error from Security Check job once Snyk authentication is set up
+- [x] Make Security Check job required by adding it to the Validate job dependencies
+- [x] Remove continue-on-error from Security Check job once Snyk authentication is set up
 - [ ] Add E2E tests to Validate job dependencies once they're consistently passing
-- [ ] Set up proper Snyk authentication in GitHub repository secrets
+- [x] Set up proper Snyk authentication in GitHub repository secrets
 - [ ] Create a dashboard or report for tracking E2E test stability
 - [ ] Standardize port usage across all environments (align ciBaseUrl with local port)
 - [ ] Add pre-flight checks in CI to verify services are running correctly
@@ -95,18 +104,24 @@ CI/CD Improvements
 
 ## Security
 
-- [ ] Implement dependency vulnerability scanning in CI
+- [x] Implement dependency vulnerability scanning in CI
 - [ ] Set up automated security scanning for container images
-- [ ] Create a security policy document
-- [ ] Implement automated secret scanning
-- [ ] Add SAST (Static Application Security Testing) to CI pipeline
-- [ ] Set up Software Composition Analysis (SCA) for third-party dependencies
-- [ ] Implement license compliance checking for dependencies
+- [x] Create a security policy document
+- [x] Implement automated secret scanning
+- [x] Add SAST (Static Application Security Testing) to CI pipeline
+- [x] Set up Software Composition Analysis (SCA) for third-party dependencies
+- [x] Implement license compliance checking for dependencies
 - [ ] Configure security-focused ESLint rules
-- [ ] Set up Dependabot alerts and security PRs
+- [x] Set up Dependabot alerts and security PRs
 - [ ] Implement security headers in the application
 - [ ] Add pre-commit hooks for secret detection
-- [ ] Configure GitHub secret scanning
+- [x] Configure GitHub secret scanning
+- [x] Set up and configure Snyk integration
+- [x] Add Snyk token to GitHub repository secrets
+- [ ] Set up automated vulnerability fix PRs with Snyk
+- [ ] Configure vulnerability severity thresholds for CI/CD pipeline
+- [ ] Implement security scanning for Docker images
+- [ ] Create security issue templates for vulnerability reports
 
 ## Documentation
 
