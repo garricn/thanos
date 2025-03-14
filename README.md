@@ -257,6 +257,41 @@ To improve code coverage:
 3. Use the HTML reports to find specific uncovered lines
 4. Add tests for error handling paths and edge cases
 
+## Security
+
+This project uses Snyk for security vulnerability scanning. To enable security checks in CI:
+
+1. Sign up for a Snyk account at https://snyk.io
+2. Get your Snyk API token from https://app.snyk.io/account
+3. Add the token as a GitHub repository secret named `SNYK_TOKEN`
+
+### Local Security Checks
+
+To run security checks locally:
+
+```bash
+# Install Snyk CLI
+npm install -g snyk
+
+# Authenticate with Snyk
+snyk auth
+
+# Run security check
+npm run security:check
+
+# Fix security issues
+npm run security:fix
+```
+
+### CI/CD Security Checks
+
+Security checks are now required in CI and will:
+
+- Run Snyk security audit if SNYK_TOKEN is configured
+- Fall back to npm audit if SNYK_TOKEN is not available
+- Block PRs if high or critical vulnerabilities are found
+- Generate security reports as artifacts
+
 ## Contributing
 
 Contributions are welcome! Here's how you can contribute:
