@@ -227,11 +227,34 @@ jobs:
   upload-logs:
     name: Upload Logs
     runs-on: ubuntu-latest
-    if: ${{ always() && (contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')) }}
+    if: ${{ always() }}
     needs: [lint, type-check, test, coverage, e2e, security]
     steps:
       - name: Create logs directory
         run: mkdir -p logs
+
+      - name: Check runner environment
+        run: |
+          echo "Checking runner environment..."
+          echo "Runner OS: ${{ runner.os }}" > logs/runner_info.txt
+          echo "Runner Name: ${{ runner.name }}" >> logs/runner_info.txt
+          echo "Runner Temp: ${{ runner.temp }}" >> logs/runner_info.txt
+          echo "Runner Tool Cache: ${{ runner.tool_cache }}" >> logs/runner_info.txt
+
+          echo "System information:" >> logs/runner_info.txt
+          uname -a >> logs/runner_info.txt
+
+          echo "Disk space:" >> logs/runner_info.txt
+          df -h >> logs/runner_info.txt
+
+          echo "Memory information:" >> logs/runner_info.txt
+          free -h >> logs/runner_info.txt || echo "free command not available"
+
+          echo "Node.js version:" >> logs/runner_info.txt
+          node -v >> logs/runner_info.txt || echo "Node.js not available"
+
+          echo "npm version:" >> logs/runner_info.txt
+          npm -v >> logs/runner_info.txt || echo "npm not available"
 
       - name: Collect GitHub Actions logs
         run: |
@@ -244,12 +267,12 @@ jobs:
 
           # Collect job status information
           echo "Job Status Summary:" >> logs/job_status.txt
-          echo "Lint: ${{ needs.lint.result }}" >> logs/job_status.txt
-          echo "Type Check: ${{ needs.type-check.result }}" >> logs/job_status.txt
-          echo "Unit Tests: ${{ needs.test.result }}" >> logs/job_status.txt
-          echo "Code Coverage: ${{ needs.coverage.result }}" >> logs/job_status.txt
-          echo "E2E Tests: ${{ needs.e2e.result }}" >> logs/job_status.txt
-          echo "Security Check: ${{ needs.security.result }}" >> logs/job_status.txt
+          echo "Lint: ${{ needs.lint.result || 'unknown' }}" >> logs/job_status.txt
+          echo "Type Check: ${{ needs.type-check.result || 'unknown' }}" >> logs/job_status.txt
+          echo "Unit Tests: ${{ needs.test.result || 'unknown' }}" >> logs/job_status.txt
+          echo "Code Coverage: ${{ needs.coverage.result || 'unknown' }}" >> logs/job_status.txt
+          echo "E2E Tests: ${{ needs.e2e.result || 'unknown' }}" >> logs/job_status.txt
+          echo "Security Check: ${{ needs.security.result || 'unknown' }}" >> logs/job_status.txt
 
       - name: Upload logs as artifacts
         uses: actions/upload-artifact@v3
