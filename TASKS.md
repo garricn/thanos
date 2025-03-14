@@ -9,6 +9,9 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [x] Fix "husky not found" error in CI by setting HUSKY=0 environment variable
 - [x] Add a CI-specific script in package.json that explicitly disables husky
 - [x] Set up a global environment variable in the CI workflow file
+- [x] Integrate SonarCloud analysis into CI workflow
+- [ ] Make CI fail when SonarCloud quality gates fail
+- [ ] Add SonarCloud analysis results as a comment on PRs
 - [ ] Create a .huskyrc.json file to configure husky behavior in different environments
 - [ ] Implement caching for node_modules to speed up CI builds
 - [ ] Add status badges to README.md for CI status
@@ -36,6 +39,11 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [ ] Improve test coverage to >90%
 - [x] Set up SonarQube for code quality analysis
 - [x] Configure SonarQube quality gates and quality profiles
+- [x] Set up SonarCloud integration with GitHub Actions
+- [ ] Add SonarCloud badges to README.md
+- [ ] Configure SonarCloud notifications for quality alerts
+- [ ] Set up SonarCloud PR decoration for automated code reviews
+- [ ] Create custom quality profiles in SonarCloud for project-specific rules
 - [ ] Implement code complexity metrics tracking
 - [x] Set up code duplication detection
 - [ ] Add maintainability index tracking
@@ -77,6 +85,8 @@ This document tracks ongoing tasks, improvements, and future enhancements for th
 - [ ] Create API documentation
 - [ ] Add contributing guidelines
 - [ ] Document deployment process
+- [ ] Document SonarCloud setup and configuration
+- [ ] Create a code quality standards document referencing SonarCloud rules
 - [ ] Document port configurations for all services in all environments
 - [ ] Create architecture diagram showing all services and their port configurations
 - [ ] Document complete environment setup process
