@@ -43,7 +43,7 @@
     "includedScripts": []
   },
   "resolutions": {
-    "inflight": "^2.0.0"
+    "inflight": "^1.0.6"
   },
   "dependencies": {
     "@nx/esbuild": "20.5.0",
