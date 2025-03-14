@@ -1,11 +1,11 @@
 name: CI
-
-on:
+'on':
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
-
+    branches:
+      - main
 jobs:
   lint:
     name: Lint
@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: npm
       - name: Install dependencies
         run: npm ci
       - name: Lint code
@@ -32,7 +32,6 @@ jobs:
             ./**/*.log
             ./npm-debug.log*
           retention-days: 7
-
   type-check:
     name: Type Check
     runs-on: ubuntu-latest
@@ -42,14 +41,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: npm
       - name: Check package sync
         run: |
+          echo "Node version: $(node -v)"
+          echo "npm version: $(npm -v)"
           echo "Checking if package.json and package-lock.json are in sync..."
-          if ! npm ci --dry-run > /dev/null 2>&1; then
-            echo "::error::package.json and package-lock.json are out of sync. Please run 'npm install' locally and commit the changes."
-            exit 1
-          fi
+          npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
       - name: Install dependencies
         run: npm ci
       - name: Check types
@@ -63,7 +61,6 @@ jobs:
             ./**/*.log
             ./npm-debug.log*
           retention-days: 7
-
   test:
     name: Unit Tests
     runs-on: ubuntu-latest
@@ -73,14 +70,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: npm
       - name: Check package sync
         run: |
+          echo "Node version: $(node -v)"
+          echo "npm version: $(npm -v)"
           echo "Checking if package.json and package-lock.json are in sync..."
-          if ! npm ci --dry-run > /dev/null 2>&1; then
-            echo "::error::package.json and package-lock.json are out of sync. Please run 'npm install' locally and commit the changes."
-            exit 1
-          fi
+          npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
       - name: Install dependencies
         run: npm ci
       - name: Run tests
@@ -95,26 +91,24 @@ jobs:
             ./npm-debug.log*
             ./junit.xml
           retention-days: 7
-
   coverage:
     name: Code Coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Fetch all history for accurate coverage reporting
+          fetch-depth: 0
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: npm
       - name: Check package sync
         run: |
+          echo "Node version: $(node -v)"
+          echo "npm version: $(npm -v)"
           echo "Checking if package.json and package-lock.json are in sync..."
-          if ! npm ci --dry-run > /dev/null 2>&1; then
-            echo "::error::package.json and package-lock.json are out of sync. Please run 'npm install' locally and commit the changes."
-            exit 1
-          fi
+          npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
       - name: Install dependencies
         run: npm ci
       - name: Generate coverage
@@ -127,7 +121,7 @@ jobs:
           directory: ./coverage/
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
-          verbose: true # Add verbose flag for more detailed output
+          verbose: true
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
@@ -138,11 +132,9 @@ jobs:
             ./npm-debug.log*
             ./coverage/**/*
           retention-days: 7
-
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
-    # Make this job not block the workflow if it fails
     continue-on-error: true
     steps:
       - uses: actions/checkout@v4
@@ -150,14 +142,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: npm
       - name: Check package sync
         run: |
+          echo "Node version: $(node -v)"
+          echo "npm version: $(npm -v)"
           echo "Checking if package.json and package-lock.json are in sync..."
-          if ! npm ci --dry-run > /dev/null 2>&1; then
-            echo "::error::package.json and package-lock.json are out of sync. Please run 'npm install' locally and commit the changes."
-            exit 1
-          fi
+          npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
       - name: Install dependencies
         run: npm ci
       - name: Start API server in background
@@ -166,7 +157,6 @@ jobs:
           sleep 10 # Give the API server time to start
       - name: Run E2E tests
         run: npm run test:all
-        # Allow this step to fail without failing the job
         continue-on-error: true
       - name: Upload logs on failure
         if: ${{ failure() }}
@@ -179,17 +169,17 @@ jobs:
             ./cypress/screenshots/**/*
             ./cypress/videos/**/*
           retention-days: 7
-
-  # This job depends on all required checks passing
   validate:
     name: Validate
-    needs: [lint, type-check, test, coverage]
+    needs:
+      - lint
+      - type-check
+      - test
+      - coverage
     runs-on: ubuntu-latest
     steps:
       - name: All checks passed
         run: echo "All validation checks have passed!"
-
-  # Optional security check that won't block the workflow
   security:
     name: Security Check
     runs-on: ubuntu-latest
@@ -200,14 +190,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: npm
       - name: Check package sync
         run: |
+          echo "Node version: $(node -v)"
+          echo "npm version: $(npm -v)"
           echo "Checking if package.json and package-lock.json are in sync..."
-          if ! npm ci --dry-run > /dev/null 2>&1; then
-            echo "::error::package.json and package-lock.json are out of sync. Please run 'npm install' locally and commit the changes."
-            exit 1
-          fi
+          npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
       - name: Install dependencies
         run: npm ci
       - name: Run security audit
@@ -222,18 +211,21 @@ jobs:
             ./npm-debug.log*
             ./npm-audit.json
           retention-days: 7
-
-  # Upload logs as artifacts when any job fails
   upload-logs:
     name: Upload Logs
     runs-on: ubuntu-latest
     if: ${{ always() }}
-    needs: [lint, type-check, test, coverage, e2e, security]
+    needs:
+      - lint
+      - type-check
+      - test
+      - coverage
+      - e2e
+      - security
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-
       - name: Diagnose GitHub Actions environment
         run: |
           echo "Diagnosing GitHub Actions environment..."
@@ -252,10 +244,8 @@ jobs:
           # Check GitHub token permissions
           echo "Checking GitHub token permissions..."
           curl -s -H "Authorization: token ${{ github.token }}" ${{ github.api_url }}/rate_limit | grep "rate"
-
       - name: Create logs directory
         run: mkdir -p logs
-
       - name: Check runner environment
         run: |
           echo "Checking runner environment..."
@@ -278,40 +268,54 @@ jobs:
 
           echo "npm version:" >> logs/runner_info.txt
           npm -v >> logs/runner_info.txt || echo "npm not available"
-
       - name: Collect GitHub Actions logs
-        run: |
+        run: >
           echo "Collecting GitHub Actions logs for run ${{ github.run_id }}"
-          echo "Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" > logs/run_info.txt
+
+          echo "Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >
+          logs/run_info.txt
+
           echo "Workflow: ${{ github.workflow }}" >> logs/run_info.txt
+
           echo "Event: ${{ github.event_name }}" >> logs/run_info.txt
+
           echo "Ref: ${{ github.ref }}" >> logs/run_info.txt
+
           echo "SHA: ${{ github.sha }}" >> logs/run_info.txt
 
-          # Collect job status information
-          echo "Job Status Summary:" >> logs/job_status.txt
-          echo "Lint: ${{ needs.lint.result || 'unknown' }}" >> logs/job_status.txt
-          echo "Type Check: ${{ needs.type-check.result || 'unknown' }}" >> logs/job_status.txt
-          echo "Unit Tests: ${{ needs.test.result || 'unknown' }}" >> logs/job_status.txt
-          echo "Code Coverage: ${{ needs.coverage.result || 'unknown' }}" >> logs/job_status.txt
-          echo "E2E Tests: ${{ needs.e2e.result || 'unknown' }}" >> logs/job_status.txt
-          echo "Security Check: ${{ needs.security.result || 'unknown' }}" >> logs/job_status.txt
 
+          # Collect job status information
+
+          echo "Job Status Summary:" >> logs/job_status.txt
+
+          echo "Lint: ${{ needs.lint.result || 'unknown' }}" >> logs/job_status.txt
+
+          echo "Type Check: ${{ needs.type-check.result || 'unknown' }}" >> logs/job_status.txt
+
+          echo "Unit Tests: ${{ needs.test.result || 'unknown' }}" >> logs/job_status.txt
+
+          echo "Code Coverage: ${{ needs.coverage.result || 'unknown' }}" >> logs/job_status.txt
+
+          echo "E2E Tests: ${{ needs.e2e.result || 'unknown' }}" >> logs/job_status.txt
+
+          echo "Security Check: ${{ needs.security.result || 'unknown' }}" >> logs/job_status.txt
       - name: Upload logs as artifacts
         uses: actions/upload-artifact@v4
         with:
           name: workflow-logs-${{ github.run_id }}
           path: logs/
           retention-days: 7
-
       - name: Create comment with logs link
         if: ${{ github.event_name == 'pull_request' }}
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const artifactUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts`;
+          script: >
+            const artifactUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id
+            }}/artifacts`;
+
             const runUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
+
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
