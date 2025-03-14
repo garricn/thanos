@@ -162,10 +162,24 @@ jobs:
           name: coverage-reports
           path: coverage/
       - name: SonarCloud Scan
+        if: ${{ github.event_name != 'pull_request' }}
         uses: SonarSource/sonarcloud-github-action@master
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, PR decoration, and automatic analysis
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Generate a token on SonarCloud.io, add to GitHub secrets
+      - name: SonarCloud Scan with PR Decoration
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, PR decoration, and automatic analysis
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Generate a token on SonarCloud.io, add to GitHub secrets
+        with:
+          # Additional arguments for PR decoration
+          args: >
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
+            -Dsonar.pullrequest.branch=${{ github.head_ref }}
+            -Dsonar.pullrequest.base=${{ github.base_ref }}
+            -Dsonar.pullrequest.github.repository=${{ github.repository }}
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
