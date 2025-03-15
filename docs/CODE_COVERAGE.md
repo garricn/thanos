@@ -48,17 +48,26 @@ npm run coverage:report
 
 The project provides several commands for working with code coverage:
 
-| Command                   | Description                                                                                      |
-| ------------------------- | ------------------------------------------------------------------------------------------------ |
-| `npm run coverage`        | Generates basic coverage reports in lcov format (primarily for tools like SonarQube and Codecov) |
-| `npm run coverage:report` | Generates comprehensive coverage reports in multiple formats (text summary, HTML, and lcov)      |
-| `npm run coverage:open`   | Generates coverage reports and automatically opens the HTML reports in your browser              |
+| Command                   | Description                                                                                   |
+| ------------------------- | --------------------------------------------------------------------------------------------- |
+| `npm run coverage`        | Generates basic coverage reports in lcov format for both unit and snapshot tests              |
+| `npm run coverage:report` | Generates comprehensive coverage reports in multiple formats for both unit and snapshot tests |
+| `npm run coverage:open`   | Generates coverage reports and automatically opens the HTML reports in your browser           |
 
 ### Differences Between Coverage Commands
 
-- **coverage**: Minimal command that only generates lcov format reports for integration with other tools
-- **coverage:report**: Comprehensive command that generates human-readable reports (text summary and HTML) in addition to lcov
+- **coverage**: Generates lcov format reports for integration with other tools, including both unit and snapshot tests
+- **coverage:report**: Generates human-readable reports (text summary and HTML) in addition to lcov, including both unit and snapshot tests
 - **coverage:open**: Convenience command that runs coverage:report and then opens the HTML reports in your browser
+
+### Tests Included in Coverage
+
+All coverage commands include:
+
+- Unit tests for both web and API projects
+- Snapshot tests for the web project
+
+This ensures consistency between local development and CI environments, where both unit and snapshot tests contribute to the overall coverage metrics.
 
 ## Understanding Coverage Reports
 
@@ -112,9 +121,10 @@ To improve code coverage:
 Code coverage is an integral part of our CI/CD pipeline:
 
 1. Tests are run automatically on each PR and push to the main branch
-2. Coverage reports are generated and uploaded to Codecov
-3. PRs include coverage change information
-4. Failed coverage thresholds block PRs from being merged
+2. Both unit tests and snapshot tests contribute to the coverage metrics
+3. Coverage reports are generated and uploaded to Codecov
+4. PRs include coverage change information
+5. Failed coverage thresholds block PRs from being merged
 
 ## Best Practices
 
