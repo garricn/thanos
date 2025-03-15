@@ -6,6 +6,8 @@
   "useTabs": false,
   "semi": true,
   "bracketSpacing": true,
+  "endOfLine": "lf",
+  "insertFinalNewline": true,
   "overrides": [
     {
       "files": "*.{yml,yaml}",
