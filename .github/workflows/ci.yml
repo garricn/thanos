@@ -200,7 +200,6 @@ jobs:
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
@@ -228,8 +227,7 @@ jobs:
           echo "Web server started, waiting for it to be ready..."
           sleep 20
       - name: Run E2E tests
-        run: npm run test:all
-        continue-on-error: true
+        run: nx e2e web-e2e
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
