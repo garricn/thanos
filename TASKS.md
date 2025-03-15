@@ -169,6 +169,13 @@ CI/CD Improvements
   - [x] Update switch-node.sh to read Node.js version from .nvmrc
   - [x] Add pre-commit hook to verify version consistency
   - [x] Consider node version in ci.yml
+- [ ] Implement validate-node-version.sh execution at key points:
+  - [ ] Add to Git pre-commit hook via Husky
+  - [ ] Add as an early step in CI workflow
+  - [ ] Create Git hook specifically for .nvmrc file changes
+  - [ ] Include in project setup/onboarding process
+  - [ ] Add to pre-release checklist
+  - [ ] Document the validation process in README.md
 
 ## Features
 
