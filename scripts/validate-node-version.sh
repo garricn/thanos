@@ -139,13 +139,35 @@ else
   echo -e "${YELLOW}ℹ️ No Dockerfile found. Skipping check.${NC}"
 fi
 
+# Check Dockerfile.ci if it exists
+if [ -f "Dockerfile.ci" ]; then
+  echo -e "\n${YELLOW}Checking Dockerfile.ci...${NC}"
+
+  # Check if Dockerfile.ci uses Node.js and if version matches
+  if grep -q "FROM node:" "Dockerfile.ci"; then
+    DOCKERFILE_CI_NODE_VERSION=$(grep "FROM node:" "Dockerfile.ci" | head -1 | sed -E 's/FROM node:([0-9]+).*/\1/')
+
+    if [ "$DOCKERFILE_CI_NODE_VERSION" != "$NVMRC_VERSION" ]; then
+      echo -e "${RED}❌ Error: Node.js version in Dockerfile.ci ($DOCKERFILE_CI_NODE_VERSION) does not match .nvmrc ($NVMRC_VERSION)${NC}"
+      echo -e "${YELLOW}    Please update Dockerfile.ci to use version from .nvmrc${NC}"
+      exit 1
+    else
+      echo -e "${GREEN}✅ Dockerfile.ci Node.js version matches .nvmrc${NC}"
+    fi
+  else
+    echo -e "${YELLOW}ℹ️ Dockerfile.ci does not use Node.js directly. Skipping check.${NC}"
+  fi
+else
+  echo -e "${YELLOW}ℹ️ No Dockerfile.ci found. Skipping check.${NC}"
+fi
+
 # Check docker-compose.yml if it exists
 if [ -f "docker-compose.yml" ]; then
   echo -e "\n${YELLOW}Checking docker-compose.yml...${NC}"
 
-  # This is a simplified check and might need adjustment based on your docker-compose structure
-  if grep -q "image: node:" "docker-compose.yml"; then
-    COMPOSE_NODE_VERSION=$(grep "image: node:" "docker-compose.yml" | head -1 | sed -E 's/.*image: node:([0-9]+).*/\1/')
+  # Check if docker-compose.yml uses Node.js and if version matches
+  if grep -q "NODE_VERSION:" "docker-compose.yml"; then
+    COMPOSE_NODE_VERSION=$(grep -o "NODE_VERSION: [0-9]\+" "docker-compose.yml" | head -1 | sed -E 's/NODE_VERSION: ([0-9]+).*/\1/')
 
     if [ "$COMPOSE_NODE_VERSION" != "$NVMRC_VERSION" ]; then
       echo -e "${RED}❌ Error: Node.js version in docker-compose.yml ($COMPOSE_NODE_VERSION) does not match .nvmrc ($NVMRC_VERSION)${NC}"
@@ -159,6 +181,50 @@ if [ -f "docker-compose.yml" ]; then
   fi
 else
   echo -e "${YELLOW}ℹ️ No docker-compose.yml found. Skipping check.${NC}"
+fi
+
+# Check docker-compose-ci.yml if it exists
+if [ -f "docker-compose-ci.yml" ]; then
+  echo -e "\n${YELLOW}Checking docker-compose-ci.yml...${NC}"
+
+  # Check if docker-compose-ci.yml uses Node.js and if version matches
+  if grep -q "NODE_VERSION:" "docker-compose-ci.yml"; then
+    COMPOSE_CI_NODE_VERSION=$(grep -o "NODE_VERSION: [0-9]\+" "docker-compose-ci.yml" | head -1 | sed -E 's/NODE_VERSION: ([0-9]+).*/\1/')
+
+    if [ "$COMPOSE_CI_NODE_VERSION" != "$NVMRC_VERSION" ]; then
+      echo -e "${RED}❌ Error: Node.js version in docker-compose-ci.yml ($COMPOSE_CI_NODE_VERSION) does not match .nvmrc ($NVMRC_VERSION)${NC}"
+      echo -e "${YELLOW}    Please update docker-compose-ci.yml to use version from .nvmrc${NC}"
+      exit 1
+    else
+      echo -e "${GREEN}✅ docker-compose-ci.yml Node.js version matches .nvmrc${NC}"
+    fi
+  else
+    echo -e "${YELLOW}ℹ️ docker-compose-ci.yml does not use Node.js directly. Skipping check.${NC}"
+  fi
+else
+  echo -e "${YELLOW}ℹ️ No docker-compose-ci.yml found. Skipping check.${NC}"
+fi
+
+# Check Dockerfile.dev if it exists
+if [ -f "Dockerfile.dev" ]; then
+  echo -e "\n${YELLOW}Checking Dockerfile.dev...${NC}"
+
+  # Check if Dockerfile.dev uses Node.js and if version matches
+  if grep -q "NODE_VERSION=" "Dockerfile.dev"; then
+    DOCKERFILE_DEV_NODE_VERSION=$(grep "NODE_VERSION=" "Dockerfile.dev" | head -1 | sed -E 's/.*NODE_VERSION=([0-9]+).*/\1/')
+
+    if [ "$DOCKERFILE_DEV_NODE_VERSION" != "$NVMRC_VERSION" ]; then
+      echo -e "${RED}❌ Error: Node.js version in Dockerfile.dev ($DOCKERFILE_DEV_NODE_VERSION) does not match .nvmrc ($NVMRC_VERSION)${NC}"
+      echo -e "${YELLOW}    Please update Dockerfile.dev to use version from .nvmrc${NC}"
+      exit 1
+    else
+      echo -e "${GREEN}✅ Dockerfile.dev Node.js version matches .nvmrc${NC}"
+    fi
+  else
+    echo -e "${YELLOW}ℹ️ Dockerfile.dev does not use Node.js directly. Skipping check.${NC}"
+  fi
+else
+  echo -e "${YELLOW}ℹ️ No Dockerfile.dev found. Skipping check.${NC}"
 fi
 
 # Final result

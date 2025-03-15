@@ -16,12 +16,22 @@ if ! command -v docker &>/dev/null; then
   exit 1
 fi
 
-# Build the Docker image
-echo -e "${YELLOW}Building Docker image...${NC}"
-docker build -t thanos-ci -f Dockerfile.ci .
+# Check if Docker Compose is installed
+if ! command -v docker-compose &>/dev/null; then
+  echo -e "${YELLOW}Docker Compose not found as standalone command. Trying with 'docker compose'...${NC}"
+  if ! docker compose version &>/dev/null; then
+    echo -e "${RED}Docker Compose is not installed. Please install Docker Compose to use this script.${NC}"
+    echo -e "${YELLOW}Visit https://docs.docker.com/compose/install/ for installation instructions.${NC}"
+    exit 1
+  else
+    DOCKER_COMPOSE="docker compose"
+  fi
+else
+  DOCKER_COMPOSE="docker-compose"
+fi
 
-# Run the Docker container
+# Run the Docker container using docker-compose
 echo -e "${YELLOW}Running CI checks in Docker container...${NC}"
-docker run --rm thanos-ci
+$DOCKER_COMPOSE -f docker-compose-ci.yml up --build --abort-on-container-exit
 
 echo -e "${GREEN}Docker CI completed!${NC}"

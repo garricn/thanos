@@ -252,6 +252,11 @@ This document tracks all tasks, improvements, and fixes for the Thanos project.
   - [ ] Install Docker Desktop from https://www.docker.com/products/docker-desktop/
   - [ ] Verify installation with `docker --version`
   - [ ] Run `npm run docker:ci` to test the Docker-based CI environment
+  - [x] Update validate-node-version.sh to check Dockerfile.ci
+  - [x] Create docker-compose.yml for local development
+  - [x] Create docker-compose-ci.yml for CI
+  - [x] Update docker-ci.sh script to use docker-compose
+  - [x] Create Dockerfile.dev for local development
 
 ## Local CI Workflows
 
