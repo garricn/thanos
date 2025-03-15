@@ -495,7 +495,7 @@ jobs:
           echo "SONARCLOUD_RESULT=${{ needs.sonarcloud.result || 'unknown' }}" >> "$GITHUB_ENV"
       - name: Create comment with logs link
         if: ${{ github.event_name == 'pull_request' }}
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: >
