@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
+  "engines": {
+    "node": "20"
+  },
   "scripts": {
     "postinstall": "echo 'Please make sure you are using Node.js '$(cat .nvmrc)' (run \"nvm use\" if you have nvm installed)'",
     "start": "concurrently --kill-others-on-fail \"nx serve api\" \"nx serve web\"",
@@ -48,7 +51,7 @@
     "sonar:update-tasks:formatted": "npm run sonar:update-tasks && npm run format:md",
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch",
-    "validate": "npm run check:deps && npm run check:outdated && npm-run-all --parallel lint type-check security:check && npm run test:all && npm run coverage",
+    "validate": "npm run check:deps && npm run check:outdated && npm-run-all --parallel lint type-check security:check validate:actions validate:node-version && npm run test:all && npm run coverage",
     "validate:actions": "./scripts/validate-actions.sh",
     "check:deps": "npm ci --dry-run && npm ls --depth=0",
     "check:outdated": "npm outdated || true"

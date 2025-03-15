@@ -238,13 +238,16 @@ This document tracks all tasks, improvements, and fixes for the Thanos project.
   - [x] Add pre-commit hook to verify version consistency
   - [x] Consider node version in ci.yml
   - [x] Ensure GitHub Actions workflow reads Node.js version from .nvmrc
-- [ ] Implement validate-node-version.sh execution at key points:
-  - [ ] Add to Git pre-commit hook via Husky
-  - [ ] Add as an early step in CI workflow
-  - [ ] Create Git hook specifically for .nvmrc file changes
-  - [ ] Include in project setup/onboarding process
-  - [ ] Add to pre-release checklist
-  - [ ] Document the validation process in README.md
+- [x] Implement validate-node-version.sh execution at key points:
+  - [x] Add to Git pre-commit hook via Husky
+  - [x] Add as an early step in CI workflow
+  - [x] Create Git hook specifically for .nvmrc file changes
+  - [x] Include in project setup/onboarding process
+  - [x] Add to pre-release checklist
+  - [x] Document the validation process in README.md
+  - [x] Integrate validate:node-version into the main validate script
+  - [x] Add engines.node field to package.json
+- [x] Integrate validate:actions into the main validate script
 - [ ] Set up Docker for local CI:
   - [ ] Install Docker Desktop from https://www.docker.com/products/docker-desktop/
   - [ ] Verify installation with `docker --version`
