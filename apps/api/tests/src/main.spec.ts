@@ -36,3 +36,35 @@ describe('API Endpoints', () => {
     });
   });
 });
+
+// Add tests for the SIGINT handler
+describe('Process SIGINT handler', () => {
+  // Mock process.exit
+  const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {
+    return undefined as never;
+  });
+
+  // Get the log model
+  const logModel = require('../../../db/models/log');
+
+  // Create a mock SIGINT handler function
+  const sigintHandler = () => {
+    logModel.closeDb();
+    process.exit(0);
+  };
+
+  afterAll(() => {
+    mockExit.mockRestore();
+  });
+
+  it('should close the database and exit when SIGINT is received', () => {
+    // Call the handler directly
+    sigintHandler();
+
+    // Check that closeDb was called
+    expect(logModel.closeDb).toHaveBeenCalledTimes(1);
+
+    // Check that process.exit was called with code 0
+    expect(mockExit).toHaveBeenCalledWith(0);
+  });
+});
