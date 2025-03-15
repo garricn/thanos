@@ -83,3 +83,46 @@ Commands for running CI checks locally to ensure consistency with the GitHub Act
 | `npm run docker:ci`        | Run CI checks in a Docker container (requires Docker) |
 
 For more details on these commands, see the [Local CI Workflows](./LOCAL_CI.md) documentation.
+
+## Docker Commands
+
+Commands for working with Docker in the project. For detailed information, see the [Docker documentation](./DOCKER.md).
+
+### Development Environment
+
+| Command                        | Description                                        |
+| ------------------------------ | -------------------------------------------------- |
+| `docker-compose up`            | Start the development environment                  |
+| `docker-compose up -d`         | Start the development environment in detached mode |
+| `docker-compose down`          | Stop the development environment                   |
+| `docker-compose build`         | Rebuild the development Docker images              |
+| `docker-compose logs`          | View logs from all services                        |
+| `docker-compose logs api`      | View logs from the API service                     |
+| `docker-compose logs web`      | View logs from the web service                     |
+| `docker-compose restart`       | Restart all services                               |
+| `docker-compose restart api`   | Restart only the API service                       |
+| `docker-compose exec api bash` | Open a bash shell in the running API container     |
+| `docker-compose exec web bash` | Open a bash shell in the running web container     |
+
+### CI Environment
+
+| Command                                               | Description                       |
+| ----------------------------------------------------- | --------------------------------- |
+| `npm run docker:ci`                                   | Run CI checks in Docker           |
+| `docker-compose -f docker-compose-ci.yml up --build`  | Build and run the CI environment  |
+| `docker-compose -f docker-compose-ci.yml run ci bash` | Run bash in the CI container      |
+| `docker-compose -f docker-compose-ci.yml down`        | Stop and remove the CI containers |
+
+### Docker Utilities
+
+| Command                               | Description                                      |
+| ------------------------------------- | ------------------------------------------------ |
+| `docker ps`                           | List running containers                          |
+| `docker ps -a`                        | List all containers (including stopped)          |
+| `docker images`                       | List all Docker images                           |
+| `docker logs <container_id>`          | View logs for a specific container               |
+| `docker exec -it <container_id> bash` | Open a bash shell in a running container         |
+| `docker system prune`                 | Remove unused data (containers, images, volumes) |
+| `docker volume ls`                    | List all volumes                                 |
+| `docker volume prune`                 | Remove all unused volumes                        |
+| `docker-compose down -v`              | Stop containers and remove volumes               |

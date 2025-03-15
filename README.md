@@ -19,6 +19,9 @@ Thanos is a scaffolding template for creating new Nx monorepo projects with a pr
 - [Code Coverage](./docs/CODE_COVERAGE.md) - Code coverage configuration and reporting
 - [Security Practices](./docs/SECURITY.md) - Security measures and vulnerability management
 - [Local CI Workflows](./docs/LOCAL_CI.md) - Running CI checks locally for consistency
+- [Docker Setup](./docs/DOCKER.md) - Docker configuration and usage
+- [CI Approaches Comparison](./docs/CI_COMPARISON.md) - Comparison of different CI approaches
+- [Docker Troubleshooting](./docs/DOCKER_TROUBLESHOOTING.md) - Solutions for Docker-related issues
 - [Troubleshooting](./docs/TROUBLESHOOTING.md) - Solutions for common issues
 - [Contributing Guidelines](./docs/CONTRIBUTING.md) - How to contribute to the project
 - [Claude Instructions](./docs/CLAUDE.md) - Guidelines for working with Claude AI assistant
