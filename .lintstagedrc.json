@@ -3,7 +3,11 @@
     "eslint --fix",
     "prettier --write"
   ],
-  "*.{json,md,yml,yaml}": [
+  "*.{json,md}": [
+    "prettier --write"
+  ],
+  "*.{yml,yaml}": [
+    "npx yaml-lint -c .yaml-lint.json",
     "prettier --write"
   ],
   "*.md": [

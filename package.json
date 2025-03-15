@@ -17,13 +17,15 @@
     "fix-node-version": "echo 'To switch to Node.js '$(cat .nvmrc)', please run: source ./scripts/switch-node.sh'",
     "clean:deep": "./scripts/clean-deep.sh",
     "validate:node-version": "./scripts/validate-node-version.sh",
-    "lint": "nx run-many -t lint --projects=web,api,web-e2e,api-e2e && npm run lint:md && npm run lint:sh",
+    "lint": "nx run-many -t lint --projects=web,api,web-e2e,api-e2e && npm run lint:md && npm run lint:sh && npm run lint:yaml",
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "lint:md:fix": "markdownlint-cli2 --fix \"**/*.md\"",
     "lint:sh": "shellcheck scripts/*.sh",
-    "format": "nx format:write && npm run format:md && npm run format:sh",
+    "lint:yaml": "npx yaml-lint -c .yaml-lint.json .github/**/*.yml",
+    "format": "nx format:write && npm run format:md && npm run format:sh && npm run format:yaml",
     "format:md": "prettier --write \"**/*.md\"",
     "format:sh": "shfmt -i 2 -ci -w scripts/*.sh",
+    "format:yaml": "node format_yaml.js",
     "clean": "rm -rf dist tmp node_modules/.cache .nx/cache",
     "coverage": "nx run-many -t test --projects=web,api --coverage --coverageReporters=lcov",
     "coverage:report": "nx run-many -t test --projects=web,api --coverage --coverageReporters=text-summary,html,lcov",
@@ -136,6 +138,7 @@
     "tslib": "^2.3.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.19.0",
-    "wait-on": "^8.0.3"
+    "wait-on": "^8.0.3",
+    "yaml-lint": "^1.7.0"
   }
 }

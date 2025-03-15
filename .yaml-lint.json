@@ -1,0 +1,52 @@
+{
+  "schema": true,
+  "rules": {
+    "line-length": {
+      "max": 120,
+      "level": "warning"
+    },
+    "truthy": {
+      "allowed-values": ["true", "false", "yes", "no"],
+      "check-keys": true
+    },
+    "indentation": {
+      "spaces": 2,
+      "indent-sequences": true,
+      "check-multi-line-strings": false
+    },
+    "document-start": {
+      "present": false
+    },
+    "document-end": {
+      "present": false
+    },
+    "key-duplicates": true,
+    "trailing-spaces": true,
+    "empty-lines": {
+      "max": 2,
+      "max-start": 0,
+      "max-end": 0
+    },
+    "commas": true,
+    "colons": {
+      "max-spaces-before": 0,
+      "max-spaces-after": 1
+    },
+    "comments": {
+      "require-starting-space": true,
+      "min-spaces-from-content": 1
+    },
+    "brackets": {
+      "min-spaces-inside": 0,
+      "max-spaces-inside": 0
+    },
+    "braces": {
+      "min-spaces-inside": 0,
+      "max-spaces-inside": 0
+    },
+    "new-line-at-end-of-file": true,
+    "new-lines": {
+      "type": "unix"
+    }
+  }
+} 
