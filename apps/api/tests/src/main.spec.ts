@@ -1,17 +1,23 @@
-import express from 'express';
 import request from 'supertest';
+import { createTestApp } from '../test-utils';
 
-// Mock express app
-const app = express();
+// Mock the log model
+jest.mock(
+  '../../../db/models/log',
+  () => ({
+    insertLog: jest.fn().mockResolvedValue(1),
+    closeDb: jest.fn(),
+  }),
+  { virtual: true }
+);
 
-// Import the route handlers
-app.get('/', (req, res) => {
-  res.send({ message: 'Hello API' });
+// Mock console.log to prevent noise in test output
+jest.spyOn(console, 'log').mockImplementation(() => {
+  /* empty function to suppress console output */
 });
 
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
+// Create the test app
+const app = createTestApp();
 
 describe('API Endpoints', () => {
   describe('GET /', () => {

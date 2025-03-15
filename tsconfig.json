@@ -16,7 +16,14 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {},
+    "paths": {
+      "@thanos/api/*": [
+        "apps/api/*"
+      ],
+      "@thanos/web/*": [
+        "apps/web/*"
+      ]
+    },
     "jsx": "react-jsx",
     "allowJs": false,
     "esModuleInterop": false,
