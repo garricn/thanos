@@ -29,6 +29,7 @@
 
 CI/CD Improvements
 
+- [ ] Reorder jobs in ci.yml
 - [x] Fix indentation in CI workflow file
 - [x] Add log upload job to CI workflow for better debugging
 - [x] Fix "husky not found" error in CI by setting HUSKY=0 environment variable
@@ -160,6 +161,13 @@ CI/CD Improvements
 - [ ] Create disaster recovery plan
 - [ ] Use Docker Compose for local development to ensure consistent environments
 - [ ] Fix NVM compatibility warning with npm config prefix
+- [x] Implement single source of truth for Node.js version:
+  - [x] Create/update .nvmrc file as the canonical source of Node.js version
+  - [x] Create a script to validate that all references to Node.js version are in sync
+  - [x] Update clean-deep.sh to read Node.js version from .nvmrc
+  - [x] Update switch-node.sh to read Node.js version from .nvmrc
+  - [x] Add pre-commit hook to verify version consistency
+  - [ ] Consider node version in ci.yml
 
 ## Features
 
