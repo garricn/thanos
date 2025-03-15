@@ -25,7 +25,7 @@
     "format": "nx format:write && npm run format:md && npm run format:sh && npm run format:yaml",
     "format:md": "prettier --write \"**/*.md\"",
     "format:sh": "shfmt -i 2 -ci -w scripts/*.sh",
-    "format:yaml": "node format_yaml.js",
+    "format:yaml": "prettier --write \".github/**/*.{yml,yaml}\"",
     "clean": "rm -rf dist tmp node_modules/.cache .nx/cache",
     "coverage": "nx run-many -t test --projects=web,api --coverage --coverageReporters=lcov",
     "coverage:report": "nx run-many -t test --projects=web,api --coverage --coverageReporters=text-summary,html,lcov",

@@ -5,5 +5,15 @@
   "tabWidth": 2,
   "useTabs": false,
   "semi": true,
-  "bracketSpacing": true
+  "bracketSpacing": true,
+  "overrides": [
+    {
+      "files": "*.{yml,yaml}",
+      "options": {
+        "singleQuote": false,
+        "printWidth": 120,
+        "proseWrap": "preserve"
+      }
+    }
+  ]
 }
