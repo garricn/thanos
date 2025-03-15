@@ -52,7 +52,7 @@ Thanos is a scaffolding template for creating new Nx monorepo projects with a pr
 | `nx e2e web-e2e --headed`                          | Run UI tests in watch mode                                     |
 | `nx run web-e2e:run-headed`                        | Run UI tests with Cypress UI visible                           |
 | `nx lint web`                                      | Run linting for web project                                    |
-| `npm run lint:all`                                 | Run linting for all projects                                   |
+| `npm run lint`                                     | Run linting for all projects                                   |
 | `npm run lint:md`                                  | Run markdown linting                                           |
 | `npm run lint:md:fix`                              | Run markdown linting and fix issues automatically              |
 | `npm run format`                                   | Run formatting for all files                                   |

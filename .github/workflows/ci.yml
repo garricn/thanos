@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: HUSKY=0 npm ci
       - name: Lint code
-        run: npm run lint:all
+        run: npm run lint
       - name: Lint markdown
         run: npm run lint:md
       - name: Upload logs on failure
