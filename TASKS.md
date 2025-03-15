@@ -168,7 +168,7 @@ CI/CD Improvements
   - [x] Update clean-deep.sh to read Node.js version from .nvmrc
   - [x] Update switch-node.sh to read Node.js version from .nvmrc
   - [x] Add pre-commit hook to verify version consistency
-  - [ ] Consider node version in ci.yml
+  - [x] Consider node version in ci.yml
 
 ## Features
 
