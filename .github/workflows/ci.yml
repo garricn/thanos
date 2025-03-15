@@ -26,6 +26,8 @@ jobs:
         run: npm run lint
       - name: Lint markdown
         run: npm run lint:md
+      - name: Lint shell scripts
+        run: npm run lint:sh || { echo "Shell script linting failed. See errors above."; exit 1; }
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
@@ -50,7 +52,7 @@ jobs:
           echo "Node version: $(node -v)"
           echo "npm version: $(npm -v)"
           echo "Checking if package.json and package-lock.json are in sync..."
-          HUSKY=0 npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
+          HUSKY=0 npm ci --dry-run || { echo "Dry run failed"; npm diff; exit 1; }
       - name: Install dependencies
         run: HUSKY=0 npm ci
       - name: Check types
@@ -80,7 +82,7 @@ jobs:
           echo "Node version: $(node -v)"
           echo "npm version: $(npm -v)"
           echo "Checking if package.json and package-lock.json are in sync..."
-          HUSKY=0 npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
+          HUSKY=0 npm ci --dry-run || { echo "Dry run failed"; npm diff; exit 1; }
       - name: Install dependencies
         run: HUSKY=0 npm ci
       - name: Run tests
@@ -111,7 +113,7 @@ jobs:
           echo "Node version: $(node -v)"
           echo "npm version: $(npm -v)"
           echo "Checking if package.json and package-lock.json are in sync..."
-          HUSKY=0 npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
+          HUSKY=0 npm ci --dry-run || { echo "Dry run failed"; npm diff; exit 1; }
       - name: Install dependencies
         run: HUSKY=0 npm ci
       - name: Install nx globally
@@ -144,16 +146,16 @@ jobs:
           echo "Node version: $(node -v)"
           echo "npm version: $(npm -v)"
           echo "Checking if package.json and package-lock.json are in sync..."
-          HUSKY=0 npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
+          HUSKY=0 npm ci --dry-run || { echo "Dry run failed"; npm diff; exit 1; }
       - name: Install dependencies
         run: HUSKY=0 npm ci
       - name: Check for Snyk token
         id: check-snyk
         run: |
           if [ -n "${{ secrets.SNYK_TOKEN }}" ]; then
-            echo "has_snyk_token=true" >> $GITHUB_OUTPUT
+            echo "has_snyk_token=true" >> "$GITHUB_OUTPUT"
           else
-            echo "has_snyk_token=false" >> $GITHUB_OUTPUT
+            echo "has_snyk_token=false" >> "$GITHUB_OUTPUT"
             echo "::warning::SNYK_TOKEN secret is not set. Security checks will be limited."
           fi
       - name: Run Snyk security audit
@@ -192,7 +194,7 @@ jobs:
           echo "Node version: $(node -v)"
           echo "npm version: $(npm -v)"
           echo "Checking if package.json and package-lock.json are in sync..."
-          HUSKY=0 npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
+          HUSKY=0 npm ci --dry-run || { echo "Dry run failed"; npm diff; exit 1; }
       - name: Install dependencies
         run: HUSKY=0 npm ci
       - name: Install nx globally
@@ -239,7 +241,7 @@ jobs:
           echo "Node version: $(node -v)"
           echo "npm version: $(npm -v)"
           echo "Checking if package.json and package-lock.json are in sync..."
-          HUSKY=0 npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
+          HUSKY=0 npm ci --dry-run || { echo "Dry run failed"; npm diff; exit 1; }
       - name: Install dependencies
         run: HUSKY=0 npm ci
       - name: Install nx globally
@@ -298,7 +300,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, PR decoration, and automatic analysis
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Generate a token on SonarCloud.io, add to GitHub secrets
         with:
-          args: >
+          args: |
             -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
             -Dsonar.organization=${{ github.repository_owner }}
             -Dsonar.host.url=https://sonarcloud.io
@@ -310,7 +312,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Generate a token on SonarCloud.io, add to GitHub secrets
         with:
           # Additional arguments for PR decoration
-          args: >
+          args: |
             -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
             -Dsonar.organization=${{ github.repository_owner }}
             -Dsonar.host.url=https://sonarcloud.io
@@ -369,15 +371,15 @@ jobs:
 
           # Check connectivity to GitHub
           echo "Testing connectivity to GitHub..."
-          curl -s -o /dev/null -w "GitHub API Status: %{http_code}\n" ${{ github.api_url }}
+          curl -s -o /dev/null -w "GitHub API Status: %{http_code}\n" "${{ github.api_url }}"
 
           # Check if actions directory exists
           echo "Checking actions directory..."
-          ls -la $GITHUB_ACTION_PATH || echo "GITHUB_ACTION_PATH not available"
+          ls -la "$GITHUB_ACTION_PATH" || echo "GITHUB_ACTION_PATH not available"
 
           # Check GitHub token permissions
           echo "Checking GitHub token permissions..."
-          curl -s -H "Authorization: token ${{ github.token }}" ${{ github.api_url }}/rate_limit | grep "rate"
+          curl -s -H "Authorization: token ${{ github.token }}" "${{ github.api_url }}/rate_limit" | grep "rate"
       - name: Create logs directory
         run: mkdir -p logs
       - name: Check runner environment
@@ -403,39 +405,24 @@ jobs:
           echo "npm version:" >> logs/runner_info.txt
           npm -v >> logs/runner_info.txt || echo "npm not available"
       - name: Collect GitHub Actions logs
-        run: >
+        run: |
           echo "Collecting GitHub Actions logs for run ${{ github.run_id }}"
 
-          echo "Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >
-          logs/run_info.txt
-
+          echo "Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" > logs/run_info.txt
           echo "Workflow: ${{ github.workflow }}" >> logs/run_info.txt
-
           echo "Event: ${{ github.event_name }}" >> logs/run_info.txt
-
           echo "Ref: ${{ github.ref }}" >> logs/run_info.txt
-
           echo "SHA: ${{ github.sha }}" >> logs/run_info.txt
 
-
           # Collect job status information
-
           echo "Job Status Summary:" >> logs/job_status.txt
-
           echo "Lint: ${{ needs.lint.result || 'unknown' }}" >> logs/job_status.txt
-
           echo "Type Check: ${{ needs.type-check.result || 'unknown' }}" >> logs/job_status.txt
-
           echo "Unit Tests: ${{ needs.test.result || 'unknown' }}" >> logs/job_status.txt
-
           echo "Snapshot Tests: ${{ needs.snapshot.result || 'unknown' }}" >> logs/job_status.txt
-
           echo "Code Coverage: ${{ needs.coverage.result || 'unknown' }}" >> logs/job_status.txt
-
           echo "E2E Tests: ${{ needs.e2e.result || 'unknown' }}" >> logs/job_status.txt
-
           echo "Security Check: ${{ needs.security.result || 'unknown' }}" >> logs/job_status.txt
-
           echo "SonarCloud Analysis: ${{ needs.sonarcloud.result || 'unknown' }}" >> logs/job_status.txt
       - name: Upload logs as artifacts
         uses: actions/upload-artifact@v4
@@ -443,21 +430,28 @@ jobs:
           name: workflow-logs-${{ github.run_id }}
           path: logs/
           retention-days: 7
+      - name: Set job status environment variables
+        run: |
+          echo "LINT_RESULT=${{ needs.lint.result || 'unknown' }}" >> "$GITHUB_ENV"
+          echo "TYPE_CHECK_RESULT=${{ needs.type-check.result || 'unknown' }}" >> "$GITHUB_ENV"
+          echo "TEST_RESULT=${{ needs.test.result || 'unknown' }}" >> "$GITHUB_ENV"
+          echo "SNAPSHOT_RESULT=${{ needs.snapshot.result || 'unknown' }}" >> "$GITHUB_ENV"
+          echo "COVERAGE_RESULT=${{ needs.coverage.result || 'unknown' }}" >> "$GITHUB_ENV"
+          echo "E2E_RESULT=${{ needs.e2e.result || 'unknown' }}" >> "$GITHUB_ENV"
+          echo "SECURITY_RESULT=${{ needs.security.result || 'unknown' }}" >> "$GITHUB_ENV"
+          echo "SONARCLOUD_RESULT=${{ needs.sonarcloud.result || 'unknown' }}" >> "$GITHUB_ENV"
       - name: Create comment with logs link
         if: ${{ github.event_name == 'pull_request' }}
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
-            const artifactUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id
-            }}/artifacts`;
-
-            const runUrl = `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`;
-
+          script: |
+            const artifactUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}/artifacts`;
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `## CI Workflow Failed ❌\n\nSome jobs in the CI workflow failed. You can view the detailed logs here:\n\n- [Workflow Run](${ runUrl })\n- [Workflow Artifacts](${ artifactUrl })\n\n### Job Status\n\n- Lint: ${{ needs.lint.result }}\n- Type Check: ${{ needs.type-check.result }}\n- Unit Tests: ${{ needs.test.result }}\n- Snapshot Tests: ${{ needs.snapshot.result }}\n- Code Coverage: ${{ needs.coverage.result }}\n- E2E Tests: ${{ needs.e2e.result }}\n- Security Check: ${{ needs.security.result }}\n- SonarCloud Analysis: ${{ needs.sonarcloud.result }}`
+              body: `## CI Workflow Failed ❌\n\nSome jobs in the CI workflow failed. You can view the detailed logs here:\n\n- [Workflow Run](${runUrl})\n- [Workflow Artifacts](${artifactUrl})\n\n### Job Status\n\n- Lint: ${process.env.LINT_RESULT || 'unknown'}\n- Type Check: ${process.env.TYPE_CHECK_RESULT || 'unknown'}\n- Unit Tests: ${process.env.TEST_RESULT || 'unknown'}\n- Snapshot Tests: ${process.env.SNAPSHOT_RESULT || 'unknown'}\n- Code Coverage: ${process.env.COVERAGE_RESULT || 'unknown'}\n- E2E Tests: ${process.env.E2E_RESULT || 'unknown'}\n- Security Check: ${process.env.SECURITY_RESULT || 'unknown'}\n- SonarCloud Analysis: ${process.env.SONARCLOUD_RESULT || 'unknown'}`
             });
