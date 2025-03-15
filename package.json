@@ -34,6 +34,7 @@
     "clean": "rm -rf dist tmp node_modules/.cache .nx/cache",
     "coverage": "nx run-many -t test --projects=web,api --coverage --coverageReporters=lcov",
     "coverage:report": "nx run-many -t test --projects=web,api --coverage --coverageReporters=text-summary,html,lcov",
+    "coverage:open": "npm run coverage:report && echo '\nCoverage reports generated at:' && echo 'Web: file://${PWD}/coverage/apps/web/lcov-report/index.html' && echo 'API: file://${PWD}/coverage/apps/api/lcov-report/index.html' && open coverage/apps/web/lcov-report/index.html coverage/apps/api/lcov-report/index.html",
     "prepare": "[ -n \"$CI\" ] || [ -n \"$HUSKY\" -a \"$HUSKY\" = \"0\" ] || husky",
     "preinstall": "command -v npx >/dev/null && npx --no-install npm-force-resolutions || echo 'Skipping npm-force-resolutions'",
     "pre-commit": "npm run validate:node-version && lint-staged",
