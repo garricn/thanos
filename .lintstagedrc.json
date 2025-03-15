@@ -16,5 +16,8 @@
   "*.sh": [
     "shellcheck",
     "shfmt -i 2 -ci -w"
+  ],
+  "*": [
+    "bash -c 'if file \"$1\" | grep -q \"text\"; then if [ -s \"$1\" ] && [ \"$(tail -c 1 \"$1\" | xxd -p)\" != \"0a\" ]; then echo \"\" >> \"$1\"; fi; fi' --"
   ]
-} 
+}
