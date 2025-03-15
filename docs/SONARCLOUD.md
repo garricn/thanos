@@ -2,6 +2,24 @@
 
 This document explains how SonarCloud is integrated with this project for continuous code quality analysis.
 
+## Table of Contents
+
+- [Overview](#overview)
+- [SonarCloud vs. Self-Hosted SonarQube](#sonarcloud-vs-self-hosted-sonarqube)
+- [Setup](#setup)
+  - [Configuration Files](#configuration-files)
+  - [GitHub Secrets](#github-secrets)
+- [Quality Gates](#quality-gates)
+- [PR Decoration](#pr-decoration)
+- [Badges](#badges)
+- [Local Analysis](#local-analysis)
+  - [Understanding the Reports](#understanding-the-reports)
+- [Self-Hosted SonarQube Setup](#self-hosted-sonarqube-setup)
+- [Viewing Results](#viewing-results)
+- [Troubleshooting](#troubleshooting)
+  - [Common Issues](#common-issues)
+  - [Getting Help](#getting-help)
+
 ## Overview
 
 SonarCloud is a cloud-based code quality and security service. It performs automatic reviews of code to detect bugs, vulnerabilities, and code smells in your codebase. Our project uses SonarCloud to:
@@ -10,6 +28,21 @@ SonarCloud is a cloud-based code quality and security service. It performs autom
 - Enforce quality gates to maintain high code standards
 - Provide detailed feedback on code issues
 - Track code quality metrics over time
+
+## SonarCloud vs. Self-Hosted SonarQube
+
+This project primarily uses SonarCloud, but can also be configured to work with a self-hosted SonarQube instance:
+
+| Feature        | SonarCloud                    | Self-Hosted SonarQube                        |
+| -------------- | ----------------------------- | -------------------------------------------- |
+| Hosting        | Cloud-based                   | Self-managed infrastructure                  |
+| Setup          | Minimal setup required        | Requires server installation and maintenance |
+| Cost           | Free for open source projects | Server and maintenance costs                 |
+| CI Integration | Built-in GitHub integration   | Requires additional configuration            |
+| Analysis       | Same analysis engine          | Same analysis engine                         |
+| Custom Rules   | Limited customization         | Full customization                           |
+
+See the [Self-Hosted SonarQube Setup](#self-hosted-sonarqube-setup) section for instructions on using a self-hosted instance.
 
 ## Setup
 
@@ -176,11 +209,64 @@ The different report types provide various levels of detail:
 
 4. **TASKS.md Integration (`sonar:update-tasks:formatted`)**: Updates the project's TASKS.md file with SonarCloud findings and formats it properly.
 
+## Self-Hosted SonarQube Setup
+
+If you prefer to use a self-hosted SonarQube instance instead of SonarCloud, follow these steps:
+
+### Prerequisites
+
+- SonarQube server installed and running
+- SonarQube authentication token
+
+### Configuration
+
+1. **Configure Environment Variables**
+
+   Create a `.env` file in the project root (do not commit this file) with your SonarQube credentials:
+
+   ```
+   SONAR_TOKEN=your-sonar-token
+   SONAR_HOST_URL=https://your-sonarqube-server
+   ```
+
+   Alternatively, set these in your shell:
+
+   ```bash
+   export SONAR_TOKEN=your-sonar-token
+   export SONAR_HOST_URL=https://your-sonarqube-server
+   ```
+
+2. **Update sonar-project.properties**
+
+   For self-hosted SonarQube, remove or comment out the SonarCloud-specific properties:
+
+   ```properties
+   # Comment out for self-hosted SonarQube
+   # sonar.organization=garricn
+
+   # Add the host URL for self-hosted instances
+   sonar.host.url=https://your-sonarqube-server
+   ```
+
+3. **CI/CD Integration**
+
+   For GitHub Actions with self-hosted SonarQube, update the CI workflow:
+
+   ```yaml
+   - name: SonarQube Scan
+     uses: SonarSource/sonarqube-scan-action@master
+     env:
+       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+       SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+   ```
+
 ## Viewing Results
 
 You can view the SonarCloud analysis results at:
 
 [https://sonarcloud.io/project/overview?id=garricn_thanos](https://sonarcloud.io/project/overview?id=garricn_thanos)
+
+For self-hosted SonarQube, access the URL of your SonarQube instance.
 
 ## Troubleshooting
 
@@ -198,13 +284,19 @@ You can view the SonarCloud analysis results at:
    - Verify the path in `sonar.javascript.lcov.reportPaths`
 
 3. **PR decoration not working**
+
    - Ensure the `GITHUB_TOKEN` has the necessary permissions
    - Check that the PR parameters are being passed correctly
 
+4. **Self-hosted SonarQube connection issues**
+   - Verify that the SonarQube server is accessible from the CI environment
+   - Check that the `SONAR_HOST_URL` is correctly set
+   - Ensure the server's SSL certificate is valid if using HTTPS
+
 ### Getting Help
 
-If you encounter issues with SonarCloud integration, you can:
+If you encounter issues with SonarCloud or SonarQube integration, you can:
 
-1. Check the [SonarCloud documentation](https://docs.sonarcloud.io/)
+1. Check the [SonarCloud documentation](https://docs.sonarcloud.io/) or [SonarQube documentation](https://docs.sonarqube.org/)
 2. Look at the CI logs for error messages
 3. Contact the project maintainers

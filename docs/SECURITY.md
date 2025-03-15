@@ -2,6 +2,20 @@
 
 This document outlines the security procedures and policies for the Thanos project.
 
+## Table of Contents
+
+- [Reporting a Vulnerability](#reporting-a-vulnerability)
+- [Security Measures](#security-measures)
+  - [Dependency Vulnerability Management](#dependency-vulnerability-management)
+    - [Snyk Integration](#1-snyk-integration)
+    - [npm-force-resolutions](#2-npm-force-resolutions)
+    - [Snyk Policy File](#3-snyk-policy-file-snyk)
+  - [Example: Inflight Package Vulnerability](#example-inflight-package-vulnerability)
+- [Security Best Practices](#security-best-practices)
+  - [Running Security Checks](#running-security-checks)
+  - [Keeping Dependencies Updated](#keeping-dependencies-updated)
+- [Security Reports](#security-reports)
+
 ## Reporting a Vulnerability
 
 If you discover a security vulnerability within this project, please send an email to [security@example.com](mailto:security@example.com). All security vulnerabilities will be promptly addressed.

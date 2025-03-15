@@ -2,6 +2,16 @@
 
 This repository includes a script to help monitor CI runs and automatically download logs and artifacts when failures occur.
 
+## Table of Contents
+
+- [Setup](#setup)
+- [Using the CI Helper Script](#using-the-ci-helper-script)
+  - [Monitor the Latest CI Run](#monitor-the-latest-ci-run)
+  - [Monitor a Specific CI Run](#monitor-a-specific-ci-run)
+  - [Trigger a New CI Run](#trigger-a-new-ci-run)
+- [Workflow Artifacts](#workflow-artifacts)
+- [Troubleshooting](#troubleshooting)
+
 ## Setup
 
 1. **Set up your GitHub token**:
