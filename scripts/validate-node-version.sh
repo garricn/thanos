@@ -75,7 +75,7 @@ if [ -f "$CI_WORKFLOW_FILE" ]; then
   echo -e "\n${YELLOW}Checking $CI_WORKFLOW_FILE...${NC}"
 
   # Verify that the file uses the .nvmrc approach
-  if grep -q "NODE_VERSION=\$(cat .nvmrc" "$CI_WORKFLOW_FILE"; then
+  if grep -q "NODE_VERSION=\$(cat .nvmrc" "$CI_WORKFLOW_FILE" || grep -q "NODE_VERSION=\$(tr -d.*<.*\.nvmrc" "$CI_WORKFLOW_FILE"; then
     echo -e "${GREEN}✅ $CI_WORKFLOW_FILE correctly reads Node.js version from .nvmrc${NC}"
   else
     echo -e "${RED}Error: $CI_WORKFLOW_FILE does not read Node.js version from .nvmrc${NC}"

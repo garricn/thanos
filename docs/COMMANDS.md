@@ -71,3 +71,15 @@ Commands for security scanning and vulnerability management.
 | `npm run security:fix`      | Fix security issues (interactive)                |
 | `npm run update:deps`       | Update dependencies and fix vulnerabilities      |
 | `npm run update:deps:force` | Force update dependencies (for breaking changes) |
+
+## Local CI Commands
+
+Commands for running CI checks locally to ensure consistency with the GitHub Actions environment.
+
+| Command                    | Description                                           |
+| -------------------------- | ----------------------------------------------------- |
+| `npm run local-ci`         | Run the same checks as the GitHub Actions CI workflow |
+| `npm run validate:actions` | Validate GitHub Actions workflow files                |
+| `npm run docker:ci`        | Run CI checks in a Docker container (requires Docker) |
+
+For more details on these commands, see the [Local CI Workflows](./LOCAL_CI.md) documentation.

@@ -82,6 +82,9 @@ This document tracks all tasks, improvements, and fixes for the Thanos project.
 - [ ] Configure SonarCloud to analyze only changed files in PRs for faster feedback
 - [ ] Set up scheduled full SonarCloud analysis for comprehensive weekly reports
 - [ ] Implement SonarCloud custom rules specific to project requirements
+- [x] Update outdated GitHub Actions to latest versions
+- [x] Implement GitHub Actions workflow validation in CI
+- [x] Create local workflow for validating GitHub Actions configurations
 
 ## Code Quality
 
@@ -205,6 +208,10 @@ This document tracks all tasks, improvements, and fixes for the Thanos project.
   - [ ] Convert tasks to issues with appropriate labels
   - [ ] Set up automation for issue tracking
   - [ ] Create documentation for issue management process
+- [x] Document local CI workflows and their benefits:
+  - [x] Create LOCAL_CI.md with detailed explanation of local CI workflows
+  - [x] Update COMMANDS.md with local CI commands
+  - [x] Add LOCAL_CI.md to documentation index in README.md
 
 ## Performance
 
@@ -230,6 +237,7 @@ This document tracks all tasks, improvements, and fixes for the Thanos project.
   - [x] Update switch-node.sh to read Node.js version from .nvmrc
   - [x] Add pre-commit hook to verify version consistency
   - [x] Consider node version in ci.yml
+  - [x] Ensure GitHub Actions workflow reads Node.js version from .nvmrc
 - [ ] Implement validate-node-version.sh execution at key points:
   - [ ] Add to Git pre-commit hook via Husky
   - [ ] Add as an early step in CI workflow
@@ -237,6 +245,20 @@ This document tracks all tasks, improvements, and fixes for the Thanos project.
   - [ ] Include in project setup/onboarding process
   - [ ] Add to pre-release checklist
   - [ ] Document the validation process in README.md
+- [ ] Set up Docker for local CI:
+  - [ ] Install Docker Desktop from https://www.docker.com/products/docker-desktop/
+  - [ ] Verify installation with `docker --version`
+  - [ ] Run `npm run docker:ci` to test the Docker-based CI environment
+
+## Local CI Workflows
+
+- [ ] Run local CI checks before pushing changes: `npm run local-ci`
+- [ ] Validate GitHub Actions workflows: `npm run validate:actions`
+- [ ] Run CI in Docker container (requires Docker): `npm run docker:ci`
+- [x] Document local CI workflows and their benefits
+- [x] Create pre-push Git hook to run local CI checks automatically
+- [x] Update GitHub Actions workflows to use latest action versions
+- [ ] Implement automated action version checking
 
 ## Features
 

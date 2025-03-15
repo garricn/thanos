@@ -23,7 +23,6 @@
     "lint:md:fix": "markdownlint-cli2 --fix \"**/*.md\"",
     "lint:sh": "shellcheck scripts/*.sh",
     "lint:yaml": "npx yaml-lint -c .yaml-lint.json .github/**/*.yml",
-    "validate:actions": "./scripts/validate-actions.sh",
     "docker:ci": "./scripts/docker-ci.sh",
     "format": "nx format:write && npm run format:md && npm run format:sh && npm run format:yaml",
     "format:md": "prettier --write \"**/*.md\"",
@@ -50,6 +49,7 @@
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch",
     "validate": "npm run check:deps && npm run check:outdated && npm-run-all --parallel lint type-check security:check && npm run test:all && npm run coverage",
+    "validate:actions": "./scripts/validate-actions.sh",
     "check:deps": "npm ci --dry-run && npm ls --depth=0",
     "check:outdated": "npm outdated || true"
   },
