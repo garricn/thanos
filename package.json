@@ -9,8 +9,10 @@
     "start:web": "nx serve web",
     "build": "nx build",
     "test": "nx test",
-    "test:all": "nx run-many -t test --projects=web,api && nx run-many -t e2e --projects=web-e2e,api-e2e",
+    "test:all": "npm run test:unit && npm run test:snapshot && npm run test:e2e",
     "test:unit": "nx run-many -t test --projects=web,api",
+    "test:snapshot": "nx test web --testPathPattern=snapshot",
+    "test:e2e": "./scripts/run-e2e-tests.sh",
     "lint:all": "nx run-many -t lint --projects=web,api,web-e2e,api-e2e",
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "lint:md:fix": "markdownlint-cli2 --fix \"**/*.md\"",
@@ -36,8 +38,9 @@
     "sonar:update-tasks:formatted": "npm run sonar:update-tasks && npm run format:md",
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch",
-    "validate": "npm-run-all --parallel lint:all test:unit coverage type-check",
-    "validate:full": "npm-run-all --parallel lint:all test:all coverage type-check security:check"
+    "validate": "npm run check:deps && npm run check:outdated && npm-run-all --parallel lint:all type-check security:check && npm run test:all && npm run coverage",
+    "check:deps": "npm ci --dry-run && npm ls --depth=0",
+    "check:outdated": "npm outdated || true"
   },
   "nx": {
     "includedScripts": []
