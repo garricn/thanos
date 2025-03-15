@@ -16,11 +16,13 @@ export const mockLogModel = {
   closeDb: jest.fn(),
 };
 
-// Mock the database module
+// Mock the database module before importing the app
+// This is necessary to ensure the mock is in place before the app is loaded
 jest.mock('../db/models/log', () => mockLogModel, { virtual: true });
 
-// Import the app after mocking the dependencies
-import { setupApp } from '../src/app';
+// We need to use require here to avoid the linting error with imports
+
+const { setupApp } = require('../src/app');
 
 /**
  * Creates a test Express app for testing
