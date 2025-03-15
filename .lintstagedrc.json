@@ -8,5 +8,9 @@
   ],
   "*.md": [
     "markdownlint-cli2 --fix"
+  ],
+  "*.sh": [
+    "shellcheck",
+    "shfmt -i 2 -ci -w"
   ]
 } 

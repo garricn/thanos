@@ -10,9 +10,10 @@ nx serve api &
 API_PID=$!
 
 # Function to clean up servers on exit
+# shellcheck disable=SC2317
 cleanup() {
   echo "Shutting down servers..."
-  kill $WEB_PID $API_PID 2>/dev/null
+  kill "$WEB_PID" "$API_PID" 2>/dev/null
   exit
 }
 
