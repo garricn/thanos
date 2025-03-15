@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   ci:
     build:
@@ -13,6 +11,11 @@ services:
     environment:
       - CI=true
       - HUSKY=0
+      - NODE_OPTIONS=--max-old-space-size=4096
+    deploy:
+      resources:
+        limits:
+          memory: 4G
 
 volumes:
   node_modules:

@@ -147,6 +147,17 @@ This document tracks all tasks, improvements, and fixes for the Thanos project.
 - [ ] Configure vulnerability severity thresholds for CI/CD pipeline
 - [ ] Implement security scanning for Docker images
 - [ ] Create security issue templates for vulnerability reports
+- [ ] Implement Docker security best practices:
+  - [ ] Use minimal base images (e.g., alpine or slim variants)
+  - [ ] Implement least privilege principle with non-root users
+  - [ ] Scan Docker images for vulnerabilities with Trivy or Clair
+  - [ ] Set up Docker content trust for image signing
+  - [ ] Implement Docker secrets management
+  - [ ] Configure read-only file systems where possible
+  - [ ] Set resource limits on containers
+  - [ ] Implement network segmentation for Docker services
+  - [ ] Add security linting for Dockerfiles
+  - [ ] Create Docker security compliance documentation
 
 ## Documentation
 
@@ -212,6 +223,16 @@ This document tracks all tasks, improvements, and fixes for the Thanos project.
   - [x] Create LOCAL_CI.md with detailed explanation of local CI workflows
   - [x] Update COMMANDS.md with local CI commands
   - [x] Add LOCAL_CI.md to documentation index in README.md
+- [ ] Create Docker documentation:
+  - [ ] Create DOCKER.md with detailed Docker setup instructions
+  - [ ] Document Docker Compose usage for development
+  - [ ] Document Docker CI usage and benefits
+  - [ ] Add Docker troubleshooting guide
+  - [ ] Create Docker best practices document
+  - [ ] Document Docker image architecture
+  - [ ] Add Docker commands to COMMANDS.md
+  - [ ] Create Docker environment variables reference
+  - [ ] Document Docker volume management
 
 ## Performance
 
@@ -220,6 +241,17 @@ This document tracks all tasks, improvements, and fixes for the Thanos project.
 - [ ] Add performance monitoring
 - [ ] Optimize database queries
 - [ ] Implement caching strategy
+- [ ] Optimize Docker performance:
+  - [ ] Implement multi-stage builds to reduce image size
+  - [ ] Use Docker BuildKit for faster builds
+  - [ ] Optimize Dockerfile layer caching
+  - [ ] Implement proper .dockerignore file
+  - [ ] Configure container resource limits
+  - [ ] Benchmark and optimize Docker Compose startup time
+  - [ ] Implement Docker volume caching for node_modules
+  - [ ] Use Docker layer compression
+  - [ ] Optimize Docker networking
+  - [ ] Implement Docker image pruning strategy
 
 ## DevOps
 
@@ -228,7 +260,7 @@ This document tracks all tasks, improvements, and fixes for the Thanos project.
 - [ ] Set up monitoring and alerting
 - [ ] Implement blue/green deployment strategy
 - [ ] Create disaster recovery plan
-- [ ] Use Docker Compose for local development to ensure consistent environments
+- [x] Use Docker Compose for local development to ensure consistent environments
 - [ ] Fix NVM compatibility warning with npm config prefix
 - [x] Implement single source of truth for Node.js version:
   - [x] Create/update .nvmrc file as the canonical source of Node.js version
@@ -248,25 +280,46 @@ This document tracks all tasks, improvements, and fixes for the Thanos project.
   - [x] Integrate validate:node-version into the main validate script
   - [x] Add engines.node field to package.json
 - [x] Integrate validate:actions into the main validate script
-- [ ] Set up Docker for local CI:
-  - [ ] Install Docker Desktop from https://www.docker.com/products/docker-desktop/
-  - [ ] Verify installation with `docker --version`
-  - [ ] Run `npm run docker:ci` to test the Docker-based CI environment
+- [x] Set up Docker for local CI:
+  - [x] Install Docker Desktop from https://www.docker.com/products/docker-desktop/
+  - [x] Verify installation with `docker --version`
+  - [x] Run `npm run docker:ci` to test the Docker-based CI environment
   - [x] Update validate-node-version.sh to check Dockerfile.ci
   - [x] Create docker-compose.yml for local development
   - [x] Create docker-compose-ci.yml for CI
   - [x] Update docker-ci.sh script to use docker-compose
   - [x] Create Dockerfile.dev for local development
+- [ ] Enhance Docker setup:
+  - [ ] Create Docker documentation in docs/DOCKER.md
+  - [ ] Add Docker health checks to services
+  - [ ] Optimize Docker image sizes
+  - [ ] Implement multi-stage builds for production images
+  - [ ] Set up Docker volume for persistent data
+  - [ ] Configure Docker networking for local service discovery
+  - [ ] Add Docker Compose profiles for different development scenarios
+  - [ ] Implement Docker-based E2E testing environment
+- [ ] Implement Docker in GitHub Actions:
+  - [ ] Use Docker containers in GitHub Actions workflows
+  - [ ] Set up Docker layer caching in GitHub Actions
+  - [ ] Create GitHub Actions workflow for building and publishing Docker images
+  - [ ] Implement Docker-based matrix testing in CI
 
 ## Local CI Workflows
 
 - [ ] Run local CI checks before pushing changes: `npm run local-ci`
-- [ ] Validate GitHub Actions workflows: `npm run validate:actions`
-- [ ] Run CI in Docker container (requires Docker): `npm run docker:ci`
+- [x] Validate GitHub Actions workflows: `npm run validate:actions`
+- [x] Run CI in Docker container (requires Docker): `npm run docker:ci`
 - [x] Document local CI workflows and their benefits
 - [x] Create pre-push Git hook to run local CI checks automatically
 - [x] Update GitHub Actions workflows to use latest action versions
 - [ ] Implement automated action version checking
+- [ ] Enhance Docker-based CI:
+  - [ ] Expand Docker CI to run all validation checks
+  - [ ] Add unit tests to Docker CI
+  - [ ] Add E2E tests to Docker CI
+  - [ ] Create Docker CI performance metrics
+  - [ ] Implement parallel test execution in Docker CI
+  - [ ] Add Docker CI results reporting
 
 ## Features
 

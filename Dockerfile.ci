@@ -10,17 +10,21 @@ RUN apt-get update && apt-get install -y \
     shellcheck \
     && rm -rf /var/lib/apt/lists/*
 
-# Install actionlint
-RUN bash <(curl -s https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+# Install actionlint - using a two-step approach instead of process substitution
+RUN curl -s https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash > /tmp/download-actionlint.bash && \
+    bash /tmp/download-actionlint.bash && \
+    rm /tmp/download-actionlint.bash
 
-# Copy package files
+# Copy package files first for better layer caching
 COPY package.json package-lock.json ./
 
-# Install dependencies
-RUN HUSKY=0 npm ci
+# Install dependencies with CI settings
+ENV CI=true
+ENV HUSKY=0
+RUN npm install --no-fund
 
 # Copy the rest of the code
 COPY . .
 
-# Set the entrypoint to run the local CI script
-ENTRYPOINT ["./scripts/local-ci.sh"] 
+# Set the entrypoint to run the CI script
+ENTRYPOINT ["/app/scripts/docker/run-ci.sh"] 
