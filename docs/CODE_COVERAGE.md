@@ -22,12 +22,15 @@ You can view code coverage reports in several ways:
 Generate and view detailed HTML coverage reports locally:
 
 ```bash
-# Generate HTML coverage reports
+# Generate HTML coverage reports and automatically open them in your browser
+npm run coverage:open
+
+# Or generate HTML coverage reports without opening them
 npm run coverage:report
 
-# Open the reports in your browser
-open coverage/apps/web/index.html
-open coverage/apps/api/index.html
+# Manually open the reports in your browser
+open coverage/apps/web/lcov-report/index.html
+open coverage/apps/api/lcov-report/index.html
 ```
 
 These HTML reports provide a visual representation of coverage with color-coded line highlighting.
@@ -38,8 +41,24 @@ Generate a quick coverage summary in your terminal:
 
 ```bash
 # Generate coverage reports with terminal summary
-npm run coverage
+npm run coverage:report
 ```
+
+## Coverage Commands
+
+The project provides several commands for working with code coverage:
+
+| Command                   | Description                                                                                      |
+| ------------------------- | ------------------------------------------------------------------------------------------------ |
+| `npm run coverage`        | Generates basic coverage reports in lcov format (primarily for tools like SonarQube and Codecov) |
+| `npm run coverage:report` | Generates comprehensive coverage reports in multiple formats (text summary, HTML, and lcov)      |
+| `npm run coverage:open`   | Generates coverage reports and automatically opens the HTML reports in your browser              |
+
+### Differences Between Coverage Commands
+
+- **coverage**: Minimal command that only generates lcov format reports for integration with other tools
+- **coverage:report**: Comprehensive command that generates human-readable reports (text summary and HTML) in addition to lcov
+- **coverage:open**: Convenience command that runs coverage:report and then opens the HTML reports in your browser
 
 ## Understanding Coverage Reports
 
@@ -82,7 +101,7 @@ The CI pipeline will fail if coverage drops below these thresholds, ensuring tha
 
 To improve code coverage:
 
-1. Run `npm run coverage` to identify uncovered code
+1. Run `npm run coverage:open` to identify uncovered code
 2. Focus on adding tests for critical business logic first
 3. Use the HTML reports to find specific uncovered lines
 4. Add tests for error handling paths and edge cases
