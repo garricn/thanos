@@ -289,6 +289,8 @@ Security checks are now required in CI and will:
 - Block PRs if high or critical vulnerabilities are found
 - Generate security reports as artifacts
 
+For detailed information about our security practices, vulnerability management approach, and specific security measures, please see the [SECURITY.md](./SECURITY.md) file.
+
 ## Contributing
 
 Contributions are welcome! Here's how you can contribute:
