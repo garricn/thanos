@@ -1,14 +1,11 @@
 # Thanos - A Nx Monorepo Scaffolding Template
 
 [![CI](https://github.com/garricn/thanos/actions/workflows/ci.yml/badge.svg)](https://github.com/garricn/thanos/actions/workflows/ci.yml)
-[![Lint](https://github.com/garricn/thanos/actions/workflows/ci.yml/badge.svg?branch=main&event=push&label=lint)](https://github.com/garricn/thanos/actions/workflows/ci.yml)
-[![Type Check](https://github.com/garricn/thanos/actions/workflows/ci.yml/badge.svg?branch=main&event=push&label=types)](https://github.com/garricn/thanos/actions/workflows/ci.yml)
-[![Tests](https://github.com/garricn/thanos/actions/workflows/ci.yml/badge.svg?branch=main&event=push&label=tests)](https://github.com/garricn/thanos/actions/workflows/ci.yml)
-[![Coverage](https://codecov.io/gh/garricn/thanos/branch/main/graph/badge.svg)](https://codecov.io/gh/garricn/thanos)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=garricn_thanos&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=garricn_thanos)
-[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=garricn_thanos&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=garricn_thanos)
-[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=garricn_thanos&metric=reliability_rating)](https://sonarcloud.io/summary/new_code?id=garricn_thanos)
-[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=garricn_thanos&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=garricn_thanos)
+[![Coverage](https://codecov.io/gh/garricn/thanos/branch/main/graph/badge.svg?token=ADVIGYFMQH)](https://codecov.io/gh/garricn/thanos)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=garricn_thanos&metric=alert_status)](https://sonarcloud.io/dashboard?id=garricn_thanos)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=garricn_thanos&metric=sqale_rating)](https://sonarcloud.io/dashboard?id=garricn_thanos)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=garricn_thanos&metric=reliability_rating)](https://sonarcloud.io/dashboard?id=garricn_thanos)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=garricn_thanos&metric=security_rating)](https://sonarcloud.io/dashboard?id=garricn_thanos)
 
 ## Description
 
