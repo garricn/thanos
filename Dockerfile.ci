@@ -1,0 +1,26 @@
+FROM node:20-slim
+
+WORKDIR /app
+
+# Install dependencies needed for CI
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    bash \
+    shellcheck \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install actionlint
+RUN bash <(curl -s https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
+
+# Copy package files
+COPY package.json package-lock.json ./
+
+# Install dependencies
+RUN HUSKY=0 npm ci
+
+# Copy the rest of the code
+COPY . .
+
+# Set the entrypoint to run the local CI script
+ENTRYPOINT ["./scripts/local-ci.sh"] 
