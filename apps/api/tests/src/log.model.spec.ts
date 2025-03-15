@@ -6,12 +6,12 @@
 jest.mock('sqlite3', () => {
   // Create mock implementations
   const mockDb = {
-    run: jest.fn((query: string, params: any, callback: Function) => {
+    run: jest.fn((query: string, params: unknown, callback: (err: Error | null) => void) => {
       if (callback) {
-        callback.call({ lastID: 1 });
+        callback.call({ lastID: 1 }, null);
       }
     }),
-    all: jest.fn((query: string, params: any, callback: Function) => {
+    all: jest.fn((query: string, params: unknown | ((err: Error | null, rows: unknown[]) => void), callback?: (err: Error | null, rows: unknown[]) => void) => {
       if (typeof params === 'function') {
         params(null, [
           {
@@ -21,24 +21,26 @@ jest.mock('sqlite3', () => {
           },
         ]);
       } else {
-        callback(null, [
-          {
-            id: 1,
-            timestamp: '2025-03-08T00:00:00.000Z',
-            endpoint: '/api/hello',
-          },
-        ]);
+        if (callback) {
+          callback(null, [
+            {
+              id: 1,
+              timestamp: '2025-03-08T00:00:00.000Z',
+              endpoint: '/api/hello',
+            },
+          ]);
+        }
       }
     }),
-    get: jest.fn((query: string, params: any, callback: Function) => {
+    get: jest.fn((query: string, params: unknown, callback: (err: Error | null, row: unknown) => void) => {
       callback(null, {
         id: 1,
         timestamp: '2025-03-08T00:00:00.000Z',
         endpoint: '/api/hello',
       });
     }),
-    close: jest.fn((callback: Function) => {
-      callback();
+    close: jest.fn((callback: (err: Error | null) => void) => {
+      callback(null);
     }),
   };
 
@@ -83,7 +85,7 @@ describe('Log Model', () => {
       const mockDb = sqlite3.verbose().Database();
 
       mockDb.run.mockImplementationOnce(
-        (query: string, params: any, callback: Function) => {
+        (query: string, params: unknown, callback: (err: Error | null) => void) => {
           callback(new Error('Database error'));
         }
       );
@@ -106,8 +108,8 @@ describe('Log Model', () => {
       const sqlite3 = require('sqlite3');
       const mockDb = sqlite3.verbose().Database();
 
-      mockDb.all.mockImplementationOnce((query: string, callback: Function) => {
-        callback(new Error('Database error'));
+      mockDb.all.mockImplementationOnce((query: string, callback: (err: Error | null, rows: unknown[]) => void) => {
+        callback(new Error('Database error'), []);
       });
 
       await expect(logModel.getLogs()).rejects.toThrow('Database error');
@@ -127,8 +129,8 @@ describe('Log Model', () => {
       const mockDb = sqlite3.verbose().Database();
 
       mockDb.get.mockImplementationOnce(
-        (query: string, params: any, callback: Function) => {
-          callback(new Error('Database error'));
+        (query: string, params: unknown, callback: (err: Error | null, row: unknown) => void) => {
+          callback(new Error('Database error'), null);
         }
       );
 
@@ -149,8 +151,8 @@ describe('Log Model', () => {
       const mockDb = sqlite3.verbose().Database();
 
       mockDb.all.mockImplementationOnce(
-        (query: string, params: any, callback: Function) => {
-          callback(new Error('Database error'));
+        (query: string, params: unknown, callback: (err: Error | null, rows: unknown[]) => void) => {
+          callback(new Error('Database error'), []);
         }
       );
 
@@ -176,7 +178,7 @@ describe('Log Model', () => {
       const sqlite3 = require('sqlite3');
       const mockDb = sqlite3.verbose().Database();
 
-      mockDb.close.mockImplementationOnce((callback: Function) => {
+      mockDb.close.mockImplementationOnce((callback: (err: Error | null) => void) => {
         callback(new Error('Close error'));
       });
 

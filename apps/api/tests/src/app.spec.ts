@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as path from 'path';
 
 // Mock fs.accessSync
 jest.mock('fs', () => ({
@@ -151,7 +150,7 @@ describe('App Path Resolution', () => {
     try {
       // Import the app module
       require('../../src/app');
-    } catch (error) {
+    } catch (_) {
       // Ignore the error
     }
 

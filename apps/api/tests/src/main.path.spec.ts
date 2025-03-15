@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as path from 'path';
 
 // Mock fs.accessSync
 jest.mock('fs', () => ({
@@ -197,7 +196,7 @@ describe('Main Path Resolution', () => {
     try {
       // Import the main module
       require('../../src/main');
-    } catch (error) {
+    } catch (_) {
       // Ignore the error
     }
 
