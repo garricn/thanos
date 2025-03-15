@@ -1,7 +1,8 @@
 import express from 'express';
+import path from 'path';
 
-// Import the log model
-const logModel = require('../db/models/log');
+// Import the log model with a path that works in both development and production
+const logModel = require(path.join(__dirname, '..', 'db', 'models', 'log'));
 
 /**
  * Sets up the Express application with all routes and middleware
