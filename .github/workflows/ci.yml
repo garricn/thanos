@@ -95,6 +95,39 @@ jobs:
             ./npm-debug.log*
             ./junit.xml
           retention-days: 7
+  snapshot:
+    name: Snapshot Tests
+    needs: [lint, type-check]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Check package sync
+        run: |
+          echo "Node version: $(node -v)"
+          echo "npm version: $(npm -v)"
+          echo "Checking if package.json and package-lock.json are in sync..."
+          HUSKY=0 npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
+      - name: Install dependencies
+        run: HUSKY=0 npm ci
+      - name: Install nx globally
+        run: npm install -g nx
+      - name: Run snapshot tests
+        run: npm run test:snapshot
+      - name: Upload logs on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-test-logs
+          path: |
+            ./**/*.log
+            ./npm-debug.log*
+            ./junit.xml
+          retention-days: 7
   security:
     name: Security Check
     needs: [lint, type-check]
@@ -190,7 +223,7 @@ jobs:
           retention-days: 7
   coverage:
     name: Code Coverage
-    needs: [test]
+    needs: [test, snapshot]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -209,6 +242,8 @@ jobs:
           HUSKY=0 npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
       - name: Install dependencies
         run: HUSKY=0 npm ci
+      - name: Install nx globally
+        run: npm install -g nx
       - name: Generate coverage
         run: npm run coverage
       - name: List coverage files
@@ -302,6 +337,7 @@ jobs:
       - sonarcloud
       - security
       - e2e
+      - snapshot
     runs-on: ubuntu-latest
     steps:
       - name: All checks passed
@@ -319,6 +355,7 @@ jobs:
       - security
       - sonarcloud
       - validate
+      - snapshot
     steps:
       - uses: actions/checkout@v4
         with:
@@ -391,6 +428,8 @@ jobs:
 
           echo "Unit Tests: ${{ needs.test.result || 'unknown' }}" >> logs/job_status.txt
 
+          echo "Snapshot Tests: ${{ needs.snapshot.result || 'unknown' }}" >> logs/job_status.txt
+
           echo "Code Coverage: ${{ needs.coverage.result || 'unknown' }}" >> logs/job_status.txt
 
           echo "E2E Tests: ${{ needs.e2e.result || 'unknown' }}" >> logs/job_status.txt
@@ -420,5 +459,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `## CI Workflow Failed ❌\n\nSome jobs in the CI workflow failed. You can view the detailed logs here:\n\n- [Workflow Run](${ runUrl })\n- [Workflow Artifacts](${ artifactUrl })\n\n### Job Status\n\n- Lint: ${{ needs.lint.result }}\n- Type Check: ${{ needs.type-check.result }}\n- Unit Tests: ${{ needs.test.result }}\n- Code Coverage: ${{ needs.coverage.result }}\n- E2E Tests: ${{ needs.e2e.result }}\n- Security Check: ${{ needs.security.result }}\n- SonarCloud Analysis: ${{ needs.sonarcloud.result }}`
+              body: `## CI Workflow Failed ❌\n\nSome jobs in the CI workflow failed. You can view the detailed logs here:\n\n- [Workflow Run](${ runUrl })\n- [Workflow Artifacts](${ artifactUrl })\n\n### Job Status\n\n- Lint: ${{ needs.lint.result }}\n- Type Check: ${{ needs.type-check.result }}\n- Unit Tests: ${{ needs.test.result }}\n- Snapshot Tests: ${{ needs.snapshot.result }}\n- Code Coverage: ${{ needs.coverage.result }}\n- E2E Tests: ${{ needs.e2e.result }}\n- Security Check: ${{ needs.security.result }}\n- SonarCloud Analysis: ${{ needs.sonarcloud.result }}`
             });

@@ -29,7 +29,7 @@
 
 CI/CD Improvements
 
-- [ ] Ensure snapshot tests run in CI
+- [x] Ensure snapshot tests run in CI
 - [x] Reorder jobs in ci.yml
 - [x] Fix indentation in CI workflow file
 - [x] Add log upload job to CI workflow for better debugging
