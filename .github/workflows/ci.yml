@@ -66,6 +66,7 @@ jobs:
           retention-days: 7
   test:
     name: Unit Tests
+    needs: [lint, type-check]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -94,8 +95,102 @@ jobs:
             ./npm-debug.log*
             ./junit.xml
           retention-days: 7
+  security:
+    name: Security Check
+    needs: [lint, type-check]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Check package sync
+        run: |
+          echo "Node version: $(node -v)"
+          echo "npm version: $(npm -v)"
+          echo "Checking if package.json and package-lock.json are in sync..."
+          HUSKY=0 npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
+      - name: Install dependencies
+        run: HUSKY=0 npm ci
+      - name: Check for Snyk token
+        id: check-snyk
+        run: |
+          if [ -n "${{ secrets.SNYK_TOKEN }}" ]; then
+            echo "has_snyk_token=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_snyk_token=false" >> $GITHUB_OUTPUT
+            echo "::warning::SNYK_TOKEN secret is not set. Security checks will be limited."
+          fi
+      - name: Run Snyk security audit
+        if: steps.check-snyk.outputs.has_snyk_token == 'true'
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: npm run security:check
+      - name: Run npm audit as fallback
+        if: steps.check-snyk.outputs.has_snyk_token != 'true'
+        run: |
+          echo "Running npm audit as fallback security check..."
+          npm audit || true
+      - name: Upload security report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-report
+          path: |
+            ./**/*.log
+            ./npm-debug.log*
+            ./snyk-report.json
+          retention-days: 7
+  e2e:
+    name: E2E Tests
+    needs: [lint, type-check]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+      - name: Check package sync
+        run: |
+          echo "Node version: $(node -v)"
+          echo "npm version: $(npm -v)"
+          echo "Checking if package.json and package-lock.json are in sync..."
+          HUSKY=0 npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
+      - name: Install dependencies
+        run: HUSKY=0 npm ci
+      - name: Install nx globally
+        run: npm install -g nx
+      - name: Build API and Web
+        run: |
+          npm run build -- --projects=api,web
+      - name: Start servers in background
+        run: |
+          npm run start:api &
+          echo "API server started, waiting for it to be ready..."
+          sleep 20
+          npm run start:web &
+          echo "Web server started, waiting for it to be ready..."
+          sleep 20
+      - name: Run E2E tests
+        run: nx e2e web-e2e
+      - name: Upload logs on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-logs
+          path: |
+            ./**/*.log
+            ./npm-debug.log*
+            ./cypress/screenshots/**/*
+            ./cypress/videos/**/*
+          retention-days: 7
   coverage:
     name: Code Coverage
+    needs: [test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -197,95 +292,6 @@ jobs:
             ./**/*.log
             ./npm-debug.log*
           retention-days: 7
-  e2e:
-    name: E2E Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: npm
-      - name: Check package sync
-        run: |
-          echo "Node version: $(node -v)"
-          echo "npm version: $(npm -v)"
-          echo "Checking if package.json and package-lock.json are in sync..."
-          HUSKY=0 npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
-      - name: Install dependencies
-        run: HUSKY=0 npm ci
-      - name: Build API and Web
-        run: |
-          npm run build -- --projects=api,web
-      - name: Start servers in background
-        run: |
-          npm run start:api &
-          echo "API server started, waiting for it to be ready..."
-          sleep 20
-          npm run start:web &
-          echo "Web server started, waiting for it to be ready..."
-          sleep 20
-      - name: Run E2E tests
-        run: nx e2e web-e2e
-      - name: Upload logs on failure
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: e2e-logs
-          path: |
-            ./**/*.log
-            ./npm-debug.log*
-            ./cypress/screenshots/**/*
-            ./cypress/videos/**/*
-          retention-days: 7
-  security:
-    name: Security Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: npm
-      - name: Check package sync
-        run: |
-          echo "Node version: $(node -v)"
-          echo "npm version: $(npm -v)"
-          echo "Checking if package.json and package-lock.json are in sync..."
-          HUSKY=0 npm ci --dry-run || (echo "Dry run failed"; npm diff; exit 1)
-      - name: Install dependencies
-        run: HUSKY=0 npm ci
-      - name: Check for Snyk token
-        id: check-snyk
-        run: |
-          if [ -n "${{ secrets.SNYK_TOKEN }}" ]; then
-            echo "has_snyk_token=true" >> $GITHUB_OUTPUT
-          else
-            echo "has_snyk_token=false" >> $GITHUB_OUTPUT
-            echo "::warning::SNYK_TOKEN secret is not set. Security checks will be limited."
-          fi
-      - name: Run Snyk security audit
-        if: steps.check-snyk.outputs.has_snyk_token == 'true'
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-        run: npm run security:check
-      - name: Run npm audit as fallback
-        if: steps.check-snyk.outputs.has_snyk_token != 'true'
-        run: |
-          echo "Running npm audit as fallback security check..."
-          npm audit || true
-      - name: Upload security report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: security-report
-          path: |
-            ./**/*.log
-            ./npm-debug.log*
-            ./snyk-report.json
-          retention-days: 7
   validate:
     name: Validate
     needs:
@@ -295,6 +301,7 @@ jobs:
       - coverage
       - sonarcloud
       - security
+      - e2e
     runs-on: ubuntu-latest
     steps:
       - name: All checks passed
@@ -311,6 +318,7 @@ jobs:
       - e2e
       - security
       - sonarcloud
+      - validate
     steps:
       - uses: actions/checkout@v4
         with:

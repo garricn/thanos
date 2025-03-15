@@ -29,7 +29,8 @@
 
 CI/CD Improvements
 
-- [ ] Reorder jobs in ci.yml
+- [ ] Ensure snapshot tests run in CI
+- [x] Reorder jobs in ci.yml
 - [x] Fix indentation in CI workflow file
 - [x] Add log upload job to CI workflow for better debugging
 - [x] Fix "husky not found" error in CI by setting HUSKY=0 environment variable
