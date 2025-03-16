@@ -116,6 +116,7 @@ Current status:
 - [x] Update outdated GitHub Actions to latest versions
 - [x] Implement GitHub Actions workflow validation in CI
 - [x] Create local workflow for validating GitHub Actions configurations
+- [ ] Fix CI Workflow failures by addressing failing tests or configuration issues
 
 ## Code Quality
 
@@ -156,6 +157,11 @@ Current status:
 - [ ] Improve test coverage for error handling paths in app.ts and main.ts
 - [ ] Fix TypeScript warning about processing JS files
 - [ ] Refactor duplicated path resolution logic into a shared utility
+- [ ] Set up codecov for test analytics to detect flaky tests and report on failures
+- [ ] Configure codecov to track test suite problems and provide insights
+- [ ] Set up JS Bundle Analysis in codecov to track and limit bundle sizes in JS merges
+- [ ] Configure SonarQube Cloud to properly analyze code coverage
+- [ ] Set up additional steps for SonarQube Cloud coverage analysis
 
 ## Testing Improvements
 
