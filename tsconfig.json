@@ -34,7 +34,10 @@
     ]
   },
   "files": [],
-  "include": [],
+  "include": [
+    "apps/**/*.ts",
+    "apps/**/*.tsx"
+  ],
   "references": [
     {
       "path": "./tsconfig.app.json"
