@@ -42,21 +42,23 @@ jest.mock(
 // Mock require for log model
 jest.mock('module', () => {
   const originalModule = jest.requireActual('module');
+  const moduleExports = { ...(originalModule as object) };
+
   return {
-    ...originalModule,
+    ...moduleExports,
     // Mock _load to return our mock for the log model
     _load: function (request: string) {
       if (request.includes('log')) {
         return { closeDb: mockCloseDb };
       }
-      return originalModule._load(request);
+      return (originalModule as any)._load(request);
     },
   };
 });
 
 describe('main.ts', () => {
-  let processExitSpy: any;
-  let processOnSpy: any;
+  let processExitSpy: ReturnType<typeof jest.spyOn>;
+  let processOnSpy: ReturnType<typeof jest.spyOn>;
   let originalProcessEnv: NodeJS.ProcessEnv;
 
   beforeEach(() => {
@@ -184,7 +186,7 @@ describe('main.ts', () => {
 
     // Get the SIGINT handler
     const sigintHandler = processOnSpy.mock.calls.find(
-      (call: any[]) => call[0] === 'SIGINT'
+      (call: Array<unknown>) => call[0] === 'SIGINT'
     )?.[1];
     expect(sigintHandler).toBeDefined();
 

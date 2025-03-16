@@ -196,7 +196,7 @@ describe('Main Path Resolution', () => {
     try {
       // Import the main module
       require('../../src/main');
-    } catch (_) {
+    } catch {
       // Ignore the error
     }
 

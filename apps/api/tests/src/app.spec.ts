@@ -1,6 +1,8 @@
 import * as fs from 'fs';
 import request from 'supertest';
-import { setupApp } from '@thanos/api/app';
+
+// We need to use require here to avoid the linting error with imports
+const { setupApp } = require('../../src/app');
 
 // Mock fs.accessSync
 jest.mock('fs', () => ({
@@ -153,7 +155,7 @@ describe('App Path Resolution', () => {
     try {
       // Import the app module
       require('../../src/app');
-    } catch (_) {
+    } catch {
       // Ignore the error
     }
 
