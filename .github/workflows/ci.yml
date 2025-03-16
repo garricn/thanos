@@ -413,6 +413,10 @@ jobs:
     name: Upload Logs
     runs-on: ubuntu-latest
     if: ${{ always() }}
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: read
     needs:
       - lint
       - type-check
