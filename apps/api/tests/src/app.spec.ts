@@ -1,4 +1,8 @@
 import * as fs from 'fs';
+import request from 'supertest';
+
+// We need to use require here to avoid the linting error with imports
+const { setupApp } = require('../../src/app');
 
 // Mock fs.accessSync
 jest.mock('fs', () => ({
@@ -14,8 +18,9 @@ jest.mock('path', () => ({
 }));
 
 // Mock the log model
+const logModelPath = '../../db/models/log';
 jest.mock(
-  '../../db/models/log',
+  logModelPath,
   () => ({
     insertLog: jest.fn().mockResolvedValue(1),
     closeDb: jest.fn(),
@@ -150,7 +155,7 @@ describe('App Path Resolution', () => {
     try {
       // Import the app module
       require('../../src/app');
-    } catch (_) {
+    } catch {
       // Ignore the error
     }
 
@@ -161,5 +166,45 @@ describe('App Path Resolution', () => {
     expect(console.error).toHaveBeenCalledWith(
       'Could not find log model at any of the expected paths:'
     );
+  });
+});
+
+describe('setupApp', () => {
+  describe('/api/hello endpoint', () => {
+    it('should return hello message and log the request', async () => {
+      // ... existing code ...
+    });
+
+    it('should handle database errors gracefully', async () => {
+      // Mock the log model to throw an error
+      const mockInsertLog = jest
+        .fn()
+        .mockRejectedValue(new Error('Database error'));
+      jest.mock(
+        logModelPath,
+        () => ({
+          insertLog: mockInsertLog,
+        }),
+        { virtual: true }
+      );
+
+      // Create a new app instance with the mocked log model
+      const app = setupApp();
+
+      // Mock console.error to prevent test output pollution
+      const originalConsoleError = console.error;
+      console.error = jest.fn();
+
+      // Make the request
+      const response = await request(app).get('/api/hello');
+
+      // Restore console.error
+      console.error = originalConsoleError;
+
+      // Verify the response
+      expect(response.status).toBe(500);
+      expect(response.body).toEqual({ error: 'Internal server error' });
+      expect(mockInsertLog).toHaveBeenCalledWith('/api/hello');
+    });
   });
 });

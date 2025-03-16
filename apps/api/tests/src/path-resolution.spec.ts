@@ -84,7 +84,7 @@ describe('Path Resolution Logic', () => {
           fs.accessSync(`${p}.js`, fs.constants.F_OK);
           logModelPath = p;
           break;
-        } catch (_) {
+        } catch {
           // Path doesn't exist, try the next one
           continue;
         }

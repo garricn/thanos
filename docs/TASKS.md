@@ -2,6 +2,37 @@
 
 This document tracks all tasks, improvements, and fixes for the Thanos project.
 
+<!--
+ASSISTANT REMINDER:
+This is a Nx monorepo project with React frontend (apps/web) and Express backend (apps/api).
+
+IMPORTANT: DO NOT spend time exploring the project structure when asked about next tasks.
+Instead, use this reminder as your complete context and reference.
+
+When asked "what should we work on next", prioritize tasks in this order:
+1. Uncompleted high priority issues and security hotspots
+2. Testing improvements (current coverage is 0.0%)
+3. Documentation tasks
+4. Feature implementation tasks
+5. DevOps and performance improvements
+
+Project structure:
+- apps/web: React frontend
+- apps/api: Express backend
+
+The project uses:
+- React, TypeScript, Vite, Tailwind CSS, Shadcn UI (frontend)
+- Node.js, Express, SQLite (backend)
+- Jest (unit tests), Cypress (E2E tests)
+- SonarCloud for code quality analysis
+
+Current status:
+- All security hotspots have been addressed
+- Test coverage is at 0.0% and needs immediate attention
+- Documentation is incomplete
+- Core features are partially implemented
+-->
+
 ## Table of Contents
 
 - [SonarCloud Tasks](#sonarcloud-tasks)

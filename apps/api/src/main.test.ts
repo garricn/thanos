@@ -1,0 +1,222 @@
+import * as fs from 'fs';
+import * as path from 'path';
+import { jest } from '@jest/globals';
+
+// Mock the fs module
+jest.mock('fs', () => ({
+  accessSync: jest.fn(),
+  constants: { F_OK: 1 },
+}));
+
+// Mock the path module
+jest.mock('path', () => ({
+  join: jest.fn().mockImplementation((...args) => args.join('/')),
+}));
+
+// Mock the app module
+jest.mock('./app', () => ({
+  setupApp: jest.fn().mockReturnValue({
+    listen: jest.fn((port, host, callback: () => void) => {
+      callback();
+      return { close: jest.fn() };
+    }),
+  }),
+}));
+
+// Mock console.error and console.log
+const originalConsoleError = console.error;
+const originalConsoleLog = console.log;
+const mockConsoleError = jest.fn();
+const mockConsoleLog = jest.fn();
+
+// Mock the log model
+const mockCloseDb = jest.fn();
+jest.mock(
+  '../db/models/log',
+  () => ({
+    closeDb: mockCloseDb,
+  }),
+  { virtual: true }
+);
+
+// Mock require for log model
+jest.mock('module', () => {
+  const originalModule = jest.requireActual('module');
+  const moduleExports = { ...(originalModule as object) };
+
+  return {
+    ...moduleExports,
+    // Mock _load to return our mock for the log model
+    _load: function (request: string) {
+      if (request.includes('log')) {
+        return { closeDb: mockCloseDb };
+      }
+      return (originalModule as any)._load(request);
+    },
+  };
+});
+
+describe('main.ts', () => {
+  let processExitSpy: ReturnType<typeof jest.spyOn>;
+  let processOnSpy: ReturnType<typeof jest.spyOn>;
+  let originalProcessEnv: NodeJS.ProcessEnv;
+
+  beforeEach(() => {
+    // Save original process.env
+    originalProcessEnv = { ...process.env };
+
+    // Clear all mocks
+    jest.clearAllMocks();
+
+    // Mock console methods
+    console.error = mockConsoleError;
+    console.log = mockConsoleLog;
+
+    // Spy on process.exit
+    processExitSpy = jest
+      .spyOn(process, 'exit')
+      .mockImplementation(() => undefined as never);
+
+    // Spy on process.on
+    processOnSpy = jest.spyOn(process, 'on');
+
+    // Reset modules to ensure main.ts is reloaded with fresh mocks
+    jest.resetModules();
+  });
+
+  afterEach(() => {
+    // Restore console methods
+    console.error = originalConsoleError;
+    console.log = originalConsoleLog;
+
+    // Restore process.exit
+    processExitSpy.mockRestore();
+
+    // Restore process.on
+    processOnSpy.mockRestore();
+
+    // Restore process.env
+    process.env = originalProcessEnv;
+  });
+
+  test('should start the server with default host and port', () => {
+    // Mock fs.accessSync to succeed for the first path
+    (fs.accessSync as jest.Mock).mockImplementation(() => undefined);
+
+    // Import main.ts (this will execute the file)
+    require('./main');
+
+    // Verify setupApp was called
+    const { setupApp } = require('./app');
+    expect(setupApp).toHaveBeenCalled();
+
+    // Verify app.listen was called with correct parameters
+    const app = setupApp();
+    expect(app.listen).toHaveBeenCalledWith(
+      3000,
+      'localhost',
+      expect.any(Function)
+    );
+
+    // Verify console.log was called with the correct messages
+    expect(console.log).toHaveBeenCalledWith('[ ready ] http://localhost:3000');
+    expect(console.log).toHaveBeenCalledWith(
+      'Try the new endpoint at http://localhost:3000/api/hello'
+    );
+  });
+
+  test('should handle custom host and port from environment variables', () => {
+    // Mock fs.accessSync to succeed for the first path
+    (fs.accessSync as jest.Mock).mockImplementation(() => undefined);
+
+    // Set environment variables
+    process.env.HOST = 'custom-host';
+    process.env.PORT = '4000';
+
+    // Import main.ts (this will execute the file)
+    jest.resetModules();
+    require('./main');
+
+    // Verify app.listen was called with correct parameters
+    const { setupApp } = require('./app');
+    const app = setupApp();
+    expect(app.listen).toHaveBeenCalledWith(
+      4000,
+      'custom-host',
+      expect.any(Function)
+    );
+  });
+
+  test('should handle case when no log model path is found', () => {
+    // Mock fs.accessSync to fail for all paths
+    (fs.accessSync as jest.Mock).mockImplementation(() => {
+      throw new Error('File not found');
+    });
+
+    // Import main.ts (this will execute the file)
+    jest.resetModules();
+    require('./main');
+
+    // Verify console.error was called
+    expect(console.error).toHaveBeenCalledWith(
+      'Could not find log model at any of the expected paths:'
+    );
+    expect(console.error).toHaveBeenCalledWith(expect.stringContaining('- '));
+
+    // Verify that the default path is used
+    expect(path.join).toHaveBeenCalledWith(
+      expect.anything(),
+      '..',
+      'db',
+      'models',
+      'log'
+    );
+  });
+
+  test('should set up graceful shutdown handler', () => {
+    // Mock fs.accessSync to succeed for the first path
+    (fs.accessSync as jest.Mock).mockImplementation(() => undefined);
+
+    // Import main.ts (this will execute the file)
+    jest.resetModules();
+    require('./main');
+
+    // Verify process.on was called with SIGINT
+    expect(processOnSpy).toHaveBeenCalledWith('SIGINT', expect.any(Function));
+
+    // Get the SIGINT handler
+    const sigintHandler = processOnSpy.mock.calls.find(
+      (call: Array<unknown>) => call[0] === 'SIGINT'
+    )?.[1];
+    expect(sigintHandler).toBeDefined();
+
+    // Call the SIGINT handler
+    if (sigintHandler) {
+      sigintHandler();
+
+      // Verify closeDb was called
+      expect(mockCloseDb).toHaveBeenCalled();
+
+      // Verify process.exit was called with 0
+      expect(processExitSpy).toHaveBeenCalledWith(0);
+    }
+  });
+
+  test('should handle SIGINT signal directly', () => {
+    // Mock fs.accessSync to succeed for the first path
+    (fs.accessSync as jest.Mock).mockImplementation(() => undefined);
+
+    // Import main.ts (this will execute the file)
+    jest.resetModules();
+    require('./main');
+
+    // Simulate SIGINT signal
+    process.emit('SIGINT');
+
+    // Verify closeDb was called
+    expect(mockCloseDb).toHaveBeenCalled();
+
+    // Verify process.exit was called with 0
+    expect(processExitSpy).toHaveBeenCalledWith(0);
+  });
+});
