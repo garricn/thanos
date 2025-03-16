@@ -30,7 +30,11 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "types": [
-      "vite/client"
+      "node"
+    ],
+    "typeRoots": [
+      "node_modules/@types",
+      "types"
     ]
   },
   "files": [],

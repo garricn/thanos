@@ -5,12 +5,15 @@
     "module": "commonjs",
     "moduleResolution": "node10",
     "jsx": "react-jsx",
+    "composite": true,
     "types": [
       "jest",
       "node",
       "@nx/react/typings/cssmodule.d.ts",
-      "@nx/react/typings/image.d.ts"
-    ]
+      "@nx/react/typings/image.d.ts",
+      "@testing-library/jest-dom"
+    ],
+    "esModuleInterop": true
   },
   "include": [
     "jest.config.ts",
@@ -22,6 +25,10 @@
     "src/**/*.spec.js",
     "src/**/*.test.jsx",
     "src/**/*.spec.jsx",
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+    "apps/**/*.test.ts",
+    "apps/**/*.spec.ts",
+    "apps/**/*.test.tsx",
+    "apps/**/*.spec.tsx"
   ]
 }
