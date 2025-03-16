@@ -39,11 +39,30 @@ jest.mock(
   { virtual: true }
 );
 
+// Mock require for log model
+jest.mock('module', () => {
+  const originalModule = jest.requireActual('module');
+  return {
+    ...originalModule,
+    // Mock _load to return our mock for the log model
+    _load: function (request: string) {
+      if (request.includes('log')) {
+        return { closeDb: mockCloseDb };
+      }
+      return originalModule._load(request);
+    },
+  };
+});
+
 describe('main.ts', () => {
   let processExitSpy: any;
   let processOnSpy: any;
+  let originalProcessEnv: NodeJS.ProcessEnv;
 
   beforeEach(() => {
+    // Save original process.env
+    originalProcessEnv = { ...process.env };
+
     // Clear all mocks
     jest.clearAllMocks();
 
@@ -73,6 +92,9 @@ describe('main.ts', () => {
 
     // Restore process.on
     processOnSpy.mockRestore();
+
+    // Restore process.env
+    process.env = originalProcessEnv;
   });
 
   test('should start the server with default host and port', () => {
@@ -106,7 +128,6 @@ describe('main.ts', () => {
     (fs.accessSync as jest.Mock).mockImplementation(() => undefined);
 
     // Set environment variables
-    const originalEnv = process.env;
     process.env.HOST = 'custom-host';
     process.env.PORT = '4000';
 
@@ -122,9 +143,6 @@ describe('main.ts', () => {
       'custom-host',
       expect.any(Function)
     );
-
-    // Restore environment variables
-    process.env = originalEnv;
   });
 
   test('should handle case when no log model path is found', () => {
@@ -142,6 +160,15 @@ describe('main.ts', () => {
       'Could not find log model at any of the expected paths:'
     );
     expect(console.error).toHaveBeenCalledWith(expect.stringContaining('- '));
+
+    // Verify that the default path is used
+    expect(path.join).toHaveBeenCalledWith(
+      expect.anything(),
+      '..',
+      'db',
+      'models',
+      'log'
+    );
   });
 
   test('should set up graceful shutdown handler', () => {
@@ -171,5 +198,23 @@ describe('main.ts', () => {
       // Verify process.exit was called with 0
       expect(processExitSpy).toHaveBeenCalledWith(0);
     }
+  });
+
+  test('should handle SIGINT signal directly', () => {
+    // Mock fs.accessSync to succeed for the first path
+    (fs.accessSync as jest.Mock).mockImplementation(() => undefined);
+
+    // Import main.ts (this will execute the file)
+    jest.resetModules();
+    require('./main');
+
+    // Simulate SIGINT signal
+    process.emit('SIGINT');
+
+    // Verify closeDb was called
+    expect(mockCloseDb).toHaveBeenCalled();
+
+    // Verify process.exit was called with 0
+    expect(processExitSpy).toHaveBeenCalledWith(0);
   });
 });
