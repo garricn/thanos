@@ -282,6 +282,7 @@ For self-hosted SonarQube, access the URL of your SonarQube instance.
    - Make sure the coverage job runs before the SonarCloud job
    - Check that the coverage reports are being generated correctly
    - Verify the path in `sonar.javascript.lcov.reportPaths`
+   - Ensure that a combined coverage file exists at `coverage/lcov.info`
 
 3. **PR decoration not working**
 
