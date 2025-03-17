@@ -11,10 +11,7 @@ export default {
     '<rootDir>/tests/src/**/*.test.ts',
     '<rootDir>/tests/src/**/*.spec.ts',
   ],
-  testPathIgnorePatterns: [
-    '<rootDir>/tests/src/app.spec.ts',
-    '<rootDir>/tests/src/main.path.spec.ts',
-  ],
+  testPathIgnorePatterns: ['<rootDir>/tests/src/main.path.spec.ts'],
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
     '!<rootDir>/src/**/*.spec.ts',

@@ -30,4 +30,11 @@ export default [
     // Override or add rules here
     rules: {},
   },
+  // Disable module boundaries rule for test files
+  {
+    files: ['**/tests/**/*.ts', '**/tests/**/*.tsx', '**/tests/**/*.js', '**/tests/**/*.jsx'],
+    rules: {
+      '@nx/enforce-module-boundaries': 'off'
+    }
+  }
 ];
