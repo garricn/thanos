@@ -18,6 +18,17 @@ export default {
     '!apps/**/node_modules/**',
     '!apps/**/dist/**',
     '!apps/**/coverage/**',
+    '!apps/**/nx-welcome.tsx',
+    '!apps/**/*.stories.{js,jsx,ts,tsx}',
+    '!apps/**/*.styles.{js,jsx,ts,tsx}',
+    '!apps/**/*.constants.{js,jsx,ts,tsx}',
+    '!apps/**/*.types.{js,jsx,ts,tsx}',
+    '!apps/**/*.mock.{js,jsx,ts,tsx}',
+    '!apps/**/*.generated.{js,jsx,ts,tsx}',
+    '!apps/**/*.module.css',
+    '!apps/**/assets/**',
+    '!apps/**/*.json',
+    '!apps/**/*.md',
   ],
   coverageThreshold: {
     global: {
