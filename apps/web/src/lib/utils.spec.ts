@@ -14,12 +14,7 @@ describe('utils', () => {
     });
 
     it('should handle falsy values', () => {
-      const result = cn(
-        'base-class',
-        false ? 'should-not-appear' : '',
-        null,
-        undefined
-      );
+      const result = cn('base-class', '', null, undefined);
       expect(result).toBe('base-class');
     });
 

@@ -1,6 +1,5 @@
 import * as ReactDOM from 'react-dom/client';
 import { StrictMode } from 'react';
-import App from './app/app';
 
 // Mock ReactDOM
 jest.mock('react-dom/client', () => ({
@@ -16,7 +15,6 @@ jest.mock('./app/app', () => ({
 }));
 
 describe('Main', () => {
-  let originalCreateElement: typeof document.createElement;
   let mockRoot: HTMLElement;
 
   beforeEach(() => {

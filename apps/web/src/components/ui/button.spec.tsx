@@ -1,8 +1,7 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { Button, buttonVariants } from './button';
-import { Slot } from '@radix-ui/react-slot';
+import { Button } from './button';
 
 // Mock Slot component
 jest.mock('@radix-ui/react-slot', () => ({
@@ -43,7 +42,7 @@ describe('Button', () => {
   it('should render as child when asChild is true', () => {
     const { container } = render(
       <Button asChild>
-        <a href="#">Test Link</a>
+        <a href="https://example.com">Test Link</a>
       </Button>
     );
     expect(container.querySelector('a')).toBeTruthy();
