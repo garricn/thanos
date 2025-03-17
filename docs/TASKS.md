@@ -162,6 +162,11 @@ Current status:
 - [ ] Set up JS Bundle Analysis in codecov to track and limit bundle sizes in JS merges
 - [ ] Configure SonarQube Cloud to properly analyze code coverage
 - [ ] Set up additional steps for SonarQube Cloud coverage analysis
+- [ ] Create a standardized approach for API error handling
+- [ ] Implement consistent logging across the API
+- [ ] Refactor the API to use a layered architecture (controllers, services, repositories)
+- [ ] Improve API response format standardization
+- [ ] Implement API documentation with OpenAPI/Swagger
 
 ## Testing Improvements
 
@@ -186,6 +191,13 @@ Current status:
 - [ ] Improve test coverage to reach 85% statement coverage
 - [ ] Add tests for error handling paths
 - [ ] Implement integration tests for database operations
+- [ ] Implement Dependency Injection for API server to improve testability
+- [ ] Add unit tests for main.ts after implementing DI
+- [ ] Create a standardized approach for handling API test data
+- [ ] Implement consistent module boundary exceptions for test files
+- [ ] Fix husky hooks configuration to properly install Git hooks
+- [ ] Resolve pre-push hook failures with proper Husky configuration
+- [ ] Create mock implementations for external services to improve test isolation
 
 ## Security
 
@@ -388,6 +400,19 @@ Current status:
 - [ ] Create admin dashboard
 - [ ] Implement notification system
 - [ ] Add search functionality
+- [ ] Implement database integration for the API
+- [ ] Create database models and schemas
+- [ ] Set up database migrations system
+- [ ] Implement proper database connection pooling
+- [ ] Add data validation for API requests
+- [ ] Create API endpoints for CRUD operations
+- [ ] Implement proper error handling for database operations
+- [ ] Add authentication and authorization to the API
+- [ ] Set up environment-specific database configurations
+- [ ] Implement database seeding for development and testing
+- [ ] Create frontend components to interact with the API
+- [ ] Implement client-side data validation
+- [ ] Add loading states and error handling in the UI
 
 ## Dependencies
 
