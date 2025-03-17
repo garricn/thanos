@@ -32,6 +32,9 @@ Commands for running tests and generating coverage reports.
 | `npm run coverage`                                 | Generate coverage reports for unit and snapshot tests    |
 | `npm run coverage:report`                          | Generate detailed coverage reports with multiple formats |
 | `npm run coverage:open`                            | Generate coverage reports and open them in your browser  |
+| `npm run coverage:fresh`                           | Generate fresh coverage reports by clearing all caches   |
+| `npm run coverage:fresh:open`                      | Generate fresh coverage reports and open in browser      |
+| `npm run test:component:fresh --component=MyComp`  | Run tests for a specific component with fresh caches     |
 
 ## Code Quality Commands
 
