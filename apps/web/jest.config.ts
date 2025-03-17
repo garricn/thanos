@@ -3,14 +3,34 @@ export default {
   preset: '../../jest.preset.js',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
-    '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/react/babel'] }]
+    '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/react/babel'] }],
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/web',
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.[jt]s?(x)',
     '<rootDir>/src/**/*(*.)@(spec|test).[jt]s?(x)',
-    '<rootDir>/tests/**/*(*.)@(spec|test).[jt]s?(x)'
+    '<rootDir>/tests/**/*(*.)@(spec|test).[jt]s?(x)',
   ],
-  setupFilesAfterEnv: ['<rootDir>/tests/test-setup.ts']
+  setupFilesAfterEnv: ['<rootDir>/tests/test-setup.ts'],
+  collectCoverageFrom: [
+    '<rootDir>/src/**/*.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/*.d.ts',
+    '!<rootDir>/src/**/*.spec.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/*.test.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/*.snapshot.spec.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/__snapshots__/**',
+    '!<rootDir>/src/**/*.config.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/nx-welcome.tsx',
+    '!<rootDir>/src/**/*.stories.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/*.styles.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/*.constants.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/*.types.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/*.mock.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/*.generated.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/*.module.css',
+    '!<rootDir>/src/**/assets/**',
+    '!<rootDir>/src/**/*.json',
+    '!<rootDir>/src/**/*.md',
+  ],
 };

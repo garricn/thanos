@@ -309,7 +309,7 @@ jobs:
       - name: Install nx globally
         run: npm install -g nx
       - name: Generate coverage
-        run: npm run coverage
+        run: npm run coverage:all
       - name: List coverage files
         run: find coverage -type f | grep lcov.info || echo "No lcov.info files found"
       - name: Upload coverage to Codecov

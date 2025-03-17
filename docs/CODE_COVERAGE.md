@@ -48,17 +48,50 @@ npm run coverage:report
 
 The project provides several commands for working with code coverage:
 
-| Command                   | Description                                                                                   |
-| ------------------------- | --------------------------------------------------------------------------------------------- |
-| `npm run coverage`        | Generates basic coverage reports in lcov format for both unit and snapshot tests              |
-| `npm run coverage:report` | Generates comprehensive coverage reports in multiple formats for both unit and snapshot tests |
-| `npm run coverage:open`   | Generates coverage reports and automatically opens the HTML reports in your browser           |
+| Command                                           | Description                                                                                   |
+| ------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| `npm run coverage`                                | Generates basic coverage reports in lcov format for both unit and snapshot tests              |
+| `npm run coverage:report`                         | Generates comprehensive coverage reports in multiple formats for both unit and snapshot tests |
+| `npm run coverage:open`                           | Generates coverage reports and automatically opens the HTML reports in your browser           |
+| `npm run coverage:fresh`                          | Generates fresh coverage reports by clearing all caches first                                 |
+| `npm run coverage:fresh:open`                     | Generates fresh coverage reports and opens the HTML reports in your browser                   |
+| `npm run test:component:fresh --component=MyComp` | Runs tests for a specific component with fresh caches and generates coverage                  |
 
 ### Differences Between Coverage Commands
 
 - **coverage**: Generates lcov format reports for integration with other tools, including both unit and snapshot tests
 - **coverage:report**: Generates human-readable reports (text summary and HTML) in addition to lcov, including both unit and snapshot tests
 - **coverage:open**: Convenience command that runs coverage:report and then opens the HTML reports in your browser
+- **coverage:fresh**: Clears all caches (coverage, node_modules/.cache, .nx/cache) and runs tests with --skip-nx-cache to ensure fresh results
+- **coverage:fresh:open**: Runs coverage:fresh and opens the HTML reports in your browser
+- **test:component:fresh**: Clears all caches and runs tests for a specific component only, useful for targeted testing
+
+### Dealing with Cache Issues
+
+The project uses Nx, which has a caching mechanism to improve performance. While this is generally beneficial, it can sometimes lead to stale coverage reports when you're actively developing and making changes to components.
+
+If you notice that your coverage reports don't reflect your recent code changes:
+
+1. Use the `coverage:fresh` or `coverage:fresh:open` commands to clear all caches and generate fresh reports
+2. For testing a specific component, use `npm run test:component:fresh --component=YourComponentName` or `npm run test:component:fresh:open --component=YourComponentName`
+3. These commands perform the following cache-clearing operations:
+   - Remove the coverage directory
+   - Clear the Node.js module cache
+   - Remove the Nx cache directory
+   - Reset the Nx cache
+   - Run tests with the --skip-nx-cache flag
+
+#### Important Note on Coverage Differences
+
+You may notice different coverage results when running targeted component tests versus full coverage reports:
+
+- **Targeted component tests** (using `test:component:fresh` or `test:component:fresh:open`) only run the specific test file for that component, which often shows higher coverage (up to 100%) for the component being tested.
+
+- **Full coverage reports** (using `coverage:fresh` or `coverage:fresh:open`) run all tests and may show lower coverage for individual components due to how tests interact with each other or how components are used across the application.
+
+For the most accurate assessment of a specific component's test coverage during development, use the targeted component test commands. For overall project coverage assessment, use the full coverage report commands.
+
+This ensures you always get accurate coverage reports, especially during active development.
 
 ### Tests Included in Coverage
 
