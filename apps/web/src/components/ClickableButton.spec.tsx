@@ -1,5 +1,6 @@
 import { render, fireEvent } from '@testing-library/react';
 import ClickableButton, { createHandleClick } from './ClickableButton';
+import React from 'react';
 
 describe('ClickableButton', () => {
   it('should render successfully', () => {
@@ -140,6 +141,7 @@ describe('ClickableButton', () => {
       const mockSetIsClicked = jest.fn();
       const handleClick = createHandleClick(mockSetIsClicked);
 
+      // Directly invoke the returned function
       handleClick();
 
       expect(mockSetIsClicked).toHaveBeenCalledWith(true);
@@ -153,6 +155,7 @@ describe('ClickableButton', () => {
         mockOnClickHandler
       );
 
+      // Directly invoke the returned function
       handleClick();
 
       expect(mockSetIsClicked).toHaveBeenCalledWith(true);
@@ -163,12 +166,74 @@ describe('ClickableButton', () => {
       const mockSetIsClicked = jest.fn();
       const handleClick = createHandleClick(mockSetIsClicked);
 
-      // This should not throw an error
-      expect(() => {
-        handleClick();
-      }).not.toThrow();
+      // Directly invoke the returned function
+      handleClick();
 
       expect(mockSetIsClicked).toHaveBeenCalledWith(true);
     });
+  });
+
+  // Test the component with mocked createHandleClick
+  it('should use createHandleClick correctly in the component', () => {
+    // Instead of mocking, we'll verify the behavior directly
+    const mockOnClickHandler = jest.fn();
+    const { getByTestId } = render(
+      <ClickableButton onClickHandler={mockOnClickHandler} />
+    );
+    const button = getByTestId('clickable-button');
+
+    // Initial state - button should show initial text
+    expect(button).toHaveTextContent('Click Me');
+
+    // Click the button
+    fireEvent.click(button);
+
+    // Verify the expected behavior:
+    // 1. Text should change to clicked state
+    expect(button).toHaveTextContent('Clicked');
+
+    // 2. onClickHandler should be called
+    expect(mockOnClickHandler).toHaveBeenCalledTimes(1);
+
+    // 3. Clicking again shouldn't change anything
+    fireEvent.click(button);
+    expect(button).toHaveTextContent('Clicked');
+    expect(mockOnClickHandler).toHaveBeenCalledTimes(2);
+  });
+
+  // Test the conditional rendering more thoroughly
+  it('should render different text based on isClicked state', () => {
+    const { getByTestId } = render(
+      <ClickableButton initialText="Initial" clickedText="Clicked" />
+    );
+    const button = getByTestId('clickable-button');
+
+    // Initial state
+    expect(button).toHaveTextContent('Initial');
+
+    // After click
+    fireEvent.click(button);
+    expect(button).toHaveTextContent('Clicked');
+  });
+
+  // Test with multiple rerenders to ensure state changes are tracked
+  it('should maintain state across rerenders', () => {
+    const { getByTestId, rerender } = render(<ClickableButton />);
+    const button = getByTestId('clickable-button');
+
+    // Initial state
+    expect(button).toHaveTextContent('Click Me');
+
+    // Click to change state
+    fireEvent.click(button);
+    expect(button).toHaveTextContent('Clicked');
+
+    // Rerender with different props
+    rerender(
+      <ClickableButton initialText="New Initial" clickedText="New Clicked" />
+    );
+
+    // Should still show clicked state
+    expect(button).toHaveTextContent('New Clicked');
   });
 });

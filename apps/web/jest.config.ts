@@ -18,17 +18,19 @@ export default {
     '!<rootDir>/src/**/*.d.ts',
     '!<rootDir>/src/**/*.spec.{js,jsx,ts,tsx}',
     '!<rootDir>/src/**/*.test.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/*.snapshot.spec.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/__snapshots__/**',
     '!<rootDir>/src/**/*.config.{js,jsx,ts,tsx}',
-    '!<rootDir>/src/**/nx-welcome.tsx', // Generated demo component
-    '!<rootDir>/src/**/*.stories.{js,jsx,ts,tsx}', // Storybook files
-    '!<rootDir>/src/**/*.styles.{js,jsx,ts,tsx}', // Style files
-    '!<rootDir>/src/**/*.constants.{js,jsx,ts,tsx}', // Constant definitions
-    '!<rootDir>/src/**/*.types.{js,jsx,ts,tsx}', // Type definitions
-    '!<rootDir>/src/**/*.mock.{js,jsx,ts,tsx}', // Mock files
-    '!<rootDir>/src/**/*.generated.{js,jsx,ts,tsx}', // Generated files
-    '!<rootDir>/src/**/*.module.css', // CSS modules
-    '!<rootDir>/src/**/assets/**', // Asset files
-    '!<rootDir>/src/**/*.json', // JSON files
-    '!<rootDir>/src/**/*.md', // Markdown files
+    '!<rootDir>/src/**/nx-welcome.tsx',
+    '!<rootDir>/src/**/*.stories.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/*.styles.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/*.constants.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/*.types.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/*.mock.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/*.generated.{js,jsx,ts,tsx}',
+    '!<rootDir>/src/**/*.module.css',
+    '!<rootDir>/src/**/assets/**',
+    '!<rootDir>/src/**/*.json',
+    '!<rootDir>/src/**/*.md',
   ],
 };
