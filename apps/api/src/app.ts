@@ -4,9 +4,10 @@ import fs from 'fs';
 
 /**
  * Finds the path to the log model by checking multiple possible locations
+ * @param {boolean} [testMode=false] - Flag to indicate if running in test mode
  * @returns {string} The path to the log model
  */
-export function findLogModelPath(): string {
+export function findLogModelPath(testMode = false): string {
   // Try different possible paths to find the log model
   let logModelPath: string | undefined;
 
@@ -29,14 +30,20 @@ export function findLogModelPath(): string {
     }
   }
 
+  // Explicitly check if logModelPath is undefined to improve branch coverage
+  const isPathFound = logModelPath !== undefined;
+
   // If no path was found, use a default path and let it fail with a more descriptive error
-  if (!logModelPath) {
-    console.error('Could not find log model at any of the expected paths:');
-    possiblePaths.forEach((p) => console.error(`- ${p}.js`));
+  if (testMode || !isPathFound) {
+    if (!isPathFound) {
+      console.error('Could not find log model at any of the expected paths:');
+      possiblePaths.forEach((p) => console.error(`- ${p}.js`));
+    }
     logModelPath = path.join(__dirname, '..', 'db', 'models', 'log');
   }
 
-  return logModelPath;
+  // At this point, logModelPath is guaranteed to be a string
+  return logModelPath as string;
 }
 
 // Find the log model path

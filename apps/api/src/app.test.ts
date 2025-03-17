@@ -79,7 +79,7 @@ describe('app.ts', () => {
       expect(mockConsoleError).not.toHaveBeenCalled();
     });
 
-    it('should handle when no path is found and execute the if (!logModelPath) branch', () => {
+    it('should handle when no path is found and execute the if (!isPathFound) branch', () => {
       // Mock fs.accessSync to fail for all paths
       (fs.accessSync as jest.Mock).mockImplementation(() => {
         throw new Error('File not found');
@@ -100,6 +100,90 @@ describe('app.ts', () => {
       });
 
       const result = findLogModelPath();
+
+      // Verify that accessSync was called for all paths
+      expect(fs.accessSync).toHaveBeenCalledTimes(3);
+
+      // Verify that console.error was called with the expected messages
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        'Could not find log model at any of the expected paths:'
+      );
+
+      // Verify the forEach was called by checking if console.error was called multiple times
+      expect(mockConsoleError).toHaveBeenCalledTimes(4); // Once for the main message and once for each path
+
+      // Verify the result is the default path
+      expect(result).toBe('__dirname/../db/models/log');
+
+      // Verify that path.join was called for the default path
+      expect(path.join).toHaveBeenCalledWith(
+        '__dirname',
+        '..',
+        'db',
+        'models',
+        'log'
+      );
+    });
+
+    it('should use the default path when testMode is true and isPathFound is true', () => {
+      // Mock fs.accessSync to succeed for the first path
+      (fs.accessSync as jest.Mock).mockImplementation(() => {
+        return undefined;
+      });
+
+      // Mock path.join for the default path
+      (path.join as jest.Mock).mockImplementation((...args) => {
+        // Return a specific value for the default path to verify it's used
+        if (
+          args.includes('..') &&
+          args.includes('db') &&
+          args.includes('models') &&
+          args.includes('log')
+        ) {
+          return '__dirname/../db/models/log';
+        }
+        return args.join('/');
+      });
+
+      const result = findLogModelPath(true);
+
+      // Verify that path.join was called for the default path
+      expect(path.join).toHaveBeenCalledWith(
+        '__dirname',
+        '..',
+        'db',
+        'models',
+        'log'
+      );
+
+      // Verify the result is the default path
+      expect(result).toBe('__dirname/../db/models/log');
+
+      // Verify that console.error was not called (since isPathFound is true)
+      expect(mockConsoleError).not.toHaveBeenCalled();
+    });
+
+    it('should use the default path when testMode is true and isPathFound is false', () => {
+      // Mock fs.accessSync to fail for all paths
+      (fs.accessSync as jest.Mock).mockImplementation(() => {
+        throw new Error('File not found');
+      });
+
+      // Mock path.join for the default path
+      (path.join as jest.Mock).mockImplementation((...args) => {
+        // Return a specific value for the default path to verify it's used
+        if (
+          args.includes('..') &&
+          args.includes('db') &&
+          args.includes('models') &&
+          args.includes('log')
+        ) {
+          return '__dirname/../db/models/log';
+        }
+        return args.join('/');
+      });
+
+      const result = findLogModelPath(true);
 
       // Verify that accessSync was called for all paths
       expect(fs.accessSync).toHaveBeenCalledTimes(3);
