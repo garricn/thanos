@@ -73,13 +73,23 @@ The project uses Nx, which has a caching mechanism to improve performance. While
 If you notice that your coverage reports don't reflect your recent code changes:
 
 1. Use the `coverage:fresh` or `coverage:fresh:open` commands to clear all caches and generate fresh reports
-2. For testing a specific component, use `npm run test:component:fresh --component=YourComponentName`
+2. For testing a specific component, use `npm run test:component:fresh --component=YourComponentName` or `npm run test:component:fresh:open --component=YourComponentName`
 3. These commands perform the following cache-clearing operations:
    - Remove the coverage directory
    - Clear the Node.js module cache
    - Remove the Nx cache directory
    - Reset the Nx cache
    - Run tests with the --skip-nx-cache flag
+
+#### Important Note on Coverage Differences
+
+You may notice different coverage results when running targeted component tests versus full coverage reports:
+
+- **Targeted component tests** (using `test:component:fresh` or `test:component:fresh:open`) only run the specific test file for that component, which often shows higher coverage (up to 100%) for the component being tested.
+
+- **Full coverage reports** (using `coverage:fresh` or `coverage:fresh:open`) run all tests and may show lower coverage for individual components due to how tests interact with each other or how components are used across the application.
+
+For the most accurate assessment of a specific component's test coverage during development, use the targeted component test commands. For overall project coverage assessment, use the full coverage report commands.
 
 This ensures you always get accurate coverage reports, especially during active development.
 

@@ -18,23 +18,24 @@ These commands are used for day-to-day development tasks.
 
 Commands for running tests and generating coverage reports.
 
-| Command                                            | Description                                              |
-| -------------------------------------------------- | -------------------------------------------------------- |
-| `nx test web`                                      | Run frontend unit tests                                  |
-| `nx test api`                                      | Run backend unit tests                                   |
-| `nx test web --test-file=Button.snapshot.test.tsx` | Run specific snapshot tests                              |
-| `nx e2e web-e2e`                                   | Run UI tests                                             |
-| `nx e2e web-e2e --headed`                          | Run UI tests in watch mode                               |
-| `nx run web-e2e:run-headed`                        | Run UI tests with Cypress UI visible                     |
-| `npm run test:all`                                 | Run all unit and e2e tests for the project               |
-| `npm run test:unit`                                | Run only unit tests (no e2e tests)                       |
-| `npm run test:snapshot`                            | Run only snapshot tests                                  |
-| `npm run coverage`                                 | Generate coverage reports for unit and snapshot tests    |
-| `npm run coverage:report`                          | Generate detailed coverage reports with multiple formats |
-| `npm run coverage:open`                            | Generate coverage reports and open them in your browser  |
-| `npm run coverage:fresh`                           | Generate fresh coverage reports by clearing all caches   |
-| `npm run coverage:fresh:open`                      | Generate fresh coverage reports and open in browser      |
-| `npm run test:component:fresh --component=MyComp`  | Run tests for a specific component with fresh caches     |
+| Command                                                | Description                                              |
+| ------------------------------------------------------ | -------------------------------------------------------- |
+| `nx test web`                                          | Run frontend unit tests                                  |
+| `nx test api`                                          | Run backend unit tests                                   |
+| `nx test web --test-file=Button.snapshot.test.tsx`     | Run specific snapshot tests                              |
+| `nx e2e web-e2e`                                       | Run UI tests                                             |
+| `nx e2e web-e2e --headed`                              | Run UI tests in watch mode                               |
+| `nx run web-e2e:run-headed`                            | Run UI tests with Cypress UI visible                     |
+| `npm run test:all`                                     | Run all unit and e2e tests for the project               |
+| `npm run test:unit`                                    | Run only unit tests (no e2e tests)                       |
+| `npm run test:snapshot`                                | Run only snapshot tests                                  |
+| `npm run coverage`                                     | Generate coverage reports for unit and snapshot tests    |
+| `npm run coverage:report`                              | Generate detailed coverage reports with multiple formats |
+| `npm run coverage:open`                                | Generate coverage reports and open them in your browser  |
+| `npm run coverage:fresh`                               | Generate fresh coverage reports by clearing all caches   |
+| `npm run coverage:fresh:open`                          | Generate fresh coverage reports and open in browser      |
+| `npm run test:component:fresh --component=MyComp`      | Run tests for a specific component with fresh caches     |
+| `npm run test:component:fresh:open --component=MyComp` | Run component tests with fresh caches and open report    |
 
 ## Code Quality Commands
 
