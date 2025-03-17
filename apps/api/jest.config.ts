@@ -27,5 +27,6 @@ export default {
     '!<rootDir>/src/**/*.md',
     '!<rootDir>/src/**/migrations/**',
     '!<rootDir>/src/**/seeds/**',
+    '!<rootDir>/src/main.ts',
   ],
 };
