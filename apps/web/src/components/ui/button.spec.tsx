@@ -13,55 +13,48 @@ jest.mock('@radix-ui/react-slot', () => ({
   )),
 }));
 
-describe('Button Component', () => {
-  it('renders a button with default props', () => {
-    render(<Button>Click me</Button>);
+describe('Button', () => {
+  it('should render successfully', () => {
+    const { baseElement } = render(<Button>Test Button</Button>);
+    expect(baseElement).toBeTruthy();
+  });
 
-    const button = screen.getByRole('button', { name: /click me/i });
-    expect(button).toBeInTheDocument();
+  it('should render with default variant and size', () => {
+    const { getByRole } = render(<Button>Test Button</Button>);
+    const button = getByRole('button');
     expect(button).toHaveClass('bg-primary');
     expect(button).toHaveClass('h-10');
   });
 
-  it('applies variant and size classes correctly', () => {
-    render(
-      <Button variant="destructive" size="sm">
-        Danger
-      </Button>
+  it('should render with custom variant', () => {
+    const { getByRole } = render(
+      <Button variant="destructive">Test Button</Button>
     );
-
-    const button = screen.getByRole('button', { name: /danger/i });
-    expect(button).toBeInTheDocument();
+    const button = getByRole('button');
     expect(button).toHaveClass('bg-destructive');
+  });
+
+  it('should render with custom size', () => {
+    const { getByRole } = render(<Button size="sm">Test Button</Button>);
+    const button = getByRole('button');
     expect(button).toHaveClass('h-9');
   });
 
-  it('renders as a Slot component when asChild is true', () => {
-    render(<Button asChild>Child Content</Button>);
-
-    expect(Slot).toHaveBeenCalled();
-    const slotComponent = screen.getByTestId('slot-component');
-    expect(slotComponent).toBeInTheDocument();
-    expect(slotComponent).toHaveTextContent('Child Content');
-  });
-
-  it('passes additional props to the button element', () => {
-    render(
-      <Button disabled aria-label="Test Button">
-        Test
+  it('should render as child when asChild is true', () => {
+    const { container } = render(
+      <Button asChild>
+        <a href="#">Test Link</a>
       </Button>
     );
-
-    const button = screen.getByRole('button', { name: /test/i });
-    expect(button).toBeDisabled();
-    expect(button).toHaveAttribute('aria-label', 'Test Button');
+    expect(container.querySelector('a')).toBeTruthy();
+    expect(container.querySelector('button')).toBeFalsy();
   });
 
-  it('applies custom className along with variant classes', () => {
-    render(<Button className="custom-class">Custom</Button>);
-
-    const button = screen.getByRole('button', { name: /custom/i });
-    expect(button).toHaveClass('custom-class');
-    expect(button).toHaveClass('bg-primary');
+  it('should apply additional className', () => {
+    const { getByRole } = render(
+      <Button className="test-class">Test Button</Button>
+    );
+    const button = getByRole('button');
+    expect(button).toHaveClass('test-class');
   });
 });

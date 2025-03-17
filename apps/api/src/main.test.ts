@@ -35,6 +35,7 @@ jest.mock(
   '../db/models/log',
   () => ({
     closeDb: mockCloseDb,
+    insertLog: jest.fn().mockResolvedValue(undefined),
   }),
   { virtual: true }
 );
@@ -49,7 +50,10 @@ jest.mock('module', () => {
     // Mock _load to return our mock for the log model
     _load: function (request: string) {
       if (request.includes('log')) {
-        return { closeDb: mockCloseDb };
+        return {
+          closeDb: mockCloseDb,
+          insertLog: jest.fn().mockResolvedValue(undefined),
+        };
       }
       return (originalModule as any)._load(request);
     },
@@ -218,5 +222,47 @@ describe('main.ts', () => {
 
     // Verify process.exit was called with 0
     expect(processExitSpy).toHaveBeenCalledWith(0);
+  });
+
+  test('should handle invalid PORT environment variable', () => {
+    // Mock fs.accessSync to succeed for the first path
+    (fs.accessSync as jest.Mock).mockImplementation(() => undefined);
+
+    // Set invalid PORT environment variable
+    process.env.PORT = 'not-a-number';
+
+    // Import main.ts (this will execute the file)
+    jest.resetModules();
+    require('./main');
+
+    // Verify app.listen was called with default port
+    const { setupApp } = require('./app');
+    const app = setupApp();
+    expect(app.listen).toHaveBeenCalledWith(
+      3000,
+      expect.any(String),
+      expect.any(Function)
+    );
+  });
+
+  test('should handle empty HOST environment variable', () => {
+    // Mock fs.accessSync to succeed for the first path
+    (fs.accessSync as jest.Mock).mockImplementation(() => undefined);
+
+    // Set empty HOST environment variable
+    process.env.HOST = '';
+
+    // Import main.ts (this will execute the file)
+    jest.resetModules();
+    require('./main');
+
+    // Verify app.listen was called with default host
+    const { setupApp } = require('./app');
+    const app = setupApp();
+    expect(app.listen).toHaveBeenCalledWith(
+      expect.any(Number),
+      'localhost',
+      expect.any(Function)
+    );
   });
 });
