@@ -38,4 +38,10 @@ export default {
       statements: 70,
     },
   },
+  testResultsProcessor: 'jest-sonar-reporter',
+  sonar: {
+    reportPath: 'coverage',
+    reportFile: 'sonar-report.xml',
+    indent: 2,
+  },
 };
