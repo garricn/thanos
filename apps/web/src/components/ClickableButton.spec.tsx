@@ -171,6 +171,29 @@ describe('ClickableButton', () => {
 
       expect(mockSetIsClicked).toHaveBeenCalledWith(true);
     });
+
+    // Add a more explicit test for the inner function
+    it('should return a function that updates state and calls handler', () => {
+      // Setup
+      const mockSetIsClicked = jest.fn();
+      const mockOnClickHandler = jest.fn();
+
+      // Get the inner function
+      const innerFunction = createHandleClick(
+        mockSetIsClicked,
+        mockOnClickHandler
+      );
+
+      // Verify it's a function
+      expect(typeof innerFunction).toBe('function');
+
+      // Call the inner function directly
+      innerFunction();
+
+      // Verify both functions were called
+      expect(mockSetIsClicked).toHaveBeenCalledWith(true);
+      expect(mockOnClickHandler).toHaveBeenCalledTimes(1);
+    });
   });
 
   // Test the component with mocked createHandleClick
