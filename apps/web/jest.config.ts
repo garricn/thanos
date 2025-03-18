@@ -12,7 +12,8 @@ export default {
     '<rootDir>/src/**/*(*.)@(spec|test).[jt]s?(x)',
     '<rootDir>/tests/**/*(*.)@(spec|test).[jt]s?(x)',
   ],
-  setupFilesAfterEnv: ['<rootDir>/tests/test-setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/tests/test-setup.ts', '../../jest.setup.js'],
+  testResultsProcessor: 'jest-sonar-reporter',
   collectCoverageFrom: [
     '<rootDir>/src/**/*.{js,jsx,ts,tsx}',
     '!<rootDir>/src/**/*.d.ts',

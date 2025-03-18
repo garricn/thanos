@@ -38,10 +38,13 @@ export default {
       statements: 70,
     },
   },
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testResultsProcessor: 'jest-sonar-reporter',
-  sonar: {
-    reportPath: 'coverage',
-    reportFile: 'sonar-report.xml',
-    indent: 2,
+  globals: {
+    'jest-sonar-reporter': {
+      outputDirectory: './coverage',
+      outputName: 'sonar-report.xml',
+      relativePaths: true,
+    },
   },
 };
