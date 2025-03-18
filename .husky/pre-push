@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-. "$(dirname "$0")/_/husky.sh"
 
 echo "Running pre-push checks..."
 
@@ -8,4 +7,4 @@ export CI=true
 export FORCE_COLOR=1
 
 # Run our local CI script
-./scripts/local-ci.sh 
+./scripts/local-ci.sh
