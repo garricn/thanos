@@ -3,6 +3,6 @@ module.exports = {
   reportFile: 'sonar-report.xml',
   indent: 2,
   sonarqubeVersion: '9.9',
-  relativePaths: false,
+  relativePaths: true,
   append: false,
 };

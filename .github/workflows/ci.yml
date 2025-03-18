@@ -362,6 +362,10 @@ jobs:
         with:
           name: coverage-reports
           path: coverage/
+      - name: Generate SonarQube Test Report
+        run: npm run test:sonar
+      - name: List reports for debugging
+        run: find coverage -type f | sort
       - name: SonarCloud Scan
         if: ${{ github.event_name != 'pull_request' }}
         uses: SonarSource/sonarqube-scan-action@v5.0.0
