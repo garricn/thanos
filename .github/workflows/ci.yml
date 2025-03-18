@@ -363,9 +363,32 @@ jobs:
           name: coverage-reports
           path: coverage/
       - name: Generate SonarQube Test Report
-        run: npm run test:sonar
+        run: |
+          # Run the test:sonar script to generate both LCOV and XML reports
+          npm run test:sonar
+
+          # Ensure sonar-report.xml exists in the correct location
+          if [ -f "coverage/sonar-report.xml" ]; then
+            echo "Test execution report exists at coverage/sonar-report.xml"
+            ls -la coverage/sonar-report.xml
+          else
+            echo "Test execution report is missing, running cleanup script directly"
+            node scripts/cleanup-test-reports.js
+          fi
       - name: List reports for debugging
-        run: find coverage -type f | sort
+        run: |
+          echo "Listing all test report files in the project:"
+          find . -name "test-report.xml" -o -name "sonar-report.xml" | sort
+
+          echo "Listing all files in coverage directory:"
+          find coverage -type f | sort
+
+          echo "Content of sonar-report.xml:"
+          if [ -f "coverage/sonar-report.xml" ]; then
+            cat coverage/sonar-report.xml
+          else
+            echo "sonar-report.xml not found!"
+          fi
       - name: SonarCloud Scan
         if: ${{ github.event_name != 'pull_request' }}
         uses: SonarSource/sonarqube-scan-action@v5.0.0
@@ -376,6 +399,8 @@ jobs:
           args: >-
             -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
             -Dsonar.organization=${{ github.repository_owner }} -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.testExecutionReportPaths=coverage/sonar-report.xml
       - name: SonarCloud Scan with PR Decoration
         if: ${{ github.event_name == 'pull_request' }}
         uses: SonarSource/sonarqube-scan-action@v5.0.0
@@ -386,6 +411,8 @@ jobs:
           args: >-
             -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
             -Dsonar.organization=${{ github.repository_owner }} -Dsonar.host.url=https://sonarcloud.io
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+            -Dsonar.testExecutionReportPaths=coverage/sonar-report.xml
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} -Dsonar.pullrequest.branch=${{
             github.head_ref }} -Dsonar.pullrequest.base=${{ github.base_ref }} -Dsonar.pullrequest.github.repository=${{
             github.repository }}
