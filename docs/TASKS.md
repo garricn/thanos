@@ -51,6 +51,8 @@ Current status:
 - [DevOps](#devops)
 - [Features](#features)
 - [Dependencies](#dependencies)
+- [Project Structure Improvements](#project-structure-improvements)
+  - [Configuration Organization](#configuration-organization)
 
 ## SonarCloud Tasks
 
@@ -442,6 +444,34 @@ Current status:
 - [ ] Document version constraints and compatibility requirements
 - [ ] Set up automated dependency updates with Dependabot
 
+## Project Structure Improvements
+
+### Configuration Organization
+
+- [ ] Create a structured `configs` directory with subdirectories for different config types:
+  - [ ] `configs/lint` - ESLint, Prettier, and other linting configurations
+  - [ ] `configs/test` - Jest and testing-related configurations
+  - [ ] `configs/build` - TypeScript, Vite, and build-related configurations
+  - [ ] `configs/docker` - Docker and container-related configurations
+  - [ ] `configs/ci` - CI/CD related configurations
+- [ ] Move non-essential configuration files to appropriate subdirectories:
+  - [ ] Move linting configs (eslint.config.mjs, eslint.base.config.mjs, .prettierrc, etc.) to `configs/lint`
+  - [ ] Move testing configs (jest.config.ts, jest.preset.js, jestSonar.config.js) to `configs/test`
+  - [ ] Move build configs (vite.config.ts, tsconfig.json, etc.) to `configs/build`
+  - [ ] Move Docker files (docker-compose.yml, Dockerfile.dev) to `configs/docker`
+  - [ ] Move CI configs (docker-compose-ci.yml, Dockerfile.ci) to `configs/ci`
+- [ ] Update file references in project files:
+  - [ ] Update package.json scripts to reference the new config file locations
+  - [ ] Update import statements in configuration files to use the new paths
+  - [ ] Create symbolic links for tools that require configs to be in the root directory
+- [ ] Keep essential configs at the root:
+  - [ ] Package.json and package-lock.json
+  - [ ] .gitignore, .npmrc, .nvmrc, and other essential dotfiles
+  - [ ] LICENSE and README.md
+- [ ] Document the configuration structure in the project documentation
+- [ ] Create an npm script to validate configuration references after reorganization
+- [ ] All generated dirs and files should live in generated/
+
 ## Other
 
 - [ ] Logging
@@ -449,6 +479,3 @@ Current status:
 - [ ] Experimentation and feature flagging
 - [ ] Dependency Injection
 - [ ] Shut servers down gracefully to avoid errors when running test:e2e
-- [ ] Reorg project
-  - [ ] All config files should live in config/configtypesubdir
-  - [ ] All generated dirs and files should live in generated/
