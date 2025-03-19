@@ -6,4 +6,4 @@
     "e2e": "cypress run",
     "e2e:headed": "cypress run --headed"
   }
-} 
+}

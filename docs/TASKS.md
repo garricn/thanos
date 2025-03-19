@@ -460,6 +460,20 @@ Current status:
   - [ ] Move build configs (vite.config.ts, tsconfig.json, etc.) to `configs/build`
   - [ ] Move Docker files (docker-compose.yml, Dockerfile.dev) to `configs/docker`
   - [ ] Move CI configs (docker-compose-ci.yml, Dockerfile.ci) to `configs/ci`
+- [ ] Clean up redundant YAML linting configurations:
+  - [ ] Switch to yamllint (native tool) for better performance and features:
+    - [ ] Remove .yaml-lint.json and yaml-lint npm package
+    - [ ] Keep .yamllint configuration
+    - [ ] Update package.json scripts to use yamllint
+    - [ ] Add yamllint installation instructions to README
+    - [ ] Update CI workflow to use yamllint
+  - [ ] Ensure all YAML files are properly linted with the new configuration
+- [ ] Implement dedicated JSON formatter:
+  - [ ] Research and select appropriate JSON formatting tool (e.g., json-stringify-pretty-compact)
+  - [ ] Add JSON formatting script to package.json
+  - [ ] Update .prettierignore to exclude JSON files
+  - [ ] Test formatting on various JSON files (package.json, tsconfig.json, etc.)
+  - [ ] Document JSON formatting approach in project docs
 - [ ] Update file references in project files:
   - [ ] Update package.json scripts to reference the new config file locations
   - [ ] Update import statements in configuration files to use the new paths

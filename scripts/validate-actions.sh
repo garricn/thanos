@@ -23,7 +23,7 @@ fi
 
 # Run YAML linting
 echo -e "${YELLOW}Running YAML linting on workflow files...${NC}"
-npx yaml-lint -c .yaml-lint.json .github/workflows/*.yml || {
+npx yaml-lint -c configs/lint/.yamllint .github/workflows/*.yml || {
   echo -e "${RED}YAML linting failed!${NC}"
   exit 1
 }

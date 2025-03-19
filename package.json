@@ -30,12 +30,13 @@
     "lint:md": "markdownlint-cli2 \"**/*.md\"",
     "lint:md:fix": "markdownlint-cli2 --fix \"**/*.md\"",
     "lint:sh": "shellcheck scripts/*.sh",
-    "lint:yaml": "npx yaml-lint -c configs/lint/.yaml-lint.json .github/**/*.yml",
+    "lint:yaml": "yamllint -c configs/lint/.yamllint .github/**/*.yml",
     "docker:ci": "./scripts/docker-ci.sh",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json}\" && npm run format:md && npm run format:sh && npm run format:yaml",
-    "format:md": "prettier --write \"**/*.md\"",
+    "format": "prettier --config configs/lint/.prettierrc --write \"**/*.{js,jsx,ts,tsx}\" && npm run format:md && npm run format:sh && npm run format:yaml",
+    "format:md": "prettier --config configs/lint/.prettierrc --write \"**/*.md\"",
     "format:sh": "shfmt -i 2 -ci -w scripts/*.sh",
-    "format:yaml": "prettier --write \".github/**/*.{yml,yaml}\"",
+    "format:yaml": "prettier --config configs/lint/.prettierrc --write \".github/**/*.{yml,yaml}\"",
+    "format:json": "json-stringify-pretty-compact --write \"**/*.json\"",
     "clean": "rm -rf dist apps/*/dist tmp node_modules/.cache",
     "coverage": "rm -rf coverage && npm run test:coverage --workspace=apps/api && npm run test:coverage --workspace=apps/web && node scripts/combine-coverage.js",
     "coverage:report": "rm -rf coverage && npm run test:coverage --workspace=apps/api -- --coverageReporters=\"text-summary\" --coverageReporters=\"html\" --coverageReporters=\"lcov\" && npm run test:coverage --workspace=apps/web -- --coverageReporters=\"text-summary\" --coverageReporters=\"html\" --coverageReporters=\"lcov\" && node scripts/combine-coverage.js",
@@ -142,7 +143,6 @@
     "tslib": "^2.3.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.19.0",
-    "wait-on": "^8.0.3",
-    "yaml-lint": "^1.7.0"
+    "wait-on": "^8.0.3"
   }
 }
