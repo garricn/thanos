@@ -1,0 +1,9 @@
+{
+  "name": "@thanos/web-e2e",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "e2e": "cypress run",
+    "e2e:headed": "cypress run --headed"
+  }
+} 

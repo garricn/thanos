@@ -20,7 +20,7 @@ This script is automatically run as part of the `test:sonar` npm script and in t
 This script is a fallback for generating SonarQube-compatible test execution reports when the normal test process doesn't generate one. It follows a simplified approach:
 
 1. First checks if `coverage/sonar-report.xml` already exists
-2. If not, looks for `junit.xml` files in the NX coverage structure
+2. If not, looks for `junit.xml` files in the project coverage structure
 3. If still no results found, generates mock test data
 4. Creates or updates the `coverage/sonar-report.xml` file
 
@@ -31,7 +31,7 @@ The script has been streamlined to focus only on the specific paths where test r
 These scripts are automatically called by various npm scripts:
 
 ```json
-"test:sonar": "rm -rf coverage && rm -rf node_modules/.cache && rm -rf .nx/cache && nx reset && JEST_SONAR_REPORTER_OUTPUT_DIR='./coverage' JEST_SONAR_REPORTER_OUTPUT_NAME='sonar-report.xml' nx run-many -t test --projects=web,api --coverage --testResultsProcessor=jest-sonar-reporter && find coverage/apps -name \"lcov.info\" -exec cat {} \\; > coverage/lcov.info && node scripts/cleanup-test-reports.js"
+"test:sonar": "rm -rf coverage && rm -rf node_modules/.cache && JEST_SONAR_REPORTER_OUTPUT_DIR='./coverage' JEST_SONAR_REPORTER_OUTPUT_NAME='sonar-report.xml' npm run test --workspace=apps/web -- --coverage --testResultsProcessor=jest-sonar-reporter && npm run test --workspace=apps/api -- --coverage --testResultsProcessor=jest-sonar-reporter && find coverage/apps -name \"lcov.info\" -exec cat {} \\; > coverage/lcov.info && node scripts/cleanup-test-reports.js"
 ```
 
 You can also run them directly:

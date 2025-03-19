@@ -22,15 +22,10 @@ async function replaceAbsolutePaths(targetDir, projectName) {
     // Vite config files
     'vite.config.ts',
     'apps/web/vite.config.ts',
-    // Nx config files
-    'nx.json',
     // Cypress config files
     'apps/web/e2e/cypress.config.ts',
     // Any JSON files that might have paths
     'package.json',
-    'project.json',
-    'apps/web/project.json',
-    'apps/api/project.json',
     // TypeScript config files
     'tsconfig.json',
     'apps/web/tsconfig.json',
@@ -67,13 +62,7 @@ function updateGitignore(targetDir) {
   const gitignorePath = path.join(targetDir, '.gitignore');
 
   if (fs.existsSync(gitignorePath)) {
-    let content = fs.readFileSync(gitignorePath, 'utf8');
-
-    // Make sure .nx directory is properly ignored
-    if (!content.includes('.nx/')) {
-      content += '\n# Nx cache\n.nx/\n';
-    }
-
+    const content = fs.readFileSync(gitignorePath, 'utf8');
     fs.writeFileSync(gitignorePath, content);
   }
 }
@@ -83,21 +72,8 @@ async function runSetupCommands(targetDir) {
   console.log('Running setup commands...');
 
   try {
-    // Create a clean .nx directory
-    const nxDir = path.join(targetDir, '.nx');
-    if (fs.existsSync(nxDir)) {
-      fs.removeSync(nxDir);
-    }
-
-    // Untrack .nx directory from git
-    execSync('git rm -r --cached .nx 2>/dev/null || true', { cwd: targetDir });
-
-    // Add a .gitkeep file to ensure the directory exists
-    fs.mkdirSync(path.join(targetDir, '.nx'), { recursive: true });
-    fs.writeFileSync(path.join(targetDir, '.nx', '.gitkeep'), '');
-
-    // Commit the changes
-    execSync('git add .gitignore .nx/.gitkeep', { cwd: targetDir });
+    // Commit the changes to ensure clean git state
+    execSync('git add .gitignore', { cwd: targetDir });
     execSync('git commit -m "Ensure clean git state with proper gitignore"', {
       cwd: targetDir,
     });
@@ -217,10 +193,11 @@ async function main() {
     delete packageJson.scripts.generate;
   }
 
-  // Add a start:no-daemon script
-  if (packageJson.scripts) {
-    packageJson.scripts['start:no-daemon'] = 'NX_DAEMON=false npm run start';
-  }
+  // Add npm scripts
+  packageJson.scripts['start'] =
+    'concurrently --kill-others-on-fail "npm run start:api" "npm run start:web"';
+  packageJson.scripts['start:api'] = 'npm run dev --workspace=apps/api';
+  packageJson.scripts['start:web'] = 'npm run dev --workspace=apps/web';
 
   // Write updated package.json
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
@@ -307,9 +284,6 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
-
-# Nx
-.nx/
 `
     );
   }
@@ -340,7 +314,6 @@ Thumbs.db
       `# Add files here to ignore them from prettier formatting
 /dist
 /coverage
-/.nx
 `
     );
   }
@@ -384,39 +357,37 @@ Thumbs.db
 
   // Success message
   console.log(`
-✅ Project ${projectName} generated successfully!
+Success! Your project is ready.
 
-Available commands:
-  npm run start           # Run both API and web servers concurrently
-  npm run start:no-daemon # Run without the NX daemon (use if you encounter daemon issues)
-  nx serve web            # Run the website locally
-  nx serve api            # Run the backend API server
-  nx test web             # Run frontend unit tests
-  nx test api             # Run backend unit tests
-  nx e2e web-e2e          # Run UI tests
-  npm run lint            # Run linting for all projects
-  npm run format          # Run formatting for all files
-  npm run test:all        # Run all unit and e2e tests for the project
+To start developing:
+  # Navigate to the project directory
+  cd ${path.basename(targetDir)}
+  
+  # Install dependencies
+  npm install
+  
+  # Start the development servers
+  npm start
+  
+  # Run tests
+  npm test
 
-Troubleshooting:
-  If you encounter NX daemon issues, try these options:
-  
-  Option 1: Run without the daemon
-  # Use the no-daemon script
-  npm run start:no-daemon
-  
-  Option 2: Reset the daemon
-  # Kill any running NX processes
-  pkill -f "nx"
-  # Remove socket files
-  find /var/folders -name "d.sock" -delete
-  # Reset NX
-  npx nx reset
+Other useful commands:
+  npm run build             # Build the project for production
+  npm run test:all          # Run all tests (unit + e2e)
+  npm run lint              # Check code for linting issues
+  npm run format            # Format code with prettier
+
+If you encounter any issues:
+  # Clean the project (removes build artifacts and caches)
+  npm run clean:deep
+  # Install dependencies again
+  npm install
 
 Notes:
 - This project uses the --legacy-peer-deps flag to resolve dependency conflicts
-  between Cypress 14.x and @nx/cypress. An .npmrc file has been created with this setting.
-- Your git repository should be in a clean state. The .nx directory is gitignored.
+  between packages. An .npmrc file has been created with this setting.
+- Your git repository should be in a clean state.
 `);
 }
 

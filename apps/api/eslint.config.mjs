@@ -10,7 +10,16 @@ export default [
       '**/tests/**/*.jsx',
     ],
     rules: {
-      '@nx/enforce-module-boundaries': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+  {
+    files: [
+      '**/*.ts',
+      '**/*.js',
+    ],
+    rules: {
+      'no-console': ['warn', { allow: ['info', 'warn', 'error'] }],
     },
   },
 ];

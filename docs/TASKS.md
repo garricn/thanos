@@ -4,7 +4,7 @@ This document tracks all tasks, improvements, and fixes for the Thanos project.
 
 <!--
 ASSISTANT REMINDER:
-This is a Nx monorepo project with React frontend (apps/web) and Express backend (apps/api).
+This is a monorepo project with React frontend (apps/web) and Express backend (apps/api).
 
 IMPORTANT: DO NOT spend time exploring the project structure when asked about next tasks.
 Instead, use this reminder as your complete context and reference.
@@ -43,6 +43,7 @@ Current status:
   - [Coverage Improvements](#coverage-improvements)
 - [CI/CD Improvements](#cicd-improvements)
 - [Code Quality](#code-quality)
+- [ESLint Refactoring Tasks](#eslint-refactoring-tasks)
 - [Testing Improvements](#testing-improvements)
 - [Security](#security)
 - [Documentation](#documentation)
@@ -167,6 +168,26 @@ Current status:
 - [ ] Refactor the API to use a layered architecture (controllers, services, repositories)
 - [ ] Improve API response format standardization
 - [ ] Implement API documentation with OpenAPI/Swagger
+- [ ] Completely remove NX dependencies from E2E testing setup
+  - [x] Update e2e.sh script to use npm commands instead of nx
+  - [x] Update Cypress configuration in apps/web/e2e to remove nx imports
+  - [x] Create standalone package.json files for E2E test directories
+  - [x] Update CI workflow to use npm run test:e2e instead of nx commands
+  - [x] Update COMMANDS.md to reflect new E2E testing commands
+  - [x] Remove NX dependencies from project.json files in E2E directories
+  - [x] Remove Nx references from README.md and other documentation
+  - [x] Remove Nx references from configuration files (jest.config.ts, postcss.config.js)
+  - [x] Update test reporting scripts to remove Nx references
+
+## ESLint Refactoring Tasks
+
+- [ ] Migrate CommonJS modules to ES Modules for consistent module patterns
+- [ ] Create a Logger Service to replace direct console usage with a dedicated logger service for different environments
+- [ ] Restructure tests to avoid requiring mocked modules
+- [ ] Refactor `build.js` to use ES modules and eliminate `eslint-disable` comments
+- [ ] Refactor `test-utils.ts` to use a more testable structure that doesn't require `eslint-disable` comments
+- [ ] Implement proper logging infrastructure to replace console statements in server code
+- [ ] Review and refactor test files to follow best practices and eliminate the need for `eslint-disable` comments
 
 ## Testing Improvements
 
@@ -420,3 +441,14 @@ Current status:
 - [ ] Create a dependency update strategy
 - [ ] Document version constraints and compatibility requirements
 - [ ] Set up automated dependency updates with Dependabot
+
+## Other
+
+- [ ] Logging
+- [ ] Analytics
+- [ ] Experimentation and feature flagging
+- [ ] Dependency Injection
+- [ ] Shut servers down gracefully to avoid errors when running test:e2e
+- [ ] Reorg project
+  - [ ] All config files should live in config/configtypesubdir
+  - [ ] All generated dirs and files should live in generated/

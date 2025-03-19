@@ -1,9 +1,18 @@
 export default {
   displayName: 'web',
-  preset: '../../jest.preset.js',
+  preset: undefined,
+  testEnvironment: 'jsdom',
   transform: {
-    '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
-    '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/react/babel'] }],
+    '^.+\\.[tj]sx?$': [
+      'babel-jest',
+      {
+        presets: [
+          ['@babel/preset-env', { targets: { node: 'current' } }],
+          ['@babel/preset-react', { runtime: 'automatic' }],
+          '@babel/preset-typescript',
+        ],
+      },
+    ],
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/web',
@@ -14,6 +23,10 @@ export default {
   ],
   setupFilesAfterEnv: ['<rootDir>/tests/test-setup.ts', '../../jest.setup.js'],
   testResultsProcessor: 'jest-sonar-reporter',
+  moduleNameMapper: {
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+  },
+  transformIgnorePatterns: ['/node_modules/(?!.*\\.mjs$)'],
   collectCoverageFrom: [
     '<rootDir>/src/**/*.{js,jsx,ts,tsx}',
     '!<rootDir>/src/**/*.d.ts',
@@ -22,7 +35,6 @@ export default {
     '!<rootDir>/src/**/*.snapshot.spec.{js,jsx,ts,tsx}',
     '!<rootDir>/src/**/__snapshots__/**',
     '!<rootDir>/src/**/*.config.{js,jsx,ts,tsx}',
-    '!<rootDir>/src/**/nx-welcome.tsx',
     '!<rootDir>/src/**/*.stories.{js,jsx,ts,tsx}',
     '!<rootDir>/src/**/*.styles.{js,jsx,ts,tsx}',
     '!<rootDir>/src/**/*.constants.{js,jsx,ts,tsx}',

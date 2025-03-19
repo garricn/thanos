@@ -62,7 +62,7 @@ The project provides several commands for working with code coverage:
 - **coverage**: Generates lcov format reports for integration with other tools, including both unit and snapshot tests
 - **coverage:report**: Generates human-readable reports (text summary and HTML) in addition to lcov, including both unit and snapshot tests
 - **coverage:open**: Convenience command that runs coverage:report and then opens the HTML reports in your browser
-- **coverage:fresh**: Clears all caches (coverage, node_modules/.cache, .nx/cache) and runs tests with --skip-nx-cache to ensure fresh results
+- **coverage:fresh**: Clears all caches (coverage and node_modules/.cache) and runs tests to ensure fresh results
 - **coverage:fresh:open**: Runs coverage:fresh and opens the HTML reports in your browser
 - **test:component:fresh**: Clears all caches and runs tests for a specific component only, useful for targeted testing
 

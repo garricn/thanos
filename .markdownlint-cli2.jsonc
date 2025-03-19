@@ -7,5 +7,5 @@
     "MD040": false,
     "MD041": false
   },
-  "ignores": ["node_modules", "dist", ".nx", "tmp"]
+  "ignores": ["node_modules", "dist", "tmp"]
 } 

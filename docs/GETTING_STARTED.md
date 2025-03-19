@@ -81,8 +81,8 @@ Follow these steps to create a new project using Thanos:
    Alternatively, you can start each server separately:
 
    ```bash
-   nx serve api    # Start the backend API server
-   nx serve web    # Start the frontend development server (in a separate terminal)
+   npm run dev --workspace=apps/api    # Start the backend API server
+   npm run dev --workspace=apps/web    # Start the frontend development server (in a separate terminal)
    ```
 
 2. Open <http://localhost:4200> in your browser to see the frontend

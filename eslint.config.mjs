@@ -1,13 +1,37 @@
+// Root ESLint configuration
 import baseConfig from './eslint.base.config.mjs';
-import nx from '@nx/eslint-plugin';
 
 export default [
   ...baseConfig,
   {
     ignores: [
       '**/dist',
-      '**/vite.config.*.timestamp*',
-      '**/vitest.config.*.timestamp*',
+      '**/node_modules',
+      '**/coverage',
+      '**/*.json',
+      '**/*.md',
+      '**/*.css',
+      '**/jest.config.ts',
+      '**/babel.config.js',
+      '**/tailwind.config.js',
+      '**/postcss.config.js',
+      '**/vite.config.ts',
+      '**/vitest.config.ts',
+      '**/cypress.config.ts',
+      '**/build.js',
+      '**/scripts',
+      '**/public',
+      '**/temp',
+      '**/tmp',
+      '**/.github',
+      '**/e2e/src/*.js',
+      '**/e2e/src/*.jsx',
+      '**/e2e/src/**/*.js',
+      '**/e2e/src/**/*.jsx',
+      '**/tests/*.js',
+      '**/tests/*.jsx',
+      '**/tests/**/*.js',
+      '**/tests/**/*.jsx',
     ],
   },
   {
@@ -24,13 +48,12 @@ export default [
     // Override or add rules here
     rules: {},
   },
-  ...nx.configs['flat/react'],
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
     // Override or add rules here
     rules: {},
   },
-  // Disable module boundaries rule for test files
+  // Special rules for test files
   {
     files: [
       '**/tests/**/*.ts',
@@ -38,8 +61,6 @@ export default [
       '**/tests/**/*.js',
       '**/tests/**/*.jsx',
     ],
-    rules: {
-      '@nx/enforce-module-boundaries': 'off',
-    },
+    rules: {},
   },
 ];

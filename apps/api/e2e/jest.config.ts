@@ -1,6 +1,5 @@
 export default {
   displayName: 'api-e2e',
-  preset: '../../../jest.preset.js',
   globalSetup: '<rootDir>/src/support/global-setup.ts',
   globalTeardown: '<rootDir>/src/support/global-teardown.ts',
   setupFiles: ['<rootDir>/src/support/test-setup.ts'],
@@ -15,4 +14,5 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../coverage/api-e2e',
+  testMatch: ['**/?(*.)+(spec|test).[jt]s?(x)'],
 };
