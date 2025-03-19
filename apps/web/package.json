@@ -8,7 +8,7 @@
     "preview": "vite preview",
     "test": "jest --config jest.config.ts",
     "test:coverage": "jest --config jest.config.ts --coverage",
-    "lint": "eslint .",
+    "lint": "eslint --config configs/lint/eslint.config.mjs .",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
