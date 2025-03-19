@@ -69,9 +69,9 @@ echo -e "\n${YELLOW}🧹 Starting deep clean...${NC}"
 # Step 1: Remove directories and files
 echo -e "\n${YELLOW}Step 1: Removing generated files and directories...${NC}"
 if [ "$DRY_RUN" = true ]; then
-  echo "Would remove: node_modules package-lock.json .nx dist tmp coverage .nyc_output ./*.log logs"
+  echo "Would remove: node_modules package-lock.json dist tmp coverage .nyc_output ./*.log logs"
 else
-  rm -rf node_modules package-lock.json .nx dist tmp coverage .nyc_output ./*.log logs
+  rm -rf node_modules package-lock.json dist tmp coverage .nyc_output ./*.log logs
   echo -e "${GREEN}✓ Removed generated files and directories${NC}"
 fi
 
@@ -106,14 +106,5 @@ else
   echo -e "${GREEN}✓ Installed dependencies${NC}"
 fi
 
-# Step 6: Repair Nx workspace
-echo -e "\n${YELLOW}Step 6: Repairing Nx workspace...${NC}"
-if [ "$DRY_RUN" = true ]; then
-  echo "Would run: npx nx repair"
-else
-  npx nx repair
-  echo -e "${GREEN}✓ Repaired Nx workspace${NC}"
-fi
-
-# Step 7: Completion
+# Step 6: Completion
 echo -e "\n${GREEN}✅ Deep cleaning complete. Environment reset to a clean state.${NC}"

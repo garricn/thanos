@@ -6,52 +6,51 @@ This document lists all the available commands you can use in the Thanos project
 
 These commands are used for day-to-day development tasks.
 
-| Command                   | Description                                   |
-| ------------------------- | --------------------------------------------- |
-| `npm run start`           | Run both API and web servers concurrently     |
-| `npm run start:no-daemon` | Run without the NX daemon (for daemon issues) |
-| `nx serve web`            | Run the website locally                       |
-| `nx serve api`            | Run the backend API server                    |
-| `npm run clean`           | Remove all generated files and caches         |
+| Command             | Description                               |
+| ------------------- | ----------------------------------------- |
+| `npm run start`     | Run both API and web servers concurrently |
+| `npm run start:api` | Run the backend API server                |
+| `npm run start:web` | Run the website locally                   |
+| `npm run clean`     | Remove all generated files and caches     |
 
 ## Testing Commands
 
 Commands for running tests and generating coverage reports.
 
-| Command                                                | Description                                              |
-| ------------------------------------------------------ | -------------------------------------------------------- |
-| `nx test web`                                          | Run frontend unit tests                                  |
-| `nx test api`                                          | Run backend unit tests                                   |
-| `nx test web --test-file=Button.snapshot.test.tsx`     | Run specific snapshot tests                              |
-| `nx e2e web-e2e`                                       | Run UI tests                                             |
-| `nx e2e web-e2e --headed`                              | Run UI tests in watch mode                               |
-| `nx run web-e2e:run-headed`                            | Run UI tests with Cypress UI visible                     |
-| `npm run test:all`                                     | Run all unit and e2e tests for the project               |
-| `npm run test:unit`                                    | Run only unit tests (no e2e tests)                       |
-| `npm run test:snapshot`                                | Run only snapshot tests                                  |
-| `npm run coverage`                                     | Generate coverage reports for unit and snapshot tests    |
-| `npm run coverage:report`                              | Generate detailed coverage reports with multiple formats |
-| `npm run coverage:open`                                | Generate coverage reports and open them in your browser  |
-| `npm run coverage:fresh`                               | Generate fresh coverage reports by clearing all caches   |
-| `npm run coverage:fresh:open`                          | Generate fresh coverage reports and open in browser      |
-| `npm run test:component:fresh --component=MyComp`      | Run tests for a specific component with fresh caches     |
-| `npm run test:component:fresh:open --component=MyComp` | Run component tests with fresh caches and open report    |
+| Command                                                                     | Description                                              |
+| --------------------------------------------------------------------------- | -------------------------------------------------------- |
+| `npm run test --workspace=apps/web`                                         | Run frontend unit tests                                  |
+| `npm run test --workspace=apps/api`                                         | Run backend unit tests                                   |
+| `npm run test --workspace=apps/web -- --test-file=Button.snapshot.test.tsx` | Run specific snapshot tests                              |
+| `npm run test:e2e`                                                          | Run all E2E tests                                        |
+| `cd apps/web/e2e && npm run e2e:headed`                                     | Run UI tests with browser visible                        |
+| `cd apps/api/e2e && npm run e2e`                                            | Run API E2E tests                                        |
+| `npm run test:all`                                                          | Run all unit and e2e tests for the project               |
+| `npm run test:unit`                                                         | Run only unit tests (no e2e tests)                       |
+| `npm run test:snapshot`                                                     | Run only snapshot tests                                  |
+| `npm run coverage`                                                          | Generate coverage reports for unit and snapshot tests    |
+| `npm run coverage:report`                                                   | Generate detailed coverage reports with multiple formats |
+| `npm run coverage:open`                                                     | Generate coverage reports and open them in your browser  |
+| `npm run coverage:fresh`                                                    | Generate fresh coverage reports by clearing all caches   |
+| `npm run coverage:fresh:open`                                               | Generate fresh coverage reports and open in browser      |
+| `npm run test:component:fresh --component=MyComp`                           | Run tests for a specific component with fresh caches     |
+| `npm run test:component:fresh:open --component=MyComp`                      | Run component tests with fresh caches and open report    |
 
 ## Code Quality Commands
 
 Commands for maintaining code quality.
 
-| Command                 | Description                                                |
-| ----------------------- | ---------------------------------------------------------- |
-| `nx lint web`           | Run linting for web project                                |
-| `npm run lint`          | Run linting for all projects                               |
-| `npm run lint:md`       | Run markdown linting                                       |
-| `npm run lint:md:fix`   | Run markdown linting and fix issues automatically          |
-| `npm run format`        | Run formatting for all files                               |
-| `npm run format:md`     | Run formatting for markdown files only                     |
-| `npm run type-check`    | Run TypeScript type checking                               |
-| `npm run validate`      | Run all critical checks (lint, test, coverage, type-check) |
-| `npm run validate:full` | Run all checks including E2E tests and security            |
+| Command                             | Description                                                |
+| ----------------------------------- | ---------------------------------------------------------- |
+| `npm run lint --workspace=apps/web` | Run linting for web project                                |
+| `npm run lint`                      | Run linting for all projects                               |
+| `npm run lint:md`                   | Run markdown linting                                       |
+| `npm run lint:md:fix`               | Run markdown linting and fix issues automatically          |
+| `npm run format`                    | Run formatting for all files                               |
+| `npm run format:md`                 | Run formatting for markdown files only                     |
+| `npm run type-check`                | Run TypeScript type checking                               |
+| `npm run validate`                  | Run all critical checks (lint, test, coverage, type-check) |
+| `npm run validate:full`             | Run all checks including E2E tests and security            |
 
 ## SonarCloud Commands
 

@@ -150,8 +150,6 @@ jobs:
           HUSKY=0 npm ci --dry-run || { echo "Dry run failed"; npm diff; exit 1; }
       - name: Install dependencies
         run: HUSKY=0 npm ci
-      - name: Install nx globally
-        run: npm install -g nx
       - name: Run snapshot tests
         run: npm run test:snapshot
       - name: Upload logs on failure
@@ -251,21 +249,12 @@ jobs:
           HUSKY=0 npm ci --dry-run || { echo "Dry run failed"; npm diff; exit 1; }
       - name: Install dependencies
         run: HUSKY=0 npm ci
-      - name: Install nx globally
-        run: npm install -g nx
       - name: Build API and Web
         run: |
-          npm run build -- --projects=api,web
-      - name: Start servers in background
-        run: |
-          npm run start:api &
-          echo "API server started, waiting for it to be ready..."
-          sleep 20
-          npm run start:web &
-          echo "Web server started, waiting for it to be ready..."
-          sleep 20
+          npm run build
       - name: Run E2E tests
-        run: nx e2e web-e2e
+        run: |
+          npm run test:e2e
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
@@ -306,8 +295,6 @@ jobs:
           HUSKY=0 npm ci --dry-run || { echo "Dry run failed"; npm diff; exit 1; }
       - name: Install dependencies
         run: HUSKY=0 npm ci
-      - name: Install nx globally
-        run: npm install -g nx
       - name: Generate coverage
         run: npm run coverage:all
       - name: List coverage files

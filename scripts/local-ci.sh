@@ -87,7 +87,7 @@ else
     sleep 10
 
     echo -e "${YELLOW}Running E2E tests...${NC}"
-    npx nx e2e web-e2e || {
+    npm run test:e2e || {
       echo -e "${RED}E2E tests failed!${NC}"
       kill $API_PID $WEB_PID
       exit 1

@@ -4,18 +4,21 @@ This guide addresses common issues you might encounter when working with the Tha
 
 ## E2E Testing Issues
 
-### E2E Tests Failing
+### E2E Tests Fail
 
-**Issue**: If `nx e2e` fails, ensure `nx serve` is running on port 4200.
+**Issue**: If E2E tests fail, ensure that both web and API servers are running on the expected ports.
 
-**Solution**: Run `nx serve web` in a separate terminal before running e2e tests.
+**Solution**: Run the servers in separate terminals before running E2E tests manually.
 
 ```bash
-# Terminal 1: Start the web server
-nx serve web
+# In one terminal, start the web server
+npm run start:web
 
-# Terminal 2: Run the E2E tests
-nx e2e web-e2e
+# In another terminal, start the API server
+npm run start:api
+
+# In a third terminal, run the E2E tests
+npm run test:e2e
 ```
 
 ### Component Tests Failing with Style-Related Errors
@@ -42,37 +45,6 @@ npm install --legacy-peer-deps
 
 This is automatically configured in the generated project via the `.npmrc` file.
 
-## NX Daemon Issues
-
-### NX Daemon Errors
-
-**Issue**: Nx daemon errors when running commands in a generated project.
-
-**Solution**: Try the following options:
-
-**Option 1**: Run without the daemon (recommended)
-
-```bash
-# Use the no-daemon script
-npm run start:no-daemon
-```
-
-**Option 2**: Reset the daemon
-
-```bash
-# 1. Reset the NX cache
-npx nx reset
-
-# 2. If that doesn't work, kill any running NX processes
-pkill -f "nx"
-
-# 3. Remove socket files that might be causing conflicts
-find /var/folders -name "d.sock" -delete
-
-# 4. Reset NX again
-npx nx reset
-```
-
 ## Path Reference Issues
 
 ### Original Thanos Project References in Error Messages
@@ -84,25 +56,6 @@ npx nx reset
 1. Check the specific files mentioned in the error messages
 2. Update the paths manually to match your project name
 3. Run a global search in your codebase for "thanos" to find any other occurrences
-
-## Git Issues
-
-### Git Shows Changes in .nx Directory
-
-**Issue**: Git shows changes in .nx directory files after running commands.
-
-**Solution**: The .nx directory should be gitignored in generated projects. If you see these files in git status:
-
-```bash
-# Remove .nx directory from git tracking
-git rm -r --cached .nx
-
-# Ensure .nx is in your .gitignore file
-echo ".nx/" >> .gitignore
-
-# Commit the changes
-git commit -m "Remove .nx directory from git tracking"
-```
 
 ## Port Conflicts
 
@@ -128,16 +81,18 @@ git commit -m "Remove .nx directory from git tracking"
 
    ```bash
    # Start web server on a different port
-   nx serve web --port=4201
+   npm run dev --workspace=apps/web -- --port=4201
 
    # Start API server on a different port
-   nx serve api --port=3001
+   PORT=3001 npm run dev --workspace=apps/api
    ```
 
 ## Getting Additional Help
 
 If you encounter issues not covered in this troubleshooting guide:
 
-1. Check the [Nx documentation](https://nx.dev/getting-started/intro)
+1. Check the project documentation in the docs/ directory
 2. Search for your issue in the project's GitHub issues
 3. Create a new issue if your problem hasn't been addressed
+
+npm config set legacy-peer-deps true

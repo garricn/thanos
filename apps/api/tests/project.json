@@ -1,12 +1,9 @@
 {
   "name": "api-tests",
-  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "implicitDependencies": ["api"],
   "targets": {
     "pretest": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "apps/api/tests/jest.config.ts",
         "testMatch": ["**/structure.test.ts"],
@@ -14,8 +11,6 @@
       }
     },
     "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "apps/api/tests/jest.config.ts",
         "passWithNoTests": true

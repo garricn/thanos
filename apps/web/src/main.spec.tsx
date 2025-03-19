@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+// App is used in the imported main.tsx, so we need to import it for mocking
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import App from './App';
 
 // Mock React and ReactDOM
@@ -29,6 +31,7 @@ describe('main.tsx', () => {
 
   it('renders the App component in the root element', () => {
     // Import main to execute it
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     require('./main');
 
     // Verify getElementById was called with 'root'

@@ -20,8 +20,8 @@ export const mockLogModel = {
 // This is necessary to ensure the mock is in place before the app is loaded
 jest.mock('../db/models/log', () => mockLogModel, { virtual: true });
 
-// We need to use require here to avoid the linting error with imports
-
+// We need to use require here because we have to mock the module before importing it
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { setupApp } = require('../src/app');
 
 /**

@@ -10,7 +10,7 @@
  *
  * The script follows a simple search process:
  * 1. First checks if coverage/sonar-report.xml already exists
- * 2. If not, looks for junit.xml files in the NX coverage structure
+ * 2. If not, looks for junit.xml files in the project coverage structure
  * 3. If still no results found, generates mock test data
  * 4. Creates or updates the coverage/sonar-report.xml file
  */
@@ -21,7 +21,7 @@ const glob = require('glob');
 
 // Paths to look for test results
 const testResultsGlobs = [
-  // Primary location for NX workspace test results
+  // Primary location for workspace test results
   'coverage/apps/*/junit.xml',
   // Specific to jest-sonar-reporter if configured to output there
   'coverage/sonar-report.xml',
@@ -88,7 +88,7 @@ function findTestResults() {
     ];
   }
 
-  // Check for junit.xml files in the NX coverage structure
+  // Check for junit.xml files in the project coverage structure
   const junitFiles = glob.sync('coverage/apps/*/junit.xml');
   if (junitFiles.length > 0) {
     console.log(`Found ${junitFiles.length} junit.xml files`);

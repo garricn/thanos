@@ -2,8 +2,17 @@ export default {
   displayName: 'thanos',
   preset: './jest.preset.js',
   transform: {
-    '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
-    '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/react/babel'] }],
+    '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': 'babel-jest',
+    '^.+\\.[tj]sx?$': [
+      'babel-jest',
+      {
+        presets: [
+          '@babel/preset-env',
+          '@babel/preset-react',
+          '@babel/preset-typescript',
+        ],
+      },
+    ],
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: './coverage/thanos',
@@ -18,7 +27,6 @@ export default {
     '!apps/**/node_modules/**',
     '!apps/**/dist/**',
     '!apps/**/coverage/**',
-    '!apps/**/nx-welcome.tsx',
     '!apps/**/*.stories.{js,jsx,ts,tsx}',
     '!apps/**/*.styles.{js,jsx,ts,tsx}',
     '!apps/**/*.constants.{js,jsx,ts,tsx}',

@@ -35,11 +35,19 @@ VERIFICATION.md
 .DS_Store
 Thumbs.db
 
-.nx/cache
-.nx/workspace-data
+# Nx (ignored in case it reappears)
+node_modules/.cache/.nx
 
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
 
 # SonarCloud
 .scannerwork
+apps/web/dist
+apps/api/dist
+.nx
+node_modules/.cache/.nx
+
+# Test reports
+test-report.xml
+**/test-report.xml

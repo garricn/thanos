@@ -1,4 +1,4 @@
-# Thanos - A Nx Monorepo Scaffolding Template
+# Thanos - A Modern Monorepo Scaffolding Template
 
 [![CI](https://github.com/garricn/thanos/actions/workflows/ci.yml/badge.svg)](https://github.com/garricn/thanos/actions/workflows/ci.yml)
 [![Coverage](https://codecov.io/gh/garricn/thanos/branch/main/graph/badge.svg?token=ADVIGYFMQH)](https://codecov.io/gh/garricn/thanos)
@@ -9,7 +9,7 @@
 
 ## Description
 
-Thanos is a scaffolding template for creating new Nx monorepo projects with a pre-configured React frontend and Express backend. It provides a solid foundation with testing infrastructure already set up, including unit tests, snapshot tests, and E2E tests. This template helps you quickly bootstrap new projects with best practices for testing and project structure.
+Thanos is a scaffolding template for creating new monorepo projects with a pre-configured React frontend and Express backend. It provides a solid foundation with testing infrastructure already set up, including unit tests, snapshot tests, and E2E tests. This template helps you quickly bootstrap new projects with best practices for testing and project structure.
 
 ## Documentation Index
 
@@ -53,7 +53,6 @@ Thanos is a scaffolding template for creating new Nx monorepo projects with a pr
 - Cypress (for UI tests)
 - ESLint
 - Prettier
-- Nx (monorepo tool)
 
 ## Quick Start
 
@@ -103,7 +102,6 @@ SOFTWARE.
 
 ## Acknowledgements
 
-- Built with [Nx](https://nx.dev/)
 - Tested with [Cline](https://github.com/saoudrizwan/cline) by Saoud Rizwan
 
 ---
