@@ -23,7 +23,6 @@
     "local-ci": "./scripts/local-ci.sh",
     "fix-node-version": "echo 'To switch to Node.js '$(cat .nvmrc)', please run: source ./scripts/switch-node.sh'",
     "clean:deep": "./scripts/clean-deep.sh",
-    "cleanup:nx": "rm -rf .nx node_modules/.cache/.nx",
     "cleanup:test-reports": "rm -f test-report.xml */test-report.xml **/test-report.xml && node scripts/cleanup-test-reports.js",
     "validate:node-version": "./scripts/validate-node-version.sh",
     "lint": "npm run lint --workspace=apps/web && npm run lint --workspace=apps/api && npm run lint:md && npm run lint:sh && npm run lint:yaml",
