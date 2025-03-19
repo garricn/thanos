@@ -376,7 +376,7 @@ Current status:
   - [x] Add engines.node field to package.json
 - [x] Integrate validate:actions into the main validate script
 - [x] Set up Docker for local CI:
-  - [x] Install Docker Desktop from https://www.docker.com/products/docker-desktop/
+  - [x] Install Docker Desktop from <https://www.docker.com/products/docker-desktop/>
   - [x] Verify installation with `docker --version`
   - [x] Run `npm run docker:ci` to test the Docker-based CI environment
   - [x] Update validate-node-version.sh to check Dockerfile.ci
@@ -455,7 +455,7 @@ Current status:
   - [ ] `configs/docker` - Docker and container-related configurations
   - [ ] `configs/ci` - CI/CD related configurations
 - [ ] Move non-essential configuration files to appropriate subdirectories:
-  - [ ] Move linting configs (eslint.config.mjs, eslint.base.config.mjs, .prettierrc, etc.) to `configs/lint`
+  - [x] Move linting configs (eslint.config.mjs, eslint.base.config.mjs, .prettierrc, etc.) to `configs/lint`
   - [ ] Move testing configs (jest.config.ts, jest.preset.js, jestSonar.config.js) to `configs/test`
   - [ ] Move build configs (vite.config.ts, tsconfig.json, etc.) to `configs/build`
   - [ ] Move Docker files (docker-compose.yml, Dockerfile.dev) to `configs/docker`
