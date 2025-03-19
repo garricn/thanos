@@ -1,0 +1,23 @@
+{
+  "*.{js,jsx,ts,tsx}": [
+    "eslint --fix",
+    "prettier --config configs/lint/.prettierrc --ignore-path configs/lint/.prettierignore --write"
+  ],
+  "*.{json,md}": [
+    "prettier --config configs/lint/.prettierrc --ignore-path configs/lint/.prettierignore --write"
+  ],
+  "*.{yml,yaml}": [
+    "yamllint -c configs/lint/.yamllint",
+    "prettier --config configs/lint/.prettierrc --ignore-path configs/lint/.prettierignore --write"
+  ],
+  "*.md": [
+    "markdownlint-cli2 --config configs/lint/.markdownlint-cli2.jsonc --fix"
+  ],
+  "*.sh": [
+    "shellcheck",
+    "shfmt -i 2 -ci -w"
+  ],
+  "*": [
+    "bash -c 'if file \"$1\" | grep -q \"text\"; then if [ -s \"$1\" ] && [ \"$(tail -c 1 \"$1\" | xxd -p)\" != \"0a\" ]; then echo \"\" >> \"$1\"; fi; fi' --"
+  ]
+}
