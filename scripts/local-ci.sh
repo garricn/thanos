@@ -102,13 +102,20 @@ fi
 echo -e "${YELLOW}Running security checks...${NC}"
 npm audit || echo -e "${YELLOW}npm audit found issues, but continuing...${NC}"
 
-# Check for GitHub Actions workflow validation
+# GitHub Actions validation
+echo -e "${YELLOW}Validating GitHub Actions workflows...${NC}"
 if command -v actionlint &>/dev/null; then
-  echo -e "${YELLOW}Validating GitHub Actions workflows...${NC}"
   actionlint -color .github/workflows/*.yml || echo -e "${YELLOW}GitHub Actions validation failed, but continuing...${NC}"
 else
-  echo -e "${YELLOW}actionlint not installed. Skipping GitHub Actions validation.${NC}"
-  echo -e "${YELLOW}To install: bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)${NC}"
+  echo -e "${YELLOW}actionlint not found. Attempting to install...${NC}"
+  TEMP_INSTALL_DIR=$(mktemp -d)
+  if curl -sSL https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash | bash -s -- "${TEMP_INSTALL_DIR}" >/dev/null 2>&1; then
+    "${TEMP_INSTALL_DIR}/actionlint" -color .github/workflows/*.yml || echo -e "${YELLOW}GitHub Actions validation failed, but continuing...${NC}"
+    rm -rf "${TEMP_INSTALL_DIR}"
+  else
+    echo -e "${YELLOW}Failed to install actionlint. Skipping GitHub Actions validation.${NC}"
+    echo -e "${YELLOW}To install manually: bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)${NC}"
+  fi
 fi
 
 echo -e "${GREEN}All local CI checks passed!${NC}"

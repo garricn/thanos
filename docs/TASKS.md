@@ -470,6 +470,10 @@ Current status:
   - [ ] Move build configs (vite.config.ts, tsconfig.json, etc.) to `configs/build`
   - [x] Move Docker files (docker-compose.yml, Dockerfile.dev) to `configs/docker`
   - [x] Move CI configs (docker-compose-ci.yml, Dockerfile.ci) to `configs/docker`
+- [x] Improve binary tool management:
+  - [x] Remove actionlint binary from repository
+  - [x] Add actionlint to .gitignore
+  - [x] Update local-ci.sh to handle actionlint installation automatically
 - [ ] Clean up redundant YAML linting configurations:
   - [ ] Switch to yamllint (native tool) for better performance and features:
     - [ ] Remove .yaml-lint.json and yaml-lint npm package
@@ -485,9 +489,9 @@ Current status:
   - [ ] Test formatting on various JSON files (package.json, tsconfig.json, etc.)
   - [ ] Document JSON formatting approach in project docs
 - [ ] Consolidate configuration into package.json where appropriate:
-  - [ ] Replace .nvmrc with "engines" field in package.json for Node.js version requirements
-  - [ ] Move .npmrc configuration settings to "publishConfig" in package.json
-  - [ ] Consider moving .snyk settings to "snyk" field in package.json
+  - [ ] Replace .nvmrc with "engines" field in package.json for Node.js version requirements (note: .nvmrc is still needed for nvm users)
+  - [ ] Research if .npmrc settings can be moved to npm scripts or keep as separate file
+  - [ ] Research if .snyk settings can be managed through package.json or keep as separate file
 - [ ] Update file references in project files:
   - [ ] Update package.json scripts to reference the new config file locations
   - [ ] Update import statements in configuration files to use the new paths
