@@ -19,9 +19,9 @@
     "test": "npm run test --workspace=apps/api && npm run test --workspace=apps/web",
     "test:all": "npm run test && npm run test:e2e",
     "test:unit": "npm run test --workspace=apps/api && npm run test --workspace=apps/web",
-    "test:unit:coverage": "mkdir -p coverage/api/unit coverage/web/unit && JEST_SONAR_REPORTER_OUTPUT_DIR='./coverage/api/unit' JEST_SONAR_REPORTER_OUTPUT_NAME='sonar-report.xml' npm run test --workspace=apps/api -- --coverage --coverageDirectory=\"${PWD}/coverage/api/unit\" --coverageReporters=text-summary --coverageReporters=html --coverageReporters=lcov --testResultsProcessor=jest-sonar-reporter && JEST_SONAR_REPORTER_OUTPUT_DIR='./coverage/web/unit' JEST_SONAR_REPORTER_OUTPUT_NAME='sonar-report.xml' npm run test --workspace=apps/web -- --coverage --coverageDirectory=\"${PWD}/coverage/web/unit\" --coverageReporters=text-summary --coverageReporters=html --coverageReporters=lcov --testResultsProcessor=jest-sonar-reporter",
+    "test:unit:coverage": "npm run coverage:clean && mkdir -p coverage/api/unit coverage/web/unit && npm run test --workspace=apps/api -- --coverage --coverageDirectory=\"${PWD}/coverage/api/unit\" --coverageReporters=text-summary --coverageReporters=html --coverageReporters=lcov --testResultsProcessor=jest-sonar-reporter && node scripts/jest-sonar-fix.js api && npm run test --workspace=apps/web -- --coverage --coverageDirectory=\"${PWD}/coverage/web/unit\" --coverageReporters=text-summary --coverageReporters=html --coverageReporters=lcov --testResultsProcessor=jest-sonar-reporter && node scripts/jest-sonar-fix.js web-unit",
     "test:snapshot": "npm run test --workspace=apps/web -- --testPathPattern=snapshot",
-    "test:snapshot:coverage": "mkdir -p coverage/web/snapshot && JEST_SONAR_REPORTER_OUTPUT_DIR='./coverage/web/snapshot' JEST_SONAR_REPORTER_OUTPUT_NAME='sonar-report.xml' npm run test --workspace=apps/web -- --testPathPattern=snapshot --coverage --coverageDirectory=\"${PWD}/coverage/web/snapshot\" --coverageReporters=text-summary --coverageReporters=html --coverageReporters=lcov --testResultsProcessor=jest-sonar-reporter",
+    "test:snapshot:coverage": "mkdir -p coverage/web/snapshot && npm run test --workspace=apps/web -- --testPathPattern=snapshot --coverage --coverageDirectory=\"${PWD}/coverage/web/snapshot\" --coverageReporters=text-summary --coverageReporters=html --coverageReporters=lcov --testResultsProcessor=jest-sonar-reporter && node scripts/jest-sonar-fix.js web-snapshot",
     "test:e2e": "./scripts/e2e.sh",
     "local-ci": "./scripts/local-ci.sh",
     "fix-node-version": "echo 'To switch to Node.js '$(cat .nvmrc)', please run: source ./scripts/switch-node.sh'",
@@ -71,7 +71,8 @@
     "validate:actions": "./scripts/validate-actions.sh",
     "check:deps": "npm ci --dry-run && npm ls --depth=0",
     "check:outdated": "npm outdated || true",
-    "act": "./scripts/run-act.sh"
+    "act": "./scripts/run-act.sh",
+    "coverage:clean": "rm -rf coverage && rm -f apps/*/test-report.xml"
   },
   "resolutions": {
     "inflight": "1.0.6"
