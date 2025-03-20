@@ -184,6 +184,16 @@ Current status:
 ## ESLint Refactoring Tasks
 
 - [ ] Migrate CommonJS modules to ES Modules for consistent module patterns
+  - [ ] Update all package.json files with "type": "module"
+  - [ ] Convert require() statements to import statements in all files
+  - [ ] Convert module.exports to export default or named exports
+  - [ ] Update tsconfig.json files to use "module": "ESNext" or "NodeNext" and "moduleResolution": "NodeNext"
+  - [ ] Fix module detection in main.ts (replace require.main with import.meta.url check)
+  - [ ] Update Jest configs to properly support ESM (add "extensionsToTreatAsEsm" and moduleNameMapper)
+  - [ ] Add NODE_OPTIONS="--experimental-vm-modules" to test scripts
+  - [ ] Update E2E test files to use ESM syntax for consistent pattern
+  - [ ] Fix path resolution in ESM imports (add .js extensions where needed)
+  - [ ] Update support files in test directories (global-setup.ts, test-setup.ts, etc.)
 - [ ] Create a Logger Service to replace direct console usage with a dedicated logger service for different environments
 - [ ] Restructure tests to avoid requiring mocked modules
 - [ ] Refactor `build.js` to use ES modules and eliminate `eslint-disable` comments
