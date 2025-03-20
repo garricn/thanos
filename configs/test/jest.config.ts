@@ -17,9 +17,9 @@ export default {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   coverageDirectory: './coverage/thanos',
   projects: [
-    '<rootDir>/apps/*/configs/test/jest.config.ts',
-    '<rootDir>/apps/*/e2e/configs/test/jest.config.ts',
-    '<rootDir>/apps/*/tests/configs/test/jest.config.ts',
+    '<rootDir>/apps/*/configs/test/jest.config.{ts,mjs}',
+    '<rootDir>/apps/*/e2e/configs/test/jest.config.{ts,mjs}',
+    '<rootDir>/apps/*/tests/configs/test/jest.config.{ts,mjs}',
   ],
   testMatch: [],
   collectCoverageFrom: [

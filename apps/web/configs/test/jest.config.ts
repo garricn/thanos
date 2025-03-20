@@ -15,7 +15,8 @@ export default {
     ],
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  coverageDirectory: '../../coverage/apps/web',
+  coverageDirectory: '../../../../coverage/apps/web',
+  rootDir: '../../',
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.[jt]s?(x)',
     '<rootDir>/src/**/*(*.)@(spec|test).[jt]s?(x)',
@@ -23,7 +24,7 @@ export default {
   ],
   setupFilesAfterEnv: [
     '<rootDir>/tests/test-setup.ts',
-    '../../scripts/jest.setup.js',
+    '<rootDir>/../../scripts/jest.setup.js',
   ],
   testResultsProcessor: 'jest-sonar-reporter',
   moduleNameMapper: {
