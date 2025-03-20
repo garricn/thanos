@@ -248,42 +248,47 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup-node
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: "temurin"
+      - name: Install SonarScanner
+        run: |
+          curl -sSLo sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
+          unzip -o sonar-scanner.zip
+          sudo mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
+          sudo ln -sf /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner
       - name: Download coverage reports
         uses: actions/download-artifact@v4
         with:
           name: coverage-reports
-          path: coverage/
-      - name: Generate SonarQube Test Report
-        run: |
-          # Run the test:sonar script to generate both LCOV and XML reports
-          npm run test:sonar
-
-          # Ensure sonar-report.xml exists in the correct location
-          if [ -f "coverage/sonar-report.xml" ]; then
-            echo "Test execution report exists at coverage/sonar-report.xml"
-            ls -la coverage/sonar-report.xml
-          else
-            echo "Test execution report is missing, running cleanup script directly"
-          fi
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+      - name: Run SonarCloud Analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.organization=${{ github.repository_owner }}
-            -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.testExecutionReportPaths=coverage/sonar-report.xml
+        run: |
+          # Determine branch name
+          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+          echo "Running analysis on branch: $BRANCH_NAME"
+
+          # Run SonarScanner with debug logging
+          sonar-scanner -X \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.projectKey=garricn_thanos \
+            -Dsonar.organization=garricn \
+            -Dsonar.branch.name=$BRANCH_NAME \
+            -Dsonar.scm.provider=git \
+            -Dsonar.config=configs/quality/sonar-project.properties
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: sonarcloud-logs
+          name: sonar-logs
           path: |
             ./**/*.log
             ./npm-debug.log*
+            ./.scannerwork/**/*
           retention-days: 7
 
   upload-logs:
