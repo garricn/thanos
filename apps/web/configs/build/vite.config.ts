@@ -4,8 +4,8 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 export default defineConfig(() => ({
-  root: __dirname,
-  cacheDir: '../../node_modules/.vite/web',
+  root: path.resolve(__dirname, '../../../../apps/web'),
+  cacheDir: '../../../../node_modules/.vite/web',
   server: {
     port: 4200,
     host: 'localhost',

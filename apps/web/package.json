@@ -3,9 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
+    "dev": "vite --config configs/build/vite.config.ts",
+    "build": "vite build --config configs/build/vite.config.ts",
+    "preview": "vite preview --config configs/build/vite.config.ts",
     "test": "jest --config jest.config.ts",
     "test:coverage": "jest --config jest.config.ts --coverage",
     "lint": "eslint --config configs/lint/eslint.config.mjs .",
