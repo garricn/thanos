@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "outDir": "../../apps/api/dist"
+  },
+  "include": ["../../apps/api/src/**/*.ts"],
+  "exclude": [
+    "../../apps/api/src/**/*.spec.ts",
+    "../../apps/api/src/**/*.test.ts"
+  ]
+}

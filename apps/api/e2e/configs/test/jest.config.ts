@@ -9,6 +9,7 @@ export default {
       'ts-jest',
       {
         tsconfig: '<rootDir>/configs/test/tsconfig.spec.json',
+        useESM: true,
       },
     ],
   },
@@ -18,6 +19,8 @@ export default {
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/configs/test/tsconfig.spec.json',
+      useESM: true,
     },
   },
+  extensionsToTreatAsEsm: ['.ts'],
 };
