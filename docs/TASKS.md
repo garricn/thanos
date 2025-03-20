@@ -477,6 +477,9 @@ Current status:
 - [x] Move Jest configuration files:
   - [x] Move jest.setup.js to scripts/ directory
   - [x] Update all references in Jest configuration files
+- [x] Update .gitignore for IDE-specific directories:
+  - [x] Ensure .vscode/ is ignored (already was)
+  - [x] Add .cursor/ to .gitignore
 - [ ] Standardize Jest configuration paths:
   - [ ] Choose a consistent approach for all path references (<rootDir> or path.resolve)
   - [ ] Update all Jest configuration files to use the standardized approach

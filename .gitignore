@@ -17,8 +17,9 @@ node_modules
 .settings/
 *.sublime-workspace
 
-# IDE - VSCode
-.vscode/
+# IDE - VSCode and Cursor
+.vscode
+.cursor
 
 # misc
 /.sass-cache
@@ -35,9 +36,7 @@ VERIFICATION.md
 .DS_Store
 Thumbs.db
 
-# Nx (ignored in case it reappears)
-node_modules/.cache/.nx
-
+# Vite
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
 
@@ -45,8 +44,6 @@ vitest.config.*.timestamp*
 .scannerwork
 apps/web/dist
 apps/api/dist
-.nx
-node_modules/.cache/.nx
 
 # Test reports
 test-report.xml
