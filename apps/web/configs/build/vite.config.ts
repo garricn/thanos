@@ -18,16 +18,11 @@ export default defineConfig(() => ({
     host: "localhost",
   },
   plugins: [react()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
   css: {
     postcss: "../../../../configs/build/postcss.config.js",
   },
   babel: {
-    configFile: "../../../../configs/build/babel.config.js",
+    configFile: "./babel.config.js",
   },
   // Uncomment this if you are using workers.
   // worker: {
