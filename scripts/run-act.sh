@@ -61,5 +61,5 @@ echo "Running: act $* --artifact-server-path ./artifacts -P ubuntu-latest=ghcr.i
 AFTER_NODE_VERSION=$(node -v)
 if [ "$CURRENT_NODE_VERSION" != "$AFTER_NODE_VERSION" ]; then
   echo "Node.js version changed during act execution. Restoring to $CURRENT_NODE_VERSION..."
-  nvm use "$(echo "$CURRENT_NODE_VERSION" | sed 's/^v//')"
+  nvm use "${CURRENT_NODE_VERSION#v}"
 fi
