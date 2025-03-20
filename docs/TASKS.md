@@ -477,6 +477,10 @@ Current status:
 - [x] Move Jest configuration files:
   - [x] Move jest.setup.js to scripts/ directory
   - [x] Update all references in Jest configuration files
+- [ ] Standardize Jest configuration paths:
+  - [ ] Choose a consistent approach for all path references (<rootDir> or path.resolve)
+  - [ ] Update all Jest configuration files to use the standardized approach
+  - [ ] Document the preferred approach in a comment for future reference
 - [ ] Clean up redundant YAML linting configurations:
   - [ ] Switch to yamllint (native tool) for better performance and features:
     - [ ] Remove .yaml-lint.json and yaml-lint npm package
