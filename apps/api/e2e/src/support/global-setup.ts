@@ -1,5 +1,8 @@
 /* eslint-disable */
-var __TEARDOWN_MESSAGE__: string;
+// Add type declaration to global scope
+declare global {
+  var __TEARDOWN_MESSAGE__: string;
+}
 
 export default async function () {
   // Start services that that the app needs to run (e.g. database, docker-compose, etc.).
