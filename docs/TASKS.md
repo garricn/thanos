@@ -484,6 +484,10 @@ Current status:
   - [ ] Update .prettierignore to exclude JSON files
   - [ ] Test formatting on various JSON files (package.json, tsconfig.json, etc.)
   - [ ] Document JSON formatting approach in project docs
+- [ ] Consolidate configuration into package.json where appropriate:
+  - [ ] Replace .nvmrc with "engines" field in package.json for Node.js version requirements
+  - [ ] Move .npmrc configuration settings to "publishConfig" in package.json
+  - [ ] Consider moving .snyk settings to "snyk" field in package.json
 - [ ] Update file references in project files:
   - [ ] Update package.json scripts to reference the new config file locations
   - [ ] Update import statements in configuration files to use the new paths
