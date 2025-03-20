@@ -141,8 +141,39 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node
-      - name: Run tests
-        run: npm run test:unit
+      - name: Run tests with coverage
+        run: |
+          mkdir -p coverage/api/unit coverage/web/unit
+          JEST_SONAR_REPORTER_OUTPUT_DIR='./coverage/api/unit' \
+          JEST_SONAR_REPORTER_OUTPUT_NAME='sonar-report.xml' \
+          npm run test --workspace=apps/api -- \
+            --coverage \
+            --coverageDirectory="${PWD}/coverage/api/unit" \
+            --coverageReporters=text-summary \
+            --coverageReporters=html \
+            --coverageReporters=lcov \
+            --testResultsProcessor=jest-sonar-reporter
+          JEST_SONAR_REPORTER_OUTPUT_DIR='./coverage/web/unit' \
+          JEST_SONAR_REPORTER_OUTPUT_NAME='sonar-report.xml' \
+          npm run test --workspace=apps/web -- \
+            --coverage \
+            --coverageDirectory="${PWD}/coverage/web/unit" \
+            --coverageReporters=text-summary \
+            --coverageReporters=html \
+            --coverageReporters=lcov \
+            --testResultsProcessor=jest-sonar-reporter
+      - name: Upload test coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-unit-coverage
+          path: coverage/api/unit/
+          retention-days: 7
+      - name: Upload web unit coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-unit-coverage
+          path: coverage/web/unit/
+          retention-days: 7
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
@@ -161,8 +192,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node
-      - name: Run snapshot tests
-        run: npm run test:snapshot
+      - name: Run snapshot tests with coverage
+        run: |
+          mkdir -p coverage/web/snapshot
+          JEST_SONAR_REPORTER_OUTPUT_DIR='./coverage/web/snapshot' \
+          JEST_SONAR_REPORTER_OUTPUT_NAME='sonar-report.xml' \
+          npm run test --workspace=apps/web -- \
+            --testPathPattern=snapshot \
+            --coverage \
+            --coverageDirectory="${PWD}/coverage/web/snapshot" \
+            --coverageReporters=text-summary \
+            --coverageReporters=html \
+            --coverageReporters=lcov \
+            --testResultsProcessor=jest-sonar-reporter
+      - name: Upload snapshot coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-snapshot-coverage
+          path: coverage/web/snapshot/
+          retention-days: 7
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
@@ -210,23 +258,51 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup-node
-      - name: Generate coverage
-        run: npm run coverage:all
-      - name: List coverage files
-        run: find coverage -type f | grep lcov.info || echo "No lcov.info files found"
-      - name: Upload coverage to Codecov
+      - name: Download API unit test coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: api-unit-coverage
+          path: coverage/api/unit
+      - name: Download web unit test coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: web-unit-coverage
+          path: coverage/web/unit
+      - name: Download web snapshot test coverage
+        uses: actions/download-artifact@v4
+        with:
+          name: web-snapshot-coverage
+          path: coverage/web/snapshot
+      - name: Combine coverage for SonarCloud
+        run: |
+          npm run coverage:combine
+          npm run coverage:combine:xml
+      - name: Upload individual coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
-          directory: ./coverage/
+          files: |
+            coverage/api/unit/lcov.info
+            coverage/web/unit/lcov.info
+            coverage/web/snapshot/lcov.info
+          flags: |
+            api-unit
+            web-unit
+            web-snapshot
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
           verbose: true
-          file: configs/test/codecov.yml
-      - name: Upload coverage reports as artifacts
+      - name: Upload combined coverage report to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          directory: ./coverage/combined/
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
+          verbose: true
+      - name: Upload combined coverage
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-reports
-          path: coverage/
+          name: combined-coverage
+          path: coverage/combined/
           retention-days: 7
       - name: Upload logs on failure
         if: ${{ failure() }}
@@ -259,10 +335,11 @@ jobs:
           unzip -o sonar-scanner.zip
           sudo mv sonar-scanner-5.0.1.3006-linux /opt/sonar-scanner
           sudo ln -sf /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner
-      - name: Download coverage reports
+      - name: Download combined coverage
         uses: actions/download-artifact@v4
         with:
-          name: coverage-reports
+          name: combined-coverage
+          path: coverage/combined
       - name: Run SonarCloud Analysis
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
