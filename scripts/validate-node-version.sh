@@ -69,28 +69,50 @@ if [ -n "$HARDCODED_REFS" ]; then
   HAS_ERRORS=true
 fi
 
-# Check CI workflow file
+# Check CI workflow file and setup-node composite action
 CI_WORKFLOW_FILE=".github/workflows/ci.yml"
-if [ -f "$CI_WORKFLOW_FILE" ]; then
-  echo -e "\n${YELLOW}Checking $CI_WORKFLOW_FILE...${NC}"
+SETUP_NODE_ACTION_FILE=".github/actions/setup-node/action.yml"
 
-  # Verify that the file uses the .nvmrc approach
-  if grep -q "NODE_VERSION=\$(cat .nvmrc" "$CI_WORKFLOW_FILE" || grep -q "NODE_VERSION=\$(tr -d.*<.*\.nvmrc" "$CI_WORKFLOW_FILE" || grep -q "NODE_VERSION=\$(< .nvmrc" "$CI_WORKFLOW_FILE"; then
-    echo -e "${GREEN}✅ $CI_WORKFLOW_FILE correctly reads Node.js version from .nvmrc${NC}"
+echo -e "\n${YELLOW}Checking CI workflow and setup-node action...${NC}"
+
+# First check if the setup-node composite action exists and reads from .nvmrc
+if [ -f "$SETUP_NODE_ACTION_FILE" ]; then
+  if grep -q "NODE_VERSION=\$(< .nvmrc)" "$SETUP_NODE_ACTION_FILE" || grep -q "node-version: \${{ steps.nvmrc.outputs.NODE_VERSION }}" "$SETUP_NODE_ACTION_FILE"; then
+    echo -e "${GREEN}✅ setup-node composite action correctly reads Node.js version from .nvmrc${NC}"
+    SETUP_NODE_OK=true
   else
-    echo -e "${RED}Error: $CI_WORKFLOW_FILE does not read Node.js version from .nvmrc${NC}"
-    echo -e "${YELLOW}    Please update the file to use the .nvmrc approach${NC}"
+    echo -e "${RED}Error: setup-node composite action does not read Node.js version from .nvmrc${NC}"
+    echo -e "${YELLOW}    Please update the action to use the .nvmrc approach${NC}"
+    HAS_ERRORS=true
+    SETUP_NODE_OK=false
+  fi
+else
+  echo -e "${YELLOW}⚠️ Warning: setup-node composite action not found at $SETUP_NODE_ACTION_FILE${NC}"
+  SETUP_NODE_OK=false
+fi
+
+# Then check if the CI workflow uses either the composite action or reads .nvmrc directly
+if [ -f "$CI_WORKFLOW_FILE" ]; then
+  if [ "$SETUP_NODE_OK" = true ] && grep -q "uses: ./.github/actions/setup-node" "$CI_WORKFLOW_FILE"; then
+    echo -e "${GREEN}✅ CI workflow correctly uses setup-node composite action${NC}"
+  elif grep -q "NODE_VERSION=\$(cat .nvmrc" "$CI_WORKFLOW_FILE" || grep -q "NODE_VERSION=\$(tr -d.*<.*\.nvmrc" "$CI_WORKFLOW_FILE" || grep -q "NODE_VERSION=\$(< .nvmrc" "$CI_WORKFLOW_FILE"; then
+    echo -e "${GREEN}✅ CI workflow correctly reads Node.js version from .nvmrc directly${NC}"
+  else
+    echo -e "${RED}Error: CI workflow does not use setup-node action or read from .nvmrc${NC}"
+    echo -e "${YELLOW}    Please either:${NC}"
+    echo -e "${YELLOW}    1. Use the setup-node composite action: uses: ./.github/actions/setup-node${NC}"
+    echo -e "${YELLOW}    2. Or read directly from .nvmrc: \$(cat .nvmrc)${NC}"
     HAS_ERRORS=true
   fi
 
   # Make sure there are no hardcoded Node.js versions
   if grep -q "node-version: \"[0-9]" "$CI_WORKFLOW_FILE"; then
-    echo -e "${RED}Error: $CI_WORKFLOW_FILE contains hardcoded Node.js versions${NC}"
-    echo -e "${YELLOW}    Please update the file to use \${{ steps.nvmrc.outputs.NODE_VERSION }}""${NC}"
+    echo -e "${RED}Error: CI workflow contains hardcoded Node.js versions${NC}"
+    echo -e "${YELLOW}    Please update to use setup-node action or \${{ steps.nvmrc.outputs.NODE_VERSION }}${NC}"
     HAS_ERRORS=true
   fi
 else
-  echo -e "${YELLOW}⚠️ Warning: $CI_WORKFLOW_FILE not found. Skipping check.${NC}"
+  echo -e "${YELLOW}⚠️ Warning: CI workflow file not found at $CI_WORKFLOW_FILE${NC}"
 fi
 
 # Check package.json for engines field

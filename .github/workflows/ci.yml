@@ -3,196 +3,51 @@ name: CI
   push:
     branches:
       - main
+    paths:
+      - "**.js"
+      - "**.jsx"
+      - "**.ts"
+      - "**.tsx"
+      - "package*.json"
+      - ".github/workflows/**"
+      - "configs/**"
   pull_request:
     branches:
       - main
+    paths:
+      - "**.js"
+      - "**.jsx"
+      - "**.ts"
+      - "**.tsx"
+      - "package*.json"
+      - ".github/workflows/**"
+      - "configs/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   CI: true
   HUSKY: 0
+
 jobs:
-  lint:
-    name: Lint
+  setup:
+    name: Setup
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Read .nvmrc
-        id: nvmrc
-        run: |
-          {
-            echo "NODE_VERSION=$(< .nvmrc)"
-          } >> "$GITHUB_OUTPUT"
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: npm
-      - name: Install dependencies
-        run: HUSKY=0 npm ci
-      - name: Install system dependencies
-        run: |
-          echo "Installing system dependencies..."
-          sudo apt-get update
-          # Install yamllint
-          if ! command -v yamllint &> /dev/null; then
-            echo "Installing yamllint..."
-            sudo apt-get install -y yamllint
-          fi
-          # Install shellcheck
-          if ! command -v shellcheck &> /dev/null; then
-            echo "Installing shellcheck..."
-            sudo apt-get install -y shellcheck
-          fi
-      - name: Run linters
-        run: npm run lint
-      - name: Upload logs on failure
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: lint-logs
-          path: |
-            ./**/*.log
-            ./npm-debug.log*
-          retention-days: 7
-  type-check:
-    name: Type Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Read .nvmrc
-        id: nvmrc
-        run: |
-          {
-            echo "NODE_VERSION=$(< .nvmrc)"
-          } >> "$GITHUB_OUTPUT"
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: npm
-      - name: Check package sync
-        run: |
-          echo "Node version: $(node -v)"
-          echo "npm version: $(npm -v)"
-          echo "Checking if package.json and package-lock.json are in sync..."
-          HUSKY=0 npm ci --dry-run || { echo "Dry run failed"; npm diff; exit 1; }
-      - name: Install dependencies
-        run: HUSKY=0 npm ci
-      - name: Check types
-        run: npm run type-check
-      - name: Upload logs on failure
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: type-check-logs
-          path: |
-            ./**/*.log
-            ./npm-debug.log*
-          retention-days: 7
-  test:
-    name: Unit Tests
-    needs:
-      - lint
-      - type-check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Read .nvmrc
-        id: nvmrc
-        run: |
-          {
-            echo "NODE_VERSION=$(< .nvmrc)"
-          } >> "$GITHUB_OUTPUT"
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: npm
-      - name: Check package sync
-        run: |
-          echo "Node version: $(node -v)"
-          echo "npm version: $(npm -v)"
-          echo "Checking if package.json and package-lock.json are in sync..."
-          HUSKY=0 npm ci --dry-run || { echo "Dry run failed"; npm diff; exit 1; }
-      - name: Install dependencies
-        run: HUSKY=0 npm ci
-      - name: Run tests
-        run: npm run test:unit
-      - name: Upload logs on failure
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: unit-test-logs
-          path: |
-            ./**/*.log
-            ./npm-debug.log*
-            ./junit.xml
-          retention-days: 7
-  snapshot:
-    name: Snapshot Tests
-    needs:
-      - lint
-      - type-check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Read .nvmrc
-        id: nvmrc
-        run: |
-          {
-            echo "NODE_VERSION=$(< .nvmrc)"
-          } >> "$GITHUB_OUTPUT"
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: npm
-      - name: Check package sync
-        run: |
-          echo "Node version: $(node -v)"
-          echo "npm version: $(npm -v)"
-          echo "Checking if package.json and package-lock.json are in sync..."
-          HUSKY=0 npm ci --dry-run || { echo "Dry run failed"; npm diff; exit 1; }
-      - name: Install dependencies
-        run: HUSKY=0 npm ci
-      - name: Run snapshot tests
-        run: npm run test:snapshot
-      - name: Upload logs on failure
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: snapshot-test-logs
-          path: |
-            ./**/*.log
-            ./npm-debug.log*
-            ./junit.xml
-          retention-days: 7
+      - uses: ./.github/actions/setup-node
+    outputs:
+      cache-hit: ${{ steps.node-modules-cache.outputs.cache-hit }}
+
   security:
     name: Security Check
-    needs:
-      - lint
-      - type-check
+    needs: [setup]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Read .nvmrc
-        id: nvmrc
-        run: |
-          {
-            echo "NODE_VERSION=$(< .nvmrc)"
-          } >> "$GITHUB_OUTPUT"
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: npm
-      - name: Check package sync
-        run: |
-          echo "Node version: $(node -v)"
-          echo "npm version: $(npm -v)"
-          echo "Checking if package.json and package-lock.json are in sync..."
-          HUSKY=0 npm ci --dry-run || { echo "Dry run failed"; npm diff; exit 1; }
-      - name: Install dependencies
-        run: HUSKY=0 npm ci
+      - uses: ./.github/actions/setup-node
       - name: Check for Snyk token
         id: check-snyk
         run: |
@@ -226,39 +81,110 @@ jobs:
             ./npm-debug.log*
             ./snyk-report.json
           retention-days: 7
-  e2e:
-    name: E2E Tests
-    needs:
-      - lint
-      - type-check
+
+  lint:
+    name: Lint
+    needs: [setup]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Read .nvmrc
-        id: nvmrc
+      - uses: ./.github/actions/setup-node
+      - name: Install system dependencies
         run: |
-          {
-            echo "NODE_VERSION=$(< .nvmrc)"
-          } >> "$GITHUB_OUTPUT"
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+          echo "Installing system dependencies..."
+          sudo apt-get update
+          # Install yamllint
+          if ! command -v yamllint &> /dev/null; then
+            echo "Installing yamllint..."
+            sudo apt-get install -y yamllint
+          fi
+          # Install shellcheck
+          if ! command -v shellcheck &> /dev/null; then
+            echo "Installing shellcheck..."
+            sudo apt-get install -y shellcheck
+          fi
+      - name: Run linters
+        run: npm run lint
+      - name: Upload logs on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
         with:
-          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: npm
-      - name: Check package sync
-        run: |
-          echo "Node version: $(node -v)"
-          echo "npm version: $(npm -v)"
-          echo "Checking if package.json and package-lock.json are in sync..."
-          HUSKY=0 npm ci --dry-run || { echo "Dry run failed"; npm diff; exit 1; }
-      - name: Install dependencies
-        run: HUSKY=0 npm ci
+          name: lint-logs
+          path: |
+            ./**/*.log
+            ./npm-debug.log*
+          retention-days: 7
+
+  type-check:
+    name: Type Check
+    needs: [setup]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node
+      - name: Check types
+        run: npm run type-check
+      - name: Upload logs on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: type-check-logs
+          path: |
+            ./**/*.log
+            ./npm-debug.log*
+          retention-days: 7
+
+  test:
+    name: Unit Tests
+    needs: [setup, type-check]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node
+      - name: Run tests
+        run: npm run test:unit
+      - name: Upload logs on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-logs
+          path: |
+            ./**/*.log
+            ./npm-debug.log*
+            ./junit.xml
+          retention-days: 7
+
+  snapshot:
+    name: Snapshot Tests
+    needs: [setup, type-check]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node
+      - name: Run snapshot tests
+        run: npm run test:snapshot
+      - name: Upload logs on failure
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-test-logs
+          path: |
+            ./**/*.log
+            ./npm-debug.log*
+            ./junit.xml
+          retention-days: 7
+
+  e2e:
+    name: E2E Tests
+    needs: [setup, type-check]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-node
       - name: Build API and Web
-        run: |
-          npm run build
+        run: npm run build
       - name: Run E2E tests
-        run: |
-          npm run test:e2e
+        run: npm run test:e2e
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
@@ -270,35 +196,16 @@ jobs:
             ./cypress/screenshots/**/*
             ./cypress/videos/**/*
           retention-days: 7
+
   coverage:
     name: Code Coverage
-    needs:
-      - test
-      - snapshot
+    needs: [setup, test, snapshot]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Read .nvmrc
-        id: nvmrc
-        run: |
-          {
-            echo "NODE_VERSION=$(< .nvmrc)"
-          } >> "$GITHUB_OUTPUT"
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: npm
-      - name: Check package sync
-        run: |
-          echo "Node version: $(node -v)"
-          echo "npm version: $(npm -v)"
-          echo "Checking if package.json and package-lock.json are in sync..."
-          HUSKY=0 npm ci --dry-run || { echo "Dry run failed"; npm diff; exit 1; }
-      - name: Install dependencies
-        run: HUSKY=0 npm ci
+      - uses: ./.github/actions/setup-node
       - name: Generate coverage
         run: npm run coverage:all
       - name: List coverage files
@@ -327,28 +234,16 @@ jobs:
             ./npm-debug.log*
             ./coverage/**/*
           retention-days: 7
+
   sonarcloud:
     name: SonarCloud Analysis
+    needs: [setup, coverage]
     runs-on: ubuntu-latest
-    needs:
-      - coverage
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Read .nvmrc
-        id: nvmrc
-        run: |
-          {
-            echo "NODE_VERSION=$(< .nvmrc)"
-          } >> "$GITHUB_OUTPUT"
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ steps.nvmrc.outputs.NODE_VERSION }}
-          cache: npm
-      - name: Install dependencies
-        run: HUSKY=0 npm ci
+      - uses: ./.github/actions/setup-node
       - name: Download coverage reports
         uses: actions/download-artifact@v4
         with:
@@ -365,57 +260,18 @@ jobs:
             ls -la coverage/sonar-report.xml
           else
             echo "Test execution report is missing, running cleanup script directly"
-            node scripts/cleanup-test-reports.js
-          fi
-      - name: List reports for debugging
-        run: |
-          echo "Listing all test report files in the project:"
-          find . -name "test-report.xml" -o -name "sonar-report.xml" | sort
-
-          echo "Listing all files in coverage directory:"
-          find coverage -type f | sort
-
-          echo "Content of sonar-report.xml:"
-          if [ -f "coverage/sonar-report.xml" ]; then
-            cat coverage/sonar-report.xml
-          else
-            echo "sonar-report.xml not found!"
           fi
       - name: SonarCloud Scan
-        if: ${{ github.event_name != 'pull_request' }}
-        uses: SonarSource/sonarqube-scan-action@v5.0.0
+        uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          projectBaseDir: .
           args: >
+            -Dsonar.organization=${{ github.repository_owner }}
             -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
-            -Dsonar.organization=${{ github.repository_owner }} -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.testExecutionReportPaths=coverage/sonar-report.xml
-            -Dsonar.projectBaseDir=.
-            -Dsonar.sources=apps/api/src/app.ts,apps/web/src/App.tsx,apps/web/src/main.tsx
-            -Dsonar.config=configs/quality/sonar-project.properties
-      - name: SonarCloud Scan with PR Decoration
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: SonarSource/sonarqube-scan-action@v5.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          projectBaseDir: .
-          args: >
-            -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
-            -Dsonar.organization=${{ github.repository_owner }} -Dsonar.host.url=https://sonarcloud.io
-            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.testExecutionReportPaths=coverage/sonar-report.xml
-            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} -Dsonar.pullrequest.branch=${{
-            github.head_ref }} -Dsonar.pullrequest.base=${{ github.base_ref }} -Dsonar.pullrequest.github.repository=${{
-            github.repository }}
-            -Dsonar.projectBaseDir=.
-            -Dsonar.sources=apps/api/src/app.ts,apps/web/src/App.tsx,apps/web/src/main.tsx
-            -Dsonar.config=configs/quality/sonar-project.properties
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
@@ -425,157 +281,31 @@ jobs:
             ./**/*.log
             ./npm-debug.log*
           retention-days: 7
-  validate:
-    name: Validate
-    needs:
-      - lint
-      - type-check
-      - test
-      - coverage
-      - sonarcloud
-      - security
-      - e2e
-      - snapshot
-    runs-on: ubuntu-latest
-    steps:
-      - name: All checks passed
-        run: echo "All validation checks have passed!"
+
   upload-logs:
     name: Upload Logs
-    runs-on: ubuntu-latest
-    if: ${{ always() }}
-    permissions:
-      issues: write
-      pull-requests: write
-      contents: read
+    if: always()
     needs:
+      - setup
+      - security
       - lint
       - type-check
       - test
-      - coverage
-      - e2e
-      - security
-      - sonarcloud
-      - validate
       - snapshot
+      - e2e
+      - coverage
+      - sonarcloud
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-      - name: Diagnose GitHub Actions environment
-        run: |
-          {
-            echo "Diagnosing GitHub Actions environment..."
-            echo "GitHub Actions version:"
-            echo "Runner OS: ${{ runner.os }}"
-            echo "GitHub API URL: ${{ github.api_url }}"
-
-            # Check connectivity to GitHub
-            echo "Testing connectivity to GitHub..."
-            curl -s -o /dev/null -w "GitHub API Status: %{http_code}\n" "${{ github.api_url }}"
-
-            # Check if actions directory exists
-            echo "Checking actions directory..."
-            ls -la "$GITHUB_ACTION_PATH" || echo "GITHUB_ACTION_PATH not available"
-
-            # Check GitHub token permissions
-            echo "Checking GitHub token permissions..."
-            curl -s -H "Authorization: token ${{ github.token }}" "${{ github.api_url }}/rate_limit" | grep "rate"
-          }
-      - name: Create logs directory
-        run: mkdir -p logs
-      - name: Check runner environment
-        run: |
-          {
-            echo "Checking runner environment..."
-            echo "Runner OS: ${{ runner.os }}"
-            echo "Runner Name: ${{ runner.name }}"
-            echo "Runner Temp: ${{ runner.temp }}"
-            echo "Runner Tool Cache: ${{ runner.tool_cache }}"
-
-            echo "System information:"
-            uname -a
-
-            echo "Disk space:"
-            df -h
-
-            echo "Memory information:"
-            free -h || echo "free command not available"
-
-            echo "Node.js version:"
-            node -v || echo "Node.js not available"
-
-            echo "npm version:"
-            npm -v || echo "npm not available"
-          } > logs/runner_info.txt
-      - name: Collect GitHub Actions logs
-        run: |
-          {
-            echo "Collecting GitHub Actions logs for run ${{ github.run_id }}"
-            echo "Run URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-            echo "Workflow: ${{ github.workflow }}"
-            echo "Event: ${{ github.event_name }}"
-            echo "Ref: ${{ github.ref }}"
-            echo "SHA: ${{ github.sha }}"
-          } > logs/run_info.txt
-
-          {
-            echo "Job Status Summary:"
-            echo "Lint: ${{ needs.lint.result || 'unknown' }}"
-            echo "Type Check: ${{ needs.type-check.result || 'unknown' }}"
-            echo "Unit Tests: ${{ needs.test.result || 'unknown' }}"
-            echo "Snapshot Tests: ${{ needs.snapshot.result || 'unknown' }}"
-            echo "Code Coverage: ${{ needs.coverage.result || 'unknown' }}"
-            echo "E2E Tests: ${{ needs.e2e.result || 'unknown' }}"
-            echo "Security Check: ${{ needs.security.result || 'unknown' }}"
-            echo "SonarCloud Analysis: ${{ needs.sonarcloud.result || 'unknown' }}"
-          } > logs/job_status.txt
-      - name: Upload logs as artifacts
+      - name: Upload all logs
         uses: actions/upload-artifact@v4
         with:
-          name: workflow-logs-${{ github.run_id }}
-          path: logs/
+          name: all-logs
+          path: |
+            ./**/*.log
+            ./npm-debug.log*
+            ./junit.xml
+            ./coverage/**/*
+            ./cypress/screenshots/**/*
+            ./cypress/videos/**/*
           retention-days: 7
-      - name: Set job status environment variables
-        run: |
-          {
-            echo "LINT_RESULT=${{ needs.lint.result || 'unknown' }}"
-            echo "TYPE_CHECK_RESULT=${{ needs.type-check.result || 'unknown' }}"
-            echo "TEST_RESULT=${{ needs.test.result || 'unknown' }}"
-            echo "SNAPSHOT_RESULT=${{ needs.snapshot.result || 'unknown' }}"
-            echo "COVERAGE_RESULT=${{ needs.coverage.result || 'unknown' }}"
-            echo "E2E_RESULT=${{ needs.e2e.result || 'unknown' }}"
-            echo "SECURITY_RESULT=${{ needs.security.result || 'unknown' }}"
-            echo "SONARCLOUD_RESULT=${{ needs.sonarcloud.result || 'unknown' }}"
-          } >> "$GITHUB_ENV"
-      - name: Create comment with logs link
-        if: ${{ github.event_name == 'pull_request' }}
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: >
-            const artifactUrl =
-            `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}/artifacts`;
-
-            const runUrl =
-            `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `## CI Workflow Failed ❌\n\n
-                Some jobs in the CI workflow failed. You can view the detailed logs here:\n\n
-                - [Workflow Run](${runUrl})\n
-                - [Workflow Artifacts](${artifactUrl})\n\n
-                ### Job Status\n\n
-                - Lint: ${process.env.LINT_RESULT || 'unknown'}\n
-                - Type Check: ${process.env.TYPE_CHECK_RESULT || 'unknown'}\n
-                - Unit Tests: ${process.env.TEST_RESULT || 'unknown'}\n
-                - Snapshot Tests: ${process.env.SNAPSHOT_RESULT || 'unknown'}\n
-                - Code Coverage: ${process.env.COVERAGE_RESULT || 'unknown'}\n
-                - E2E Tests: ${process.env.E2E_RESULT || 'unknown'}\n
-                - Security Check: ${process.env.SECURITY_RESULT || 'unknown'}\n
-                - SonarCloud Analysis: ${process.env.SONARCLOUD_RESULT || 'unknown'}`
-            });
