@@ -1,4 +1,4 @@
-const axios = require('axios');
+import axios from 'axios';
 
 describe('API', () => {
   it('should return Hello World from the root endpoint', async () => {

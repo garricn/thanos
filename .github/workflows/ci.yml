@@ -308,6 +308,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
           verbose: true
+          file: configs/test/codecov.yml
       - name: Upload coverage reports as artifacts
         uses: actions/upload-artifact@v4
         with:
