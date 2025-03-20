@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nodemon --watch src --ext ts --exec 'ts-node --project ../../configs/build/tsconfig.api.json src/main.ts'",
+    "dev": "nodemon --watch src --ext ts --exec 'ts-node --esm --project ../../configs/build/tsconfig.api.json src/main.ts'",
     "build": "node build.js",
     "start": "node dist/index.js",
     "test": "jest --config configs/test/jest.config.ts",

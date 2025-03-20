@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { createApp } from '../../src/app';
+import { createApp } from '../../src/app.ts';
 
 describe('API App', () => {
   it('should return Hello World', async () => {

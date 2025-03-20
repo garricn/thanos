@@ -16,11 +16,5 @@ export default {
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../coverage/api-e2e',
   testMatch: ['**/?(*.)+(spec|test).[jt]s?(x)'],
-  globals: {
-    'ts-jest': {
-      tsconfig: '<rootDir>/configs/test/tsconfig.spec.json',
-      useESM: true,
-    },
-  },
   extensionsToTreatAsEsm: ['.ts'],
 };

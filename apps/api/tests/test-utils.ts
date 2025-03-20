@@ -22,13 +22,13 @@ jest.mock('../db/models/log', () => mockLogModel, { virtual: true });
 
 // We need to dynamically import here because we have to mock the module before importing it
 // Using dynamic import pattern for ES modules
-const appModule = await import('../src/app');
-const { setupApp } = appModule;
+const appModule = await import('../src/app.ts');
+const { createApp } = appModule;
 
 /**
  * Creates a test Express app for testing
  * @returns {express.Application} The configured Express app for testing
  */
 export function createTestApp(): express.Application {
-  return setupApp();
+  return createApp();
 }
