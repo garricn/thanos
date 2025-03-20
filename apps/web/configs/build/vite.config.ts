@@ -26,6 +26,9 @@ export default defineConfig(() => ({
   css: {
     postcss: "../../../../configs/build/postcss.config.js",
   },
+  babel: {
+    configFile: "../../../../configs/build/babel.config.js",
+  },
   // Uncomment this if you are using workers.
   // worker: {
   //  plugins: [],
