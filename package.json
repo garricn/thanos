@@ -66,7 +66,8 @@
     "validate": "npm run check:deps && npm run check:outdated && npm-run-all --parallel lint type-check security:check validate:actions validate:node-version && npm run test:all && npm run coverage:all",
     "validate:actions": "./scripts/validate-actions.sh",
     "check:deps": "npm ci --dry-run && npm ls --depth=0",
-    "check:outdated": "npm outdated || true"
+    "check:outdated": "npm outdated || true",
+    "act": "./scripts/run-act.sh"
   },
   "resolutions": {
     "inflight": "1.0.6"
