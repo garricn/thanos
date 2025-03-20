@@ -28,12 +28,12 @@ Docker provides containerization for the Thanos project, ensuring consistent dev
 
 The project includes several Docker-related files:
 
-| File                       | Purpose                                         |
-| -------------------------- | ----------------------------------------------- |
-| `Dockerfile.dev`           | Configuration for local development environment |
-| `Dockerfile.ci`            | Configuration for CI environment                |
-| `docker-compose.yml`       | Multi-container setup for local development     |
-| `docker-compose-ci.yml`    | Multi-container setup for CI                    |
+| File                    | Description                                            |
+|------------------------|--------------------------------------------------------|
+| `configs/docker/Dockerfile.dev`           | Configuration for local development environment |
+| `configs/docker/Dockerfile.ci`            | Configuration for CI environment                |
+| `configs/docker/docker-compose.yml`       | Multi-container setup for local development     |
+| `configs/docker/docker-compose-ci.yml`    | Multi-container setup for CI                    |
 | `scripts/docker-ci.sh`     | Script to run CI checks in Docker               |
 | `scripts/docker/run-ci.sh` | Script executed inside the Docker CI container  |
 
@@ -65,7 +65,7 @@ The project includes several Docker-related files:
 
 ## Development Environment
 
-The development environment uses `docker-compose.yml` and `Dockerfile.dev` to create a consistent development setup.
+The development environment uses `configs/docker/docker-compose.yml` and `configs/docker/Dockerfile.dev` to create a consistent development setup.
 
 ### Starting the Development Environment
 
@@ -94,7 +94,7 @@ docker-compose down
 
 ## CI Environment
 
-The CI environment uses `docker-compose-ci.yml` and `Dockerfile.ci` to run validation checks in an isolated environment.
+The CI environment uses `configs/docker/docker-compose-ci.yml` and `configs/docker/Dockerfile.ci` to run validation checks in an isolated environment.
 
 ### Running CI Checks
 

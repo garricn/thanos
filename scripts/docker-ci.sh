@@ -33,7 +33,7 @@ fi
 # Run the Docker container using docker-compose
 echo -e "${YELLOW}Running CI checks in Docker container...${NC}"
 echo -e "${YELLOW}This will validate that all Node.js version references are in sync with .nvmrc${NC}"
-$DOCKER_COMPOSE -f docker-compose-ci.yml up --build --abort-on-container-exit
+$DOCKER_COMPOSE -f configs/docker/docker-compose-ci.yml up --build --abort-on-container-exit
 
 # Check the exit code of the Docker container
 EXIT_CODE=$?

@@ -118,12 +118,12 @@ else
 fi
 
 # Check Dockerfile if it exists
-if [ -f "Dockerfile" ]; then
+if [ -f "configs/docker/Dockerfile" ]; then
   echo -e "\n${YELLOW}Checking Dockerfile...${NC}"
 
   # Check if Dockerfile uses Node.js and if version matches
-  if grep -q "FROM node:" "Dockerfile"; then
-    DOCKERFILE_NODE_VERSION=$(grep "FROM node:" "Dockerfile" | head -1 | sed -E 's/FROM node:([0-9]+).*/\1/')
+  if grep -q "FROM node:" "configs/docker/Dockerfile"; then
+    DOCKERFILE_NODE_VERSION=$(grep "FROM node:" "configs/docker/Dockerfile" | head -1 | sed -E 's/FROM node:([0-9]+).*/\1/')
 
     if [ "$DOCKERFILE_NODE_VERSION" != "$NVMRC_VERSION" ]; then
       echo -e "${RED}❌ Error: Node.js version in Dockerfile ($DOCKERFILE_NODE_VERSION) does not match .nvmrc ($NVMRC_VERSION)${NC}"
@@ -140,12 +140,12 @@ else
 fi
 
 # Check Dockerfile.ci if it exists
-if [ -f "Dockerfile.ci" ]; then
+if [ -f "configs/docker/Dockerfile.ci" ]; then
   echo -e "\n${YELLOW}Checking Dockerfile.ci...${NC}"
 
   # Check if Dockerfile.ci uses Node.js and if version matches
-  if grep -q "FROM node:" "Dockerfile.ci"; then
-    DOCKERFILE_CI_NODE_VERSION=$(grep "FROM node:" "Dockerfile.ci" | head -1 | sed -E 's/FROM node:([0-9]+).*/\1/')
+  if grep -q "FROM node:" "configs/docker/Dockerfile.ci"; then
+    DOCKERFILE_CI_NODE_VERSION=$(grep "FROM node:" "configs/docker/Dockerfile.ci" | head -1 | sed -E 's/FROM node:([0-9]+).*/\1/')
 
     if [ "$DOCKERFILE_CI_NODE_VERSION" != "$NVMRC_VERSION" ]; then
       echo -e "${RED}❌ Error: Node.js version in Dockerfile.ci ($DOCKERFILE_CI_NODE_VERSION) does not match .nvmrc ($NVMRC_VERSION)${NC}"
@@ -162,12 +162,12 @@ else
 fi
 
 # Check docker-compose.yml if it exists
-if [ -f "docker-compose.yml" ]; then
+if [ -f "configs/docker/docker-compose.yml" ]; then
   echo -e "\n${YELLOW}Checking docker-compose.yml...${NC}"
 
   # Check if docker-compose.yml uses Node.js and if version matches
-  if grep -q "NODE_VERSION:" "docker-compose.yml"; then
-    COMPOSE_NODE_VERSION=$(grep -o "NODE_VERSION: [0-9]\+" "docker-compose.yml" | head -1 | sed -E 's/NODE_VERSION: ([0-9]+).*/\1/')
+  if grep -q "NODE_VERSION:" "configs/docker/docker-compose.yml"; then
+    COMPOSE_NODE_VERSION=$(grep -o "NODE_VERSION: [0-9]\+" "configs/docker/docker-compose.yml" | head -1 | sed -E 's/NODE_VERSION: ([0-9]+).*/\1/')
 
     if [ "$COMPOSE_NODE_VERSION" != "$NVMRC_VERSION" ]; then
       echo -e "${RED}❌ Error: Node.js version in docker-compose.yml ($COMPOSE_NODE_VERSION) does not match .nvmrc ($NVMRC_VERSION)${NC}"
@@ -184,12 +184,12 @@ else
 fi
 
 # Check docker-compose-ci.yml if it exists
-if [ -f "docker-compose-ci.yml" ]; then
+if [ -f "configs/docker/docker-compose-ci.yml" ]; then
   echo -e "\n${YELLOW}Checking docker-compose-ci.yml...${NC}"
 
   # Check if docker-compose-ci.yml uses Node.js and if version matches
-  if grep -q "NODE_VERSION:" "docker-compose-ci.yml"; then
-    COMPOSE_CI_NODE_VERSION=$(grep -o "NODE_VERSION: [0-9]\+" "docker-compose-ci.yml" | head -1 | sed -E 's/NODE_VERSION: ([0-9]+).*/\1/')
+  if grep -q "NODE_VERSION:" "configs/docker/docker-compose-ci.yml"; then
+    COMPOSE_CI_NODE_VERSION=$(grep -o "NODE_VERSION: [0-9]\+" "configs/docker/docker-compose-ci.yml" | head -1 | sed -E 's/NODE_VERSION: ([0-9]+).*/\1/')
 
     if [ "$COMPOSE_CI_NODE_VERSION" != "$NVMRC_VERSION" ]; then
       echo -e "${RED}❌ Error: Node.js version in docker-compose-ci.yml ($COMPOSE_CI_NODE_VERSION) does not match .nvmrc ($NVMRC_VERSION)${NC}"
@@ -206,12 +206,12 @@ else
 fi
 
 # Check Dockerfile.dev if it exists
-if [ -f "Dockerfile.dev" ]; then
+if [ -f "configs/docker/Dockerfile.dev" ]; then
   echo -e "\n${YELLOW}Checking Dockerfile.dev...${NC}"
 
   # Check if Dockerfile.dev uses Node.js and if version matches
-  if grep -q "NODE_VERSION=" "Dockerfile.dev"; then
-    DOCKERFILE_DEV_NODE_VERSION=$(grep "NODE_VERSION=" "Dockerfile.dev" | head -1 | sed -E 's/.*NODE_VERSION=([0-9]+).*/\1/')
+  if grep -q "NODE_VERSION=" "configs/docker/Dockerfile.dev"; then
+    DOCKERFILE_DEV_NODE_VERSION=$(grep "NODE_VERSION=" "configs/docker/Dockerfile.dev" | head -1 | sed -E 's/.*NODE_VERSION=([0-9]+).*/\1/')
 
     if [ "$DOCKERFILE_DEV_NODE_VERSION" != "$NVMRC_VERSION" ]; then
       echo -e "${RED}❌ Error: Node.js version in Dockerfile.dev ($DOCKERFILE_DEV_NODE_VERSION) does not match .nvmrc ($NVMRC_VERSION)${NC}"

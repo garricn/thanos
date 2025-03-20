@@ -458,8 +458,8 @@ Current status:
   - [x] Move linting configs (eslint.config.mjs, eslint.base.config.mjs, .prettierrc, etc.) to `configs/lint`
   - [ ] Move testing configs (jest.config.ts, jest.preset.js, jestSonar.config.js) to `configs/test`
   - [ ] Move build configs (vite.config.ts, tsconfig.json, etc.) to `configs/build`
-  - [ ] Move Docker files (docker-compose.yml, Dockerfile.dev) to `configs/docker`
-  - [ ] Move CI configs (docker-compose-ci.yml, Dockerfile.ci) to `configs/ci`
+  - [x] Move Docker files (docker-compose.yml, Dockerfile.dev) to `configs/docker`
+  - [x] Move CI configs (docker-compose-ci.yml, Dockerfile.ci) to `configs/docker`
 - [ ] Clean up redundant YAML linting configurations:
   - [ ] Switch to yamllint (native tool) for better performance and features:
     - [ ] Remove .yaml-lint.json and yaml-lint npm package
