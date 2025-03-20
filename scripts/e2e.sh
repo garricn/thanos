@@ -41,7 +41,7 @@ WEB_EXIT_CODE=$?
 cd -
 
 echo "Running API E2E tests..."
-cd apps/api/e2e && NODE_OPTIONS='--experimental-vm-modules' npx jest --config jest.config.mjs --verbose --no-cache
+cd apps/api/e2e && NODE_OPTIONS='--experimental-vm-modules' npx jest --config configs/test/jest.config.mjs --verbose --no-cache
 API_EXIT_CODE=$?
 cd -
 
