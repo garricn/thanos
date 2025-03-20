@@ -5,8 +5,8 @@ import { mkdirSync, existsSync } from 'fs';
 
 // Directories to look for lcov.info files
 const covDirs = [
-  path.join(process.cwd(), 'apps/web/coverage'),
-  path.join(process.cwd(), 'apps/api/coverage'),
+  path.join(process.cwd(), 'coverage/apps/web'),
+  path.join(process.cwd(), 'coverage/apps/api'),
 ];
 
 // Create the coverage output directory if it doesn't exist
@@ -40,7 +40,7 @@ for (const dir of covDirs) {
       // Copy the lcov-report directory if it exists
       const lcovReportDir = path.join(dir, 'lcov-report');
       if (existsSync(lcovReportDir)) {
-        const targetDir = dir.includes('/web/')
+        const targetDir = dir.includes('/web')
           ? path.join(outputDir, 'apps/web/lcov-report')
           : path.join(outputDir, 'apps/api/lcov-report');
 

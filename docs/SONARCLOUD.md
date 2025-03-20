@@ -49,6 +49,7 @@ See the [Self-Hosted SonarQube Setup](#self-hosted-sonarqube-setup) section for 
 ### Configuration Files
 
 1. **configs/quality/sonar-project.properties**
+
    - This file contains the main configuration for SonarCloud analysis
    - Defines what code to analyze and what to exclude
    - Specifies where to find test reports and coverage data
