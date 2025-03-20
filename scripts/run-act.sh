@@ -49,11 +49,10 @@ fi
 CMD+=(
   "--artifact-server-path" "./artifacts"
   "-P" "ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest"
-  "-v"
 )
 
 # Print command (without tokens)
-echo "Running: act $* --artifact-server-path ./artifacts -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest -v"
+echo "Running: act $* --artifact-server-path ./artifacts -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest"
 
 # Run act passing all provided arguments
 "${CMD[@]}"
