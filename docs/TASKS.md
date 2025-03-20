@@ -481,6 +481,11 @@ Current status:
   - [ ] Choose a consistent approach for all path references (<rootDir> or path.resolve)
   - [ ] Update all Jest configuration files to use the standardized approach
   - [ ] Document the preferred approach in a comment for future reference
+- [ ] Update and relocate generate.js:
+  - [ ] Move generate.js to scripts/ directory
+  - [ ] Update generate.js to fix outdated functionality
+  - [ ] Add package.json script to run it from the new location
+  - [ ] Update documentation to reference the new location
 - [ ] Clean up redundant YAML linting configurations:
   - [ ] Switch to yamllint (native tool) for better performance and features:
     - [ ] Remove .yaml-lint.json and yaml-lint npm package
