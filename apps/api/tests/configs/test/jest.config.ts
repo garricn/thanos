@@ -1,12 +1,11 @@
 export default {
   displayName: 'api-tests',
-  preset: '../../../jest.preset.js',
   testEnvironment: 'node',
   transform: {
     '^.+\\.[tj]s$': [
       'ts-jest',
       {
-        tsconfig: '<rootDir>/tsconfig.spec.json',
+        tsconfig: '<rootDir>/configs/test/tsconfig.spec.json',
       },
     ],
   },
@@ -17,4 +16,10 @@ export default {
     '<rootDir>/src/**/*.spec.ts',
     '<rootDir>/*.test.ts',
   ],
+  setupFilesAfterEnv: ['../../../jest.setup.js'],
+  globals: {
+    'ts-jest': {
+      tsconfig: '<rootDir>/configs/test/tsconfig.spec.json',
+    },
+  },
 };

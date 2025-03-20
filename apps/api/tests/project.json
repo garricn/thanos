@@ -1,21 +1,24 @@
 {
   "name": "api-tests",
+  "$schema": "../../../../schemas/project-schema.json",
+  "sourceRoot": "apps/api/tests/src",
   "projectType": "application",
-  "implicitDependencies": ["api"],
   "targets": {
-    "pretest": {
-      "options": {
-        "jestConfig": "apps/api/tests/jest.config.ts",
-        "testMatch": ["**/structure.test.ts"],
-        "passWithNoTests": true
-      }
-    },
     "test": {
+      "executor": "@thanos/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/api/tests/jest.config.ts",
+        "jestConfig": "apps/api/tests/configs/test/jest.config.ts",
         "passWithNoTests": true
       },
-      "dependsOn": ["pretest"]
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
     }
-  }
+  },
+  "tags": [],
+  "implicitDependencies": ["api"]
 }

@@ -1,13 +1,24 @@
 {
   "name": "api-e2e",
+  "$schema": "../../../../schemas/project-schema.json",
+  "sourceRoot": "apps/api/e2e/src",
   "projectType": "application",
-  "implicitDependencies": ["api"],
   "targets": {
     "e2e": {
+      "executor": "@thanos/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
-        "jestConfig": "apps/api/e2e/jest.config.ts",
+        "jestConfig": "apps/api/e2e/configs/test/jest.config.ts",
         "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
       }
     }
-  }
+  },
+  "tags": [],
+  "implicitDependencies": ["api"]
 }

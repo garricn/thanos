@@ -8,11 +8,16 @@ export default {
     '^.+\\.[tj]s$': [
       'ts-jest',
       {
-        tsconfig: '<rootDir>/tsconfig.spec.json',
+        tsconfig: '<rootDir>/configs/test/tsconfig.spec.json',
       },
     ],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../coverage/api-e2e',
   testMatch: ['**/?(*.)+(spec|test).[jt]s?(x)'],
+  globals: {
+    'ts-jest': {
+      tsconfig: '<rootDir>/configs/test/tsconfig.spec.json',
+    },
+  },
 };

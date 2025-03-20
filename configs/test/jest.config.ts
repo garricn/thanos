@@ -1,6 +1,6 @@
 export default {
   displayName: 'thanos',
-  preset: './jest.preset.js',
+  testEnvironment: 'node',
   transform: {
     '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': 'babel-jest',
     '^.+\\.[tj]sx?$': [
@@ -14,9 +14,13 @@ export default {
       },
     ],
   },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   coverageDirectory: './coverage/thanos',
-  projects: ['<rootDir>/apps/*/jest.config.ts'],
+  projects: [
+    '<rootDir>/apps/*/configs/test/jest.config.ts',
+    '<rootDir>/apps/*/e2e/configs/test/jest.config.ts',
+    '<rootDir>/apps/*/tests/configs/test/jest.config.ts',
+  ],
   testMatch: [],
   collectCoverageFrom: [
     'apps/**/*.{js,jsx,ts,tsx}',
@@ -38,12 +42,13 @@ export default {
     '!apps/**/*.json',
     '!apps/**/*.md',
   ],
+  coverageReporters: ['json', 'lcov', 'text', 'clover'],
   coverageThreshold: {
     global: {
-      branches: 70,
-      functions: 70,
-      lines: 70,
-      statements: 70,
+      branches: 80,
+      functions: 80,
+      lines: 80,
+      statements: 80,
     },
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],

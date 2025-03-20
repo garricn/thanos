@@ -6,8 +6,8 @@
     "dev": "nodemon --watch src --ext ts --exec 'ts-node src/main.ts'",
     "build": "node build.js",
     "start": "node dist/index.js",
-    "test": "jest --config jest.config.ts",
-    "test:coverage": "jest --config jest.config.ts --coverage",
+    "test": "jest --config configs/test/jest.config.ts",
+    "test:coverage": "jest --config configs/test/jest.config.ts --coverage",
     "lint": "eslint --config configs/lint/eslint.config.mjs .",
     "typecheck": "tsc --noEmit --project ../../configs/build/tsconfig.json"
   },

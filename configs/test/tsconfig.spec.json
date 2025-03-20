@@ -1,5 +1,5 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../build/tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
     "module": "commonjs",
@@ -7,7 +7,8 @@
     "jsx": "react-jsx",
     "composite": true,
     "types": ["jest", "node", "@testing-library/jest-dom"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "allowJs": true
   },
   "include": [
     "../../jest.config.ts",

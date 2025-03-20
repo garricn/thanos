@@ -1,24 +1,24 @@
+import * as path from 'path';
+
+const projectRoot = path.resolve(__dirname, '../../');
+
 export default {
   displayName: 'api',
-  preset: undefined,
   testEnvironment: 'node',
+  rootDir: projectRoot,
   transform: {
     '^.+\\.[tj]s$': [
       'ts-jest',
       {
-        tsconfig: '<rootDir>/tsconfig.spec.json',
-        allowJs: true,
+        tsconfig: '<rootDir>/configs/test/tsconfig.spec.json',
       },
     ],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
-  coverageDirectory: '../../coverage/apps/api',
-  testMatch: [
-    '<rootDir>/tests/src/**/*.test.ts',
-    '<rootDir>/tests/src/**/*.spec.ts',
-  ],
+  coverageDirectory: path.resolve(projectRoot, '../../coverage'),
+  testMatch: ['<rootDir>/tests/**/*.test.ts', '<rootDir>/tests/**/*.spec.ts'],
   testPathIgnorePatterns: ['<rootDir>/tests/src/main.path.spec.ts'],
-  setupFilesAfterEnv: ['../../jest.setup.js'],
+  setupFilesAfterEnv: [path.resolve(projectRoot, '../../jest.setup.js')],
   testResultsProcessor: 'jest-sonar-reporter',
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',
