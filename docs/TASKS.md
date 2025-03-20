@@ -485,6 +485,59 @@ Current status:
   - [x] Ensure all generated directories are properly ignored
   - [x] Add common environment and temporary files
   - [x] Include patterns for all build artifacts
+- [ ] Implement centralized generated/ directory structure:
+
+  - Proposed structure:
+
+    ```
+    generated/
+    ├── dist/             # Build outputs
+    │   ├── api/          # API build output
+    │   └── web/          # Web build output
+    ├── coverage/         # Test coverage reports
+    │   ├── api/
+    │   └── web/
+    ├── reports/          # Test and other reports
+    │   ├── test/         # Jest test reports
+    │   └── sonar/        # SonarQube reports
+    ├── scannerwork/      # SonarQube scanner files
+    └── temp/             # Temporary files
+    ```
+
+  - [ ] Phase 1: Planning and preparation
+    - [x] Define directory structure for generated outputs
+    - [x] Identify potential path resolution issues
+    - [x] Document incremental implementation plan
+    - [ ] Create the base generated/ directory with placeholder .gitkeep files
+    - [ ] Update .gitignore to include the new structure
+  - [ ] Phase 2: Test and coverage reports (lowest risk)
+    - [ ] Create generated/coverage/ structure
+    - [ ] Update Jest coverage configuration for API app
+    - [ ] Verify API tests still generate correct coverage
+    - [ ] Update Jest coverage configuration for Web app
+    - [ ] Verify Web tests still generate correct coverage
+    - [ ] Update SonarQube coverage report paths
+  - [ ] Phase 3: Build outputs (medium risk)
+    - [ ] Create generated/dist/ structure
+    - [ ] Update API build output configuration
+    - [ ] Verify API builds correctly to new location
+    - [ ] Update Web build output configuration
+    - [ ] Verify Web builds correctly to new location
+    - [ ] Test that all imports and file references work correctly
+  - [ ] Phase 4: SonarQube integration (higher risk)
+    - [ ] Update sonar-project.properties paths
+    - [ ] Modify jest-to-sonar.js script for new locations
+    - [ ] Test SonarQube scanning with new structure
+    - [ ] Verify all reports are correctly generated and found
+  - [ ] Phase 5: CI/CD pipeline updates
+    - [ ] Update GitHub Actions workflow paths
+    - [ ] Test CI pipeline with new directory structure
+    - [ ] Verify all CI steps pass with new configuration
+  - [ ] Phase 6: Cleanup and documentation
+    - [ ] Remove old directories once all tests pass
+    - [ ] Update project documentation to reference new paths
+    - [ ] Document the new structure in PROJECT_STRUCTURE.md
+
 - [ ] Standardize Jest configuration paths:
   - [ ] Choose a consistent approach for all path references (<rootDir> or path.resolve)
   - [ ] Update all Jest configuration files to use the standardized approach
