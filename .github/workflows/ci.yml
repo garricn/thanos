@@ -41,7 +41,14 @@ jobs:
           fi
           yamllint -c configs/lint/.yamllint .github/**/*.yml
       - name: Run linters
-        run: npm run lint
+        run: |
+          # Install shellcheck
+          if ! command -v shellcheck &> /dev/null; then
+            echo "Installing shellcheck..."
+            sudo apt-get update
+            sudo apt-get install -y shellcheck
+          fi
+          npm run lint
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
