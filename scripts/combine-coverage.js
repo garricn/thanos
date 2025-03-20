@@ -1,7 +1,7 @@
 // This script combines coverage reports from different workspaces
-const fs = require('fs');
-const path = require('path');
-const { mkdirSync, existsSync } = require('fs');
+import fs from 'fs';
+import path from 'path';
+import { mkdirSync, existsSync } from 'fs';
 
 // Directories to look for lcov.info files
 const covDirs = [

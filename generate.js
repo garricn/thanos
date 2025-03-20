@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
-const inquirer = require('inquirer');
-const fs = require('fs-extra');
-const path = require('path');
-const { execSync } = require('child_process');
+import inquirer from 'inquirer';
+import fs from 'fs-extra';
+import path from 'path';
+import { execSync } from 'child_process';
+import { fileURLToPath } from 'url';
 
 // Get the script directory (where thanos is installed)
-const scriptPath = process.argv[1];
-const scriptDir = path.dirname(scriptPath);
+const currentFilePath = fileURLToPath(import.meta.url);
+const scriptDir = path.dirname(currentFilePath);
 const thanosDir = scriptDir;
 
 // Get the target directory (where the user is running the script from)

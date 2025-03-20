@@ -1,4 +1,5 @@
 import { createApp } from './app';
+import { fileURLToPath } from 'url';
 
 // Extracted server creation function that can be tested
 export function createServer() {
@@ -14,6 +15,7 @@ export function createServer() {
 }
 
 // Only execute when directly run, not when imported in tests
-if (require.main === module) {
+const isMainModule = import.meta.url === `file://${process.argv[1]}`;
+if (isMainModule) {
   createServer();
 }

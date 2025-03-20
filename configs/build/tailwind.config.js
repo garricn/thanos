@@ -1,5 +1,5 @@
-const { join } = require('path');
-const glob = require('glob');
+import { join } from 'path';
+import glob from 'glob';
 
 // Simple replacement for createGlobPatternsForDependencies
 const createContentPaths = (baseDir) => {
@@ -15,7 +15,7 @@ const createContentPaths = (baseDir) => {
 };
 
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
     join(
       __dirname,

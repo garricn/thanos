@@ -2,6 +2,7 @@
   "name": "@thanos/web",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "vite --config configs/build/vite.config.ts",
     "build": "vite build --config configs/build/vite.config.ts",
