@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
 import { build } from 'esbuild';
 import { copy } from 'fs-extra';
 import path from 'path';
 import { fileURLToPath } from 'url';
-/* eslint-enable @typescript-eslint/no-require-imports */
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

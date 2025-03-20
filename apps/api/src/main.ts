@@ -1,5 +1,4 @@
 import { createApp } from './app.ts';
-import { fileURLToPath } from 'url';
 
 // Extracted server creation function that can be tested
 export function createServer() {
