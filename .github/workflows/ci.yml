@@ -141,27 +141,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node
-      - name: Run tests with coverage
-        run: |
-          mkdir -p coverage/api/unit coverage/web/unit
-          JEST_SONAR_REPORTER_OUTPUT_DIR='./coverage/api/unit' \
-          JEST_SONAR_REPORTER_OUTPUT_NAME='sonar-report.xml' \
-          npm run test --workspace=apps/api -- \
-            --coverage \
-            --coverageDirectory="${PWD}/coverage/api/unit" \
-            --coverageReporters=text-summary \
-            --coverageReporters=html \
-            --coverageReporters=lcov \
-            --testResultsProcessor=jest-sonar-reporter
-          JEST_SONAR_REPORTER_OUTPUT_DIR='./coverage/web/unit' \
-          JEST_SONAR_REPORTER_OUTPUT_NAME='sonar-report.xml' \
-          npm run test --workspace=apps/web -- \
-            --coverage \
-            --coverageDirectory="${PWD}/coverage/web/unit" \
-            --coverageReporters=text-summary \
-            --coverageReporters=html \
-            --coverageReporters=lcov \
-            --testResultsProcessor=jest-sonar-reporter
+      - name: Run unit tests with coverage
+        run: npm run test:unit:coverage
       - name: Upload test coverage
         uses: actions/upload-artifact@v4
         with:
@@ -193,18 +174,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node
       - name: Run snapshot tests with coverage
-        run: |
-          mkdir -p coverage/web/snapshot
-          JEST_SONAR_REPORTER_OUTPUT_DIR='./coverage/web/snapshot' \
-          JEST_SONAR_REPORTER_OUTPUT_NAME='sonar-report.xml' \
-          npm run test --workspace=apps/web -- \
-            --testPathPattern=snapshot \
-            --coverage \
-            --coverageDirectory="${PWD}/coverage/web/snapshot" \
-            --coverageReporters=text-summary \
-            --coverageReporters=html \
-            --coverageReporters=lcov \
-            --testResultsProcessor=jest-sonar-reporter
+        run: npm run test:snapshot:coverage
       - name: Upload snapshot coverage
         uses: actions/upload-artifact@v4
         with:

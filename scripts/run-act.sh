@@ -4,6 +4,9 @@
 
 set -e
 
+# Store current Node.js version
+CURRENT_NODE_VERSION=$(node -v)
+
 # Create artifacts directory if it doesn't exist
 mkdir -p ./artifacts
 
@@ -46,10 +49,18 @@ fi
 CMD+=(
   "--artifact-server-path" "./artifacts"
   "-P" "ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest"
+  "-v"
 )
 
 # Print command (without tokens)
-echo "Running: act $* --artifact-server-path ./artifacts -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest"
+echo "Running: act $* --artifact-server-path ./artifacts -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest -v"
 
 # Run act passing all provided arguments
 "${CMD[@]}"
+
+# Restore Node.js version if it changed
+AFTER_NODE_VERSION=$(node -v)
+if [ "$CURRENT_NODE_VERSION" != "$AFTER_NODE_VERSION" ]; then
+  echo "Node.js version changed during act execution. Restoring to $CURRENT_NODE_VERSION..."
+  nvm use "$(echo "$CURRENT_NODE_VERSION" | sed 's/^v//')"
+fi
