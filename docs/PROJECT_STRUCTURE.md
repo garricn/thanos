@@ -22,6 +22,12 @@ thanos/
 │       ├── src/           # API source code
 │       │   └── main.ts    # Express server entry point
 │       └── e2e/           # API end-to-end tests
+├── configs/               # Configuration files
+│   ├── build/             # Build configurations
+│   ├── lint/              # Linting configurations
+│   ├── test/              # Testing configurations
+│   └── quality/           # Quality tool configurations
+│       └── sonar-project.properties  # SonarCloud configuration
 ├── docs/                  # Project documentation
 │   ├── GETTING_STARTED.md # Instructions for getting started
 │   ├── COMMANDS.md        # List of available commands
@@ -52,7 +58,6 @@ thanos/
 - **tsconfig.json**: TypeScript configuration
 - **nx.json**: Nx monorepo configuration
 - **README.md**: Project overview and documentation
-- **sonar-project.properties**: SonarCloud configuration
 
 ## Naming Conventions
 

@@ -48,83 +48,16 @@ See the [Self-Hosted SonarQube Setup](#self-hosted-sonarqube-setup) section for 
 
 ### Configuration Files
 
-1. **sonar-project.properties**
+1. **configs/quality/sonar-project.properties**
+   - This file contains the main configuration for SonarCloud analysis
+   - Defines what code to analyze and what to exclude
+   - Specifies where to find test reports and coverage data
 
-   This file contains the main configuration for SonarCloud analysis:
+2. **Update configs/quality/sonar-project.properties**
 
    ```properties
-   # Project identification
-   sonar.projectKey=garricn_thanos
-   sonar.projectName=Thanos
-   sonar.projectVersion=1.0.0
-   sonar.organization=garricn
-
-   # Source code location
-   sonar.sources=apps
-   sonar.exclusions=**/*.test.ts,**/*.spec.ts,**/*.cy.ts,**/*.e2e.ts,**/node_modules/**,**/dist/**,**/coverage/**
-
-   # Tests location
-   sonar.tests=apps
-   sonar.test.inclusions=**/*.test.ts,**/*.spec.ts,**/*.cy.ts,**/*.e2e.ts
-
-   # Test coverage reports
-   sonar.javascript.lcov.reportPaths=coverage/lcov.info
-
-   # Encoding of the source code
-   sonar.sourceEncoding=UTF-8
-
-   # TypeScript analysis configuration
-   sonar.typescript.tsconfigPath=tsconfig.base.json
-
-   # Additional parameters
-   sonar.verbose=false
-   sonar.qualitygate.wait=true
-   sonar.qualitygate.timeout=300
-   ```
-
-2. **GitHub Actions Workflow (.github/workflows/ci.yml)**
-
-   The CI workflow includes a job for SonarCloud analysis:
-
-   ```yaml
-   sonarcloud:
-     name: SonarCloud Analysis
-     runs-on: ubuntu-latest
-     needs: [coverage]
-     steps:
-       - uses: actions/checkout@v4
-         with:
-           fetch-depth: 0
-       - name: Set up Node.js
-         uses: actions/setup-node@v4
-         with:
-           node-version: '20'
-           cache: npm
-       - name: Install dependencies
-         run: HUSKY=0 npm ci
-       - name: Download coverage reports
-         uses: actions/download-artifact@v4
-         with:
-           name: coverage-reports
-           path: coverage/
-       - name: SonarCloud Scan
-         if: ${{ github.event_name != 'pull_request' }}
-         uses: SonarSource/sonarcloud-github-action@master
-         env:
-           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-       - name: SonarCloud Scan with PR Decoration
-         if: ${{ github.event_name == 'pull_request' }}
-         uses: SonarSource/sonarcloud-github-action@master
-         env:
-           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-         with:
-           args: >
-             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
-             -Dsonar.pullrequest.branch=${{ github.head_ref }}
-             -Dsonar.pullrequest.base=${{ github.base_ref }}
-             -Dsonar.pullrequest.github.repository=${{ github.repository }}
+   sonar.projectKey=your_organization_thanos
+   sonar.organization=your_organization
    ```
 
 ### GitHub Secrets
