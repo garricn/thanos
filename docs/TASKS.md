@@ -480,6 +480,11 @@ Current status:
 - [x] Update .gitignore for IDE-specific directories:
   - [x] Ensure .vscode/ is ignored (already was)
   - [x] Add .cursor/ to .gitignore
+- [x] Improve .gitignore organization and comprehensiveness:
+  - [x] Organize entries into clear, logical sections
+  - [x] Ensure all generated directories are properly ignored
+  - [x] Add common environment and temporary files
+  - [x] Include patterns for all build artifacts
 - [ ] Standardize Jest configuration paths:
   - [ ] Choose a consistent approach for all path references (<rootDir> or path.resolve)
   - [ ] Update all Jest configuration files to use the standardized approach
