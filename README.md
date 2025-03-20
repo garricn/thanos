@@ -107,3 +107,34 @@ SOFTWARE.
 ---
 
 _Note: This project was originally a learning exercise for Test-Driven Development (TDD) with an AI agent (Cline) and has been transformed into a reusable scaffolding template._
+
+### Prerequisites
+
+- Node.js 20 (use `nvm use` if you have nvm installed)
+- npm 10 or later
+- Git
+- Docker and Docker Compose (for containerized development)
+- yamllint (for YAML linting):
+  - macOS: `brew install yamllint`
+  - Linux: `sudo apt-get install yamllint`
+  - Windows: `choco install yamllint`
+
+### Installation
+
+```bash
+# Clone the Thanos repository
+git clone https://github.com/garricn/thanos.git
+
+# Make the generator script executable
+chmod +x /path/to/thanos/generate.js
+
+# Create and navigate to a new empty directory
+mkdir my-new-project
+cd my-new-project
+
+# Run the generator script
+/path/to/thanos/generate.js
+
+# Start your new project
+npm run start
+```

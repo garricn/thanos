@@ -1,0 +1,8 @@
+{
+  "extends": "../../../../configs/build/tsconfig.api.json",
+  "ts-node": {
+    "transpileOnly": true,
+    "esm": true,
+    "experimentalSpecifierResolution": "node"
+  }
+}

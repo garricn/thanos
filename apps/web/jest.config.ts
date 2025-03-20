@@ -21,7 +21,10 @@ export default {
     '<rootDir>/src/**/*(*.)@(spec|test).[jt]s?(x)',
     '<rootDir>/tests/**/*(*.)@(spec|test).[jt]s?(x)',
   ],
-  setupFilesAfterEnv: ['<rootDir>/tests/test-setup.ts', '../../jest.setup.js'],
+  setupFilesAfterEnv: [
+    '<rootDir>/tests/test-setup.ts',
+    '../../scripts/jest.setup.js',
+  ],
   testResultsProcessor: 'jest-sonar-reporter',
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',

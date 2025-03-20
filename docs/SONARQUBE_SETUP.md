@@ -57,7 +57,7 @@ To enable SonarQube analysis in CI, add the following secrets to your GitHub rep
 
 ## Configuration
 
-The SonarQube configuration is defined in the `sonar-project.properties` file in the project root. Key settings include:
+The SonarQube configuration is defined in the `configs/quality/sonar-project.properties` file in the project. Key settings include:
 
 - `sonar.projectKey`: Unique identifier for the project in SonarQube
 - `sonar.sources`: Directories containing source code to analyze
@@ -81,7 +81,7 @@ You can customize Quality Gates in the SonarQube server settings.
 
 - **Analysis fails with authentication error**: Check that your `SONAR_TOKEN` and `SONAR_HOST_URL` are correct.
 - **Coverage reports not found**: Ensure that the coverage job is generating reports in the expected location.
-- **Analysis succeeds but no results in SonarQube**: Verify that the project key in `sonar-project.properties` matches the project key in SonarQube.
+- **Analysis succeeds but no results in SonarQube**: Verify that the project key in `configs/quality/sonar-project.properties` matches the project key in SonarQube.
 
 ## Resources
 

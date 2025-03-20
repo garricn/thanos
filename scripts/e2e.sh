@@ -18,7 +18,11 @@ API_PID=$!
 # shellcheck disable=SC2317
 cleanup() {
   echo "Shutting down servers..."
-  kill "$WEB_PID" "$API_PID" 2>/dev/null || true
+  # Send SIGTERM first to allow graceful shutdown
+  kill -TERM "$WEB_PID" "$API_PID" 2>/dev/null || true
+  # Wait a moment for processes to terminate
+  sleep 2
+  # Force kill any remaining processes on the ports
   lsof -ti:4200,3000 | xargs kill -9 2>/dev/null || true
   echo "All servers have been shut down."
 }
@@ -37,9 +41,14 @@ WEB_EXIT_CODE=$?
 cd -
 
 echo "Running API E2E tests..."
-cd apps/api/e2e && npx jest --verbose
+cd apps/api/e2e && NODE_OPTIONS='--experimental-vm-modules' npx jest --config configs/test/jest.config.mjs --verbose --no-cache
 API_EXIT_CODE=$?
 cd -
+
+# Explicitly run cleanup to shut down servers
+cleanup
+# Disable the trap so cleanup doesn't run twice
+trap - EXIT INT TERM
 
 # Determine final exit code
 if [ $WEB_EXIT_CODE -ne 0 ] || [ $API_EXIT_CODE -ne 0 ]; then

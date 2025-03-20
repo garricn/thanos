@@ -15,9 +15,9 @@
  * 4. Creates or updates the coverage/sonar-report.xml file
  */
 
-const fs = require('fs');
-const path = require('path');
-const glob = require('glob');
+import fs from 'fs';
+import path from 'path';
+import { glob } from 'glob';
 
 // Paths to look for test results
 const testResultsGlobs = [
@@ -89,7 +89,7 @@ function findTestResults() {
   }
 
   // Check for junit.xml files in the project coverage structure
-  const junitFiles = glob.sync('coverage/apps/*/junit.xml');
+  const junitFiles = glob('coverage/apps/*/junit.xml', { sync: true });
   if (junitFiles.length > 0) {
     console.log(`Found ${junitFiles.length} junit.xml files`);
     resultFiles.push(...junitFiles);
@@ -244,3 +244,6 @@ function escapeXml(unsafe) {
 
 // Execute the script
 generateSonarXML();
+
+// Add ESM export for potential imports from other modules
+export { generateSonarXML };

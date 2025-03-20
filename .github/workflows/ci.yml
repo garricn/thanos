@@ -28,16 +28,18 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: HUSKY=0 npm ci
-      - name: Validate GitHub Actions workflows
+      - name: Lint YAML
         run: |
-          # Install actionlint using the official download script
-          bash <(curl https://raw.githubusercontent.com/rhysd/actionlint/main/scripts/download-actionlint.bash)
-          # Install yaml-lint for YAML validation
-          npm install yaml-lint
-          # Run YAML linting
-          npx yaml-lint -c .yaml-lint.json .github/workflows/*.yml
-          # Run actionlint
-          ./actionlint -color .github/workflows/*.yml
+          if ! command -v yamllint &> /dev/null; then
+            echo "Installing yamllint..."
+            if [[ "$RUNNER_OS" == "macOS" ]]; then
+              brew install yamllint
+            elif [[ "$RUNNER_OS" == "Linux" ]]; then
+              sudo apt-get update
+              sudo apt-get install -y yamllint
+            fi
+          fi
+          yamllint -c configs/lint/.yamllint .github/**/*.yml
       - name: Run linters
         run: npm run lint
       - name: Upload logs on failure
@@ -306,6 +308,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
           verbose: true
+          file: configs/test/codecov.yml
       - name: Upload coverage reports as artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -383,11 +386,15 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          args: >-
+          projectBaseDir: .
+          args: >
             -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
             -Dsonar.organization=${{ github.repository_owner }} -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
             -Dsonar.testExecutionReportPaths=coverage/sonar-report.xml
+            -Dsonar.projectBaseDir=.
+            -Dsonar.sources=apps/api/src/app.ts,apps/web/src/App.tsx,apps/web/src/main.tsx
+            -Dsonar.config=configs/quality/sonar-project.properties
       - name: SonarCloud Scan with PR Decoration
         if: ${{ github.event_name == 'pull_request' }}
         uses: SonarSource/sonarqube-scan-action@v5.0.0
@@ -395,7 +402,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
-          args: >-
+          projectBaseDir: .
+          args: >
             -Dsonar.projectKey=${{ github.repository_owner }}_${{ github.event.repository.name }}
             -Dsonar.organization=${{ github.repository_owner }} -Dsonar.host.url=https://sonarcloud.io
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
@@ -403,6 +411,9 @@ jobs:
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} -Dsonar.pullrequest.branch=${{
             github.head_ref }} -Dsonar.pullrequest.base=${{ github.base_ref }} -Dsonar.pullrequest.github.repository=${{
             github.repository }}
+            -Dsonar.projectBaseDir=.
+            -Dsonar.sources=apps/api/src/app.ts,apps/web/src/App.tsx,apps/web/src/main.tsx
+            -Dsonar.config=configs/quality/sonar-project.properties
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4

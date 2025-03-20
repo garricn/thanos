@@ -2,7 +2,8 @@
   "name": "@thanos/api-e2e",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "e2e": "jest"
   }
-} 
+}

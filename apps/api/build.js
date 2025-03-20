@@ -1,8 +1,9 @@
-/* eslint-disable @typescript-eslint/no-require-imports */
-const { build } = require('esbuild');
-const { copy } = require('fs-extra');
-const path = require('path');
-/* eslint-enable @typescript-eslint/no-require-imports */
+import { build } from 'esbuild';
+import { copy } from 'fs-extra';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function runBuild() {
   // Build the TypeScript files

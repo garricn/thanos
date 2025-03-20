@@ -184,6 +184,16 @@ Current status:
 ## ESLint Refactoring Tasks
 
 - [ ] Migrate CommonJS modules to ES Modules for consistent module patterns
+  - [ ] Update all package.json files with "type": "module"
+  - [ ] Convert require() statements to import statements in all files
+  - [ ] Convert module.exports to export default or named exports
+  - [ ] Update tsconfig.json files to use "module": "ESNext" or "NodeNext" and "moduleResolution": "NodeNext"
+  - [ ] Fix module detection in main.ts (replace require.main with import.meta.url check)
+  - [ ] Update Jest configs to properly support ESM (add "extensionsToTreatAsEsm" and moduleNameMapper)
+  - [ ] Add NODE_OPTIONS="--experimental-vm-modules" to test scripts
+  - [ ] Update E2E test files to use ESM syntax for consistent pattern
+  - [ ] Fix path resolution in ESM imports (add .js extensions where needed)
+  - [ ] Update support files in test directories (global-setup.ts, test-setup.ts, etc.)
 - [ ] Create a Logger Service to replace direct console usage with a dedicated logger service for different environments
 - [ ] Restructure tests to avoid requiring mocked modules
 - [ ] Refactor `build.js` to use ES modules and eliminate `eslint-disable` comments
@@ -376,7 +386,7 @@ Current status:
   - [x] Add engines.node field to package.json
 - [x] Integrate validate:actions into the main validate script
 - [x] Set up Docker for local CI:
-  - [x] Install Docker Desktop from https://www.docker.com/products/docker-desktop/
+  - [x] Install Docker Desktop from <https://www.docker.com/products/docker-desktop/>
   - [x] Verify installation with `docker --version`
   - [x] Run `npm run docker:ci` to test the Docker-based CI environment
   - [x] Update validate-node-version.sh to check Dockerfile.ci
@@ -455,11 +465,45 @@ Current status:
   - [ ] `configs/docker` - Docker and container-related configurations
   - [ ] `configs/ci` - CI/CD related configurations
 - [ ] Move non-essential configuration files to appropriate subdirectories:
-  - [ ] Move linting configs (eslint.config.mjs, eslint.base.config.mjs, .prettierrc, etc.) to `configs/lint`
+  - [x] Move linting configs (eslint.config.mjs, eslint.base.config.mjs, .prettierrc, etc.) to `configs/lint`
   - [ ] Move testing configs (jest.config.ts, jest.preset.js, jestSonar.config.js) to `configs/test`
   - [ ] Move build configs (vite.config.ts, tsconfig.json, etc.) to `configs/build`
-  - [ ] Move Docker files (docker-compose.yml, Dockerfile.dev) to `configs/docker`
-  - [ ] Move CI configs (docker-compose-ci.yml, Dockerfile.ci) to `configs/ci`
+  - [x] Move Docker files (docker-compose.yml, Dockerfile.dev) to `configs/docker`
+  - [x] Move CI configs (docker-compose-ci.yml, Dockerfile.ci) to `configs/docker`
+- [x] Improve binary tool management:
+  - [x] Remove actionlint binary from repository
+  - [x] Add actionlint to .gitignore
+  - [x] Update local-ci.sh to handle actionlint installation automatically
+- [x] Move Jest configuration files:
+  - [x] Move jest.setup.js to scripts/ directory
+  - [x] Update all references in Jest configuration files
+- [ ] Standardize Jest configuration paths:
+  - [ ] Choose a consistent approach for all path references (<rootDir> or path.resolve)
+  - [ ] Update all Jest configuration files to use the standardized approach
+  - [ ] Document the preferred approach in a comment for future reference
+- [ ] Update and relocate generate.js:
+  - [ ] Move generate.js to scripts/ directory
+  - [ ] Update generate.js to fix outdated functionality
+  - [ ] Add package.json script to run it from the new location
+  - [ ] Update documentation to reference the new location
+- [ ] Clean up redundant YAML linting configurations:
+  - [ ] Switch to yamllint (native tool) for better performance and features:
+    - [ ] Remove .yaml-lint.json and yaml-lint npm package
+    - [ ] Keep .yamllint configuration
+    - [ ] Update package.json scripts to use yamllint
+    - [ ] Add yamllint installation instructions to README
+    - [ ] Update CI workflow to use yamllint
+  - [ ] Ensure all YAML files are properly linted with the new configuration
+- [ ] Implement dedicated JSON formatter:
+  - [ ] Research and select appropriate JSON formatting tool (e.g., json-stringify-pretty-compact)
+  - [ ] Add JSON formatting script to package.json
+  - [ ] Update .prettierignore to exclude JSON files
+  - [ ] Test formatting on various JSON files (package.json, tsconfig.json, etc.)
+  - [ ] Document JSON formatting approach in project docs
+- [ ] Consolidate configuration into package.json where appropriate:
+  - [ ] Replace .nvmrc with "engines" field in package.json for Node.js version requirements (note: .nvmrc is still needed for nvm users)
+  - [ ] Research if .npmrc settings can be moved to npm scripts or keep as separate file
+  - [ ] Research if .snyk settings can be managed through package.json or keep as separate file
 - [ ] Update file references in project files:
   - [ ] Update package.json scripts to reference the new config file locations
   - [ ] Update import statements in configuration files to use the new paths
@@ -471,6 +515,7 @@ Current status:
 - [ ] Document the configuration structure in the project documentation
 - [ ] Create an npm script to validate configuration references after reorganization
 - [ ] All generated dirs and files should live in generated/
+- [ ] Relative paths should be relative to project root
 
 ## Other
 

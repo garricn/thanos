@@ -7,8 +7,8 @@
  * 2. After copying, the root test-report.xml is removed to avoid confusion
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
 
 const ROOT_REPORT = 'test-report.xml';
 const COVERAGE_DIR = 'coverage';
@@ -60,7 +60,10 @@ if (fs.existsSync(ROOT_REPORT)) {
     // Try to run jest-to-sonar.js if available
     if (fs.existsSync(path.join('scripts', 'jest-to-sonar.js'))) {
       console.log('Running jest-to-sonar.js to generate the report');
-      require('./jest-to-sonar.js');
+      // Use dynamic import for ES modules
+      import('./jest-to-sonar.js').catch((err) => {
+        console.error('Error importing jest-to-sonar.js:', err);
+      });
     } else {
       console.error('No mechanism found to generate the report');
     }
