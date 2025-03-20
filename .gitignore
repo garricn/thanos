@@ -25,6 +25,7 @@ testem.log
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
 *.log
+artifacts
 
 # IDEs and editors
 .idea

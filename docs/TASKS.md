@@ -501,6 +501,7 @@ Current status:
     │   ├── test/         # Jest test reports
     │   └── sonar/        # SonarQube reports
     ├── scannerwork/      # SonarQube scanner files
+    ├── artifacts/        # Github actions workflow uploads for local runnner 'act'
     └── temp/             # Temporary files
     ```
 
@@ -585,3 +586,4 @@ Current status:
 - [ ] Experimentation and feature flagging
 - [ ] Dependency Injection
 - [ ] Shut servers down gracefully to avoid errors when running test:e2e
+- [ ] Get Github actions workflow local runner 'act' working
