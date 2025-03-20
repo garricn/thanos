@@ -1,24 +1,24 @@
 // This script combines coverage reports from different workspaces
-import fs from "fs";
-import path from "path";
-import { mkdirSync, existsSync } from "fs";
+import fs from 'fs';
+import path from 'path';
+import { mkdirSync, existsSync } from 'fs';
 
 // Directories to look for lcov.info and sonar-report.xml files
 const covDirs = [
-  path.join(process.cwd(), "coverage/api/unit"),
-  path.join(process.cwd(), "coverage/web/unit"),
-  path.join(process.cwd(), "coverage/web/snapshot"),
+  path.join(process.cwd(), 'coverage/api/unit'),
+  path.join(process.cwd(), 'coverage/web/unit'),
+  path.join(process.cwd(), 'coverage/web/snapshot'),
 ];
 
 // Create the coverage output directory if it doesn't exist
-const outputDir = path.join(process.cwd(), "coverage");
-const combinedDir = path.join(outputDir, "combined");
+const outputDir = path.join(process.cwd(), 'coverage');
+const combinedDir = path.join(outputDir, 'combined');
 if (!existsSync(combinedDir)) {
   mkdirSync(combinedDir, { recursive: true });
 }
 
 // Combine LCOV reports
-let combinedLcov = "";
+let combinedLcov = '';
 // Collect all test results for XML reports
 let combinedTestResults = [];
 let totalTests = 0;
@@ -29,15 +29,15 @@ let pendingTests = 0;
 for (const dir of covDirs) {
   if (existsSync(dir)) {
     // Handle LCOV files
-    const lcovPath = path.join(dir, "lcov.info");
+    const lcovPath = path.join(dir, 'lcov.info');
     if (existsSync(lcovPath)) {
-      const lcovContent = fs.readFileSync(lcovPath, "utf-8");
-      combinedLcov += lcovContent + "\n";
+      const lcovContent = fs.readFileSync(lcovPath, 'utf-8');
+      combinedLcov += lcovContent + '\n';
 
       // Copy the lcov-report directory if it exists
-      const lcovReportDir = path.join(dir, "lcov-report");
+      const lcovReportDir = path.join(dir, 'lcov-report');
       if (existsSync(lcovReportDir)) {
-        const targetDir = path.join(combinedDir, "lcov-report");
+        const targetDir = path.join(combinedDir, 'lcov-report');
 
         // Copy directory recursively
         const copyRecursiveSync = (src, dest) => {
@@ -52,7 +52,7 @@ for (const dir of covDirs) {
             fs.readdirSync(src).forEach((childItemName) => {
               copyRecursiveSync(
                 path.join(src, childItemName),
-                path.join(dest, childItemName),
+                path.join(dest, childItemName)
               );
             });
           } else {
@@ -65,10 +65,10 @@ for (const dir of covDirs) {
     }
 
     // Handle Sonar XML files
-    const sonarPath = path.join(dir, "sonar-report.xml");
+    const sonarPath = path.join(dir, 'sonar-report.xml');
     if (existsSync(sonarPath)) {
       try {
-        const content = fs.readFileSync(sonarPath, "utf8");
+        const content = fs.readFileSync(sonarPath, 'utf8');
         const report = JSON.parse(content);
         if (report.testResults) {
           combinedTestResults = combinedTestResults.concat(report.testResults);
@@ -85,7 +85,7 @@ for (const dir of covDirs) {
 }
 
 // Write the combined LCOV file
-fs.writeFileSync(path.join(combinedDir, "lcov.info"), combinedLcov);
+fs.writeFileSync(path.join(combinedDir, 'lcov.info'), combinedLcov);
 
 // Write the combined Sonar XML report
 const combinedSonarReport = {
@@ -97,12 +97,12 @@ const combinedSonarReport = {
 };
 
 fs.writeFileSync(
-  path.join(combinedDir, "sonar-report.xml"),
-  JSON.stringify(combinedSonarReport, null, 2),
+  path.join(combinedDir, 'sonar-report.xml'),
+  JSON.stringify(combinedSonarReport, null, 2)
 );
 
-console.log("Combined coverage reports created successfully!");
-console.log(`- LCOV report: ${path.join(combinedDir, "lcov.info")}`);
+console.log('Combined coverage reports created successfully!');
+console.log(`- LCOV report: ${path.join(combinedDir, 'lcov.info')}`);
 console.log(
-  `- Sonar XML report: ${path.join(combinedDir, "sonar-report.xml")}`,
+  `- Sonar XML report: ${path.join(combinedDir, 'sonar-report.xml')}`
 );
