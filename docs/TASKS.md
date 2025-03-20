@@ -485,6 +485,7 @@ Current status:
 - [ ] Document the configuration structure in the project documentation
 - [ ] Create an npm script to validate configuration references after reorganization
 - [ ] All generated dirs and files should live in generated/
+- [ ] Relative paths should be relative to project root
 
 ## Other
 

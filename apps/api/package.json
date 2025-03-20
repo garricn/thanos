@@ -9,7 +9,7 @@
     "test": "jest --config jest.config.ts",
     "test:coverage": "jest --config jest.config.ts --coverage",
     "lint": "eslint --config configs/lint/eslint.config.mjs .",
-    "typecheck": "tsc --noEmit --project configs/build/tsconfig.json"
+    "typecheck": "tsc --noEmit --project ../../configs/build/tsconfig.json"
   },
   "dependencies": {
     "express": "^4.19.2",

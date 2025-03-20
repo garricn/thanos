@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "rootDir": ".",
+    "rootDir": "../..",
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",
@@ -9,33 +9,21 @@
     "importHelpers": true,
     "target": "es2015",
     "module": "esnext",
-    "lib": [
-      "es2020",
-      "dom"
-    ],
+    "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "baseUrl": ".",
+    "baseUrl": "../..",
     "paths": {
-      "@thanos/api/*": [
-        "apps/api/*"
-      ],
-      "@thanos/web/*": [
-        "apps/web/*"
-      ]
+      "@thanos/api/*": ["apps/api/*"],
+      "@thanos/web/*": ["apps/web/*"]
     },
     "jsx": "react-jsx",
     "allowJs": false,
     "esModuleInterop": false,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "types": [
-      "node"
-    ],
-    "typeRoots": [
-      "node_modules/@types",
-      "types"
-    ]
+    "types": ["node"],
+    "typeRoots": ["../../node_modules/@types", "../../types"]
   },
   "files": [],
   "include": [],
@@ -48,8 +36,5 @@
     }
   ],
   "compileOnSave": false,
-  "exclude": [
-    "node_modules",
-    "tmp"
-  ]
+  "exclude": ["node_modules", "tmp"]
 }
