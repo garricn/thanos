@@ -1,53 +1,57 @@
 # See https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
 
-# compiled output
+# Dependency directories
+node_modules
+node_modules/.cache/
+
+# Build and output directories
 dist
+**/dist
 tmp
 out-tsc
+build
+**/build
 
-# dependencies
-node_modules
+# Test and coverage
+/coverage
+**/coverage
+test-report.xml
+**/test-report.xml
+/libpeerconnection.log
+testem.log
+
+# Cache and temporary files
+.scannerwork
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
+*.log
 
 # IDEs and editors
-/.idea
+.idea
 .project
 .classpath
 .c9/
 *.launch
 .settings/
 *.sublime-workspace
-
-# IDE - VSCode and Cursor
 .vscode
 .cursor
-
-# misc
-/.sass-cache
-/connect.lock
-/coverage
-/libpeerconnection.log
-npm-debug.log
-yarn-error.log
-testem.log
-/typings
-VERIFICATION.md
 
 # System Files
 .DS_Store
 Thumbs.db
+/.sass-cache
+/connect.lock
+/typings
 
-# Vite
-vite.config.*.timestamp*
-vitest.config.*.timestamp*
+# Environment and local files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+npm-debug.log
+yarn-error.log
+VERIFICATION.md
 
-# SonarCloud
-.scannerwork
-apps/web/dist
-apps/api/dist
-
-# Test reports
-test-report.xml
-**/test-report.xml
-
-# Binaries
+# Binaries and executables
 actionlint
