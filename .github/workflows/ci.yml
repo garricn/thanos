@@ -563,5 +563,17 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `## CI Workflow Failed ❌\n\nSome jobs in the CI workflow failed. You can view the detailed logs here:\n\n- [Workflow Run](${runUrl})\n- [Workflow Artifacts](${artifactUrl})\n\n### Job Status\n\n- Lint: ${process.env.LINT_RESULT || 'unknown'}\n- Type Check: ${process.env.TYPE_CHECK_RESULT || 'unknown'}\n- Unit Tests: ${process.env.TEST_RESULT || 'unknown'}\n- Snapshot Tests: ${process.env.SNAPSHOT_RESULT || 'unknown'}\n- Code Coverage: ${process.env.COVERAGE_RESULT || 'unknown'}\n- E2E Tests: ${process.env.E2E_RESULT || 'unknown'}\n- Security Check: ${process.env.SECURITY_RESULT || 'unknown'}\n- SonarCloud Analysis: ${process.env.SONARCLOUD_RESULT || 'unknown'}`
+              body: `## CI Workflow Failed ❌\n\n
+                Some jobs in the CI workflow failed. You can view the detailed logs here:\n\n
+                - [Workflow Run](${runUrl})\n
+                - [Workflow Artifacts](${artifactUrl})\n\n
+                ### Job Status\n\n
+                - Lint: ${process.env.LINT_RESULT || 'unknown'}\n
+                - Type Check: ${process.env.TYPE_CHECK_RESULT || 'unknown'}\n
+                - Unit Tests: ${process.env.TEST_RESULT || 'unknown'}\n
+                - Snapshot Tests: ${process.env.SNAPSHOT_RESULT || 'unknown'}\n
+                - Code Coverage: ${process.env.COVERAGE_RESULT || 'unknown'}\n
+                - E2E Tests: ${process.env.E2E_RESULT || 'unknown'}\n
+                - Security Check: ${process.env.SECURITY_RESULT || 'unknown'}\n
+                - SonarCloud Analysis: ${process.env.SONARCLOUD_RESULT || 'unknown'}`
             });
