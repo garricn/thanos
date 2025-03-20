@@ -14,10 +14,7 @@ export default [
     },
   },
   {
-    files: [
-      '**/*.ts',
-      '**/*.js',
-    ],
+    files: ['**/*.ts', '**/*.js'],
     rules: {
       'no-console': ['warn', { allow: ['info', 'warn', 'error'] }],
     },

@@ -474,6 +474,9 @@ Current status:
   - [x] Remove actionlint binary from repository
   - [x] Add actionlint to .gitignore
   - [x] Update local-ci.sh to handle actionlint installation automatically
+- [x] Move Jest configuration files:
+  - [x] Move jest.setup.js to scripts/ directory
+  - [x] Update all references in Jest configuration files
 - [ ] Clean up redundant YAML linting configurations:
   - [ ] Switch to yamllint (native tool) for better performance and features:
     - [ ] Remove .yaml-lint.json and yaml-lint npm package

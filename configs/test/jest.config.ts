@@ -51,7 +51,7 @@ export default {
       statements: 80,
     },
   },
-  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/scripts/jest.setup.js'],
   testResultsProcessor: 'jest-sonar-reporter',
   globals: {
     'jest-sonar-reporter': {

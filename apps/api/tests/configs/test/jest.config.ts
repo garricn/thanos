@@ -16,7 +16,7 @@ export default {
     '<rootDir>/src/**/*.spec.ts',
     '<rootDir>/*.test.ts',
   ],
-  setupFilesAfterEnv: ['../../../jest.setup.js'],
+  setupFilesAfterEnv: ['../../../../scripts/jest.setup.js'],
   globals: {
     'ts-jest': {
       tsconfig: '<rootDir>/configs/test/tsconfig.spec.json',

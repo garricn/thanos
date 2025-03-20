@@ -32,7 +32,7 @@
     "lint:sh": "shellcheck scripts/*.sh",
     "lint:yaml": "yamllint -c configs/lint/.yamllint .github/**/*.yml",
     "docker:ci": "./scripts/docker-ci.sh",
-    "format": "prettier --config configs/lint/.prettierrc --ignore-path configs/lint/.prettierignore --write \"**/*.{js,jsx,ts,tsx}\" && npm run format:md && npm run format:sh && npm run format:yaml",
+    "format": "prettier --config configs/lint/.prettierrc --ignore-path configs/lint/.prettierignore --write \"**/*.{js,jsx,mjs,ts,tsx}\" && npm run format:md && npm run format:sh && npm run format:yaml",
     "format:md": "prettier --config configs/lint/.prettierrc --ignore-path configs/lint/.prettierignore --write \"**/*.md\"",
     "format:sh": "shfmt -i 2 -ci -w scripts/*.sh",
     "format:yaml": "prettier --config configs/lint/.prettierrc --ignore-path configs/lint/.prettierignore --write \".github/**/*.{yml,yaml}\"",
