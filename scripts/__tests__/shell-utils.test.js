@@ -56,7 +56,10 @@ jest.mock('node:child_process', () => ({
 const { mockExit, mockConsoleLog, mockConsoleError } = setupTestEnvironment();
 
 // Import functions
-import { switchNodeVersion } from '../lib/shell-utils.js';
+import {
+  switchNodeVersion,
+  getCurrentNodeVersion,
+} from '../lib/shell-utils.js';
 
 describe('shell-utils', () => {
   beforeEach(() => {
@@ -122,6 +125,25 @@ describe('shell-utils', () => {
         expect.stringContaining('Failed to switch Node.js version')
       );
       expect(mockExit).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe('getCurrentNodeVersion', () => {
+    it('returns the current Node.js version', () => {
+      // Arrange
+      mockExecSync.mockImplementation((command) => {
+        if (command === 'node -v') {
+          return 'v18.15.0';
+        }
+        return '';
+      });
+
+      // Act
+      const version = getCurrentNodeVersion(mockExecSync);
+
+      // Assert
+      expect(version).toBe('18');
+      expect(mockExecSync).toHaveBeenCalledWith('node -v', expect.any(Object));
     });
   });
 });
