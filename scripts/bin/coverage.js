@@ -11,7 +11,7 @@ import { DOMParser, XMLSerializer } from '@xmldom/xmldom';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const projectRoot = path.resolve(__dirname, '..');
+const projectRoot = path.resolve(__dirname, '../..');
 
 // Ensure test directories exist
 function ensureTestDirectories(type) {
