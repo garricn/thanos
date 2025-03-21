@@ -5,60 +5,53 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { DOMParser, XMLSerializer } from '@xmldom/xmldom';
 
-// Get current directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const projectRoot = path.resolve(__dirname, '..');
 
 // Input files
 const inputFiles = [
-  'coverage/api/unit/sonar-report.xml',
-  'coverage/web/unit/sonar-report.xml',
-  'coverage/web/snapshot/sonar-report.xml',
-];
+  'coverage/raw/api/unit/sonar-report.xml',
+  'coverage/raw/web/unit/sonar-report.xml',
+  'coverage/raw/web/snapshot/sonar-report.xml',
+].filter((file) => fs.existsSync(file));
 
-// Output file
-const outputFile = 'coverage/combined/sonar-report.xml';
+if (inputFiles.length === 0) {
+  console.log('No Sonar report files found to combine.');
+  process.exit(0);
+}
 
-// Ensure output directory exists
-const outputDir = path.dirname(path.join(projectRoot, outputFile));
+// Create output directory if it doesn't exist
+const outputDir = 'coverage/reports/sonar';
 if (!fs.existsSync(outputDir)) {
   fs.mkdirSync(outputDir, { recursive: true });
 }
 
-// Initialize empty testExecutions document
-const combinedDoc = new DOMParser().parseFromString(
-  '<?xml version="1.0" encoding="UTF-8"?><testExecutions version="1"></testExecutions>',
-  'text/xml'
-);
-const combinedRoot = combinedDoc.documentElement;
+const outputFile = path.join(outputDir, 'sonar-report.xml');
 
-// Process each input file
-inputFiles.forEach((file) => {
-  const fullPath = path.join(projectRoot, file);
-  if (fs.existsSync(fullPath)) {
-    try {
-      const content = fs.readFileSync(fullPath, 'utf8');
-      const doc = new DOMParser().parseFromString(content, 'text/xml');
-      const fileNodes = doc.getElementsByTagName('file');
+// Read and parse the first file as the base
+const baseContent = fs.readFileSync(inputFiles[0], 'utf8');
+const parser = new DOMParser();
+const baseDoc = parser.parseFromString(baseContent, 'text/xml');
+const baseRoot = baseDoc.documentElement;
 
-      // Copy each file node to the combined document
-      for (let i = 0; i < fileNodes.length; i++) {
-        const imported = combinedDoc.importNode(fileNodes[i], true);
-        combinedRoot.appendChild(imported);
-      }
+// Process additional files
+inputFiles.slice(1).forEach((file) => {
+  const content = fs.readFileSync(file, 'utf8');
+  const doc = parser.parseFromString(content, 'text/xml');
+  const root = doc.documentElement;
 
-      console.log(`✅ Processed: ${file}`);
-    } catch (err) {
-      console.error(`❌ Error processing ${file}: ${err.message}`);
-    }
-  } else {
-    console.log(`⚠️ File not found: ${file}`);
+  // Copy all file elements from additional files
+  const files = root.getElementsByTagName('file');
+  for (let i = 0; i < files.length; i++) {
+    const node = files.item(i);
+    const imported = baseDoc.importNode(node, true);
+    baseRoot.appendChild(imported);
   }
 });
 
-// Write combined XML to output file
+// Write the combined file
 const serializer = new XMLSerializer();
-const combinedXml = serializer.serializeToString(combinedDoc);
-fs.writeFileSync(path.join(projectRoot, outputFile), combinedXml);
-console.log(`✅ Created combined report: ${outputFile}`);
+const output = serializer.serializeToString(baseDoc);
+fs.writeFileSync(outputFile, output);
+
+console.log(`Combined Sonar report created at: ${outputFile}`);
