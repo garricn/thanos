@@ -269,9 +269,7 @@ jobs:
           name: web-snapshot-coverage
           path: coverage/web/snapshot
       - name: Combine coverage for SonarCloud
-        run: |
-          npm run coverage:combine
-          npm run coverage:combine:xml
+        run: npm run coverage:combine
       - name: Upload individual coverage reports to Codecov
         uses: codecov/codecov-action@v4
         with:
