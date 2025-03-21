@@ -64,7 +64,7 @@ npm run act -- --simple -j validate
 You can also run the script directly:
 
 ```bash
-./scripts/run-act.sh [event-type] [workflow-file]
+./scripts/act.sh [event-type] [workflow-file]
 ```
 
 ### Using act manually

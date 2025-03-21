@@ -11,7 +11,7 @@
     "apps/*"
   ],
   "scripts": {
-    "act": "./scripts/run-act.sh",
+    "act": "./scripts/act.sh",
     "build": "npm run build --workspace=apps/api && npm run build --workspace=apps/web",
     "check": "npm-run-all --parallel lint type-check test:unit",
     "check:all": "npm-run-all check test:e2e coverage:all security:check check:deps",
