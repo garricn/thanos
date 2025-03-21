@@ -98,25 +98,38 @@ export function setupTestEnvironment() {
 // Common mock module setup
 export function setupCommonMocks() {
   const mockExecSync = jest.fn();
+  const mockSpawn = jest.fn();
   const mockReadFileSync = jest.fn();
   const mockExistsSync = jest.fn();
   const mockReaddirSync = jest.fn();
+  const mockWaitOn = jest.fn();
 
-  jest.unstable_mockModule('node:child_process', () => ({
+  // Mock child_process
+  jest.mock('child_process', () => ({
     execSync: mockExecSync,
+    spawn: mockSpawn,
   }));
 
-  jest.unstable_mockModule('node:fs', () => ({
+  // Mock fs
+  jest.mock('fs', () => ({
     readFileSync: mockReadFileSync,
     existsSync: mockExistsSync,
     readdirSync: mockReaddirSync,
   }));
 
+  // Mock wait-on
+  jest.mock('wait-on', () => ({
+    __esModule: true,
+    default: mockWaitOn,
+  }));
+
   return {
     mockExecSync,
+    mockSpawn,
     mockReadFileSync,
     mockExistsSync,
     mockReaddirSync,
+    mockWaitOn,
   };
 }
 

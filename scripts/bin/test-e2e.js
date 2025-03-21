@@ -30,7 +30,7 @@ let apiExitCode = 0;
  * @param {object} options Options for child_process.execSync
  * @returns {string} The command output
  */
-function execCmd(command, options = {}) {
+export function execCmd(command, options = {}) {
   console.log(`${colors.yellow}Executing: ${command}${colors.reset}`);
   try {
     return execSync(command, {
@@ -48,7 +48,7 @@ function execCmd(command, options = {}) {
  * Kill processes on specific ports
  * @param {number[]} ports Array of ports to kill processes on
  */
-function killProcessesOnPorts(ports) {
+export function killProcessesOnPorts(ports) {
   try {
     const portsStr = ports.join(',');
     console.log(
@@ -98,7 +98,7 @@ function killProcessesOnPorts(ports) {
  * @param {string} name Name of the server for logging
  * @returns {ChildProcess} The spawned child process
  */
-function startServer(command, name) {
+export function startServer(command, name) {
   console.log(`${colors.yellow}Starting ${name} server...${colors.reset}`);
 
   // Split the command into command and args
@@ -133,7 +133,7 @@ function startServer(command, name) {
 /**
  * Clean up all child processes
  */
-function cleanup() {
+export function cleanup() {
   console.log(`${colors.yellow}Shutting down servers...${colors.reset}`);
 
   // Send SIGTERM to all child processes
@@ -156,7 +156,7 @@ function cleanup() {
 /**
  * Main function to run E2E tests
  */
-async function runE2ETests() {
+export async function runE2ETests() {
   try {
     // Kill any existing processes on the ports we need
     killProcessesOnPorts([4200, 3000]);
@@ -233,5 +233,7 @@ async function runE2ETests() {
   }
 }
 
-// Start the tests
-runE2ETests();
+// Start the tests if this file is being run directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+  runE2ETests();
+}
