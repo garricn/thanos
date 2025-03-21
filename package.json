@@ -46,7 +46,7 @@
     "start:web": "npm run dev --workspace=apps/web",
     "test": "npm run test --workspace=apps/api && npm run test --workspace=apps/web",
     "test:all": "npm run test && npm run test:e2e",
-    "test:e2e": "./scripts/test-e2e.sh",
+    "test:e2e": "node scripts/bin/test-e2e.js",
     "test:scripts": "node --experimental-vm-modules node_modules/jest/bin/jest.js --config scripts/configs/jest.config.js",
     "test:snapshot": "npm run test --workspace=apps/web -- --testPathPattern=snapshot",
     "test:snapshot:coverage": "npm run coverage:snapshot -- --no-combine",

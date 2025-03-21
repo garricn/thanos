@@ -7,4 +7,6 @@ export default {
   coverageDirectory: 'coverage/scripts',
   coverageReporters: ['text', 'lcov'],
   verbose: true,
+  transform: {},
+  transformIgnorePatterns: ['/node_modules/(?!wait-on)'],
 };
