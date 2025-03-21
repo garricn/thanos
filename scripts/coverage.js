@@ -13,16 +13,27 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
 
-// Ensure required directories exist
-function ensureDirectories() {
-  const dirs = [
-    'coverage/raw/api/unit',
-    'coverage/raw/web/unit',
-    'coverage/raw/web/snapshot',
-    'coverage/combined',
-    'coverage/reports/sonar',
-    'coverage/reports/html',
-  ];
+// Ensure test directories exist
+function ensureTestDirectories(type) {
+  const dirs = [];
+
+  if (type === 'all' || type === 'unit') {
+    dirs.push('coverage/api/unit', 'coverage/web/unit');
+  }
+  if (type === 'all' || type === 'snapshot') {
+    dirs.push('coverage/web/snapshot');
+  }
+
+  dirs.forEach((dir) => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+  });
+}
+
+// Ensure combine directories exist
+function ensureCombineDirectories() {
+  const dirs = ['coverage/combined'];
 
   dirs.forEach((dir) => {
     if (!fs.existsSync(dir)) {
@@ -35,7 +46,6 @@ function ensureDirectories() {
 function cleanCoverage() {
   console.log(chalk.blue('🧹 Cleaning coverage directories...'));
   execSync('rm -rf coverage', { stdio: 'inherit' });
-  ensureDirectories();
 }
 
 // Move Sonar report files to their correct locations
@@ -44,15 +54,15 @@ function moveSonarReports(reportType) {
   const webReportSource = path.join(projectRoot, 'apps/web/test-report.xml');
   const apiReportDest = path.join(
     projectRoot,
-    'coverage/raw/api/unit/sonar-report.xml'
+    'coverage/api/unit/sonar-report.xml'
   );
   const webUnitReportDest = path.join(
     projectRoot,
-    'coverage/raw/web/unit/sonar-report.xml'
+    'coverage/web/unit/sonar-report.xml'
   );
   const webSnapshotReportDest = path.join(
     projectRoot,
-    'coverage/raw/web/snapshot/sonar-report.xml'
+    'coverage/web/snapshot/sonar-report.xml'
   );
 
   function moveFile(source, destination) {
@@ -99,17 +109,19 @@ function runUnitTests() {
   // API unit tests
   console.log(chalk.yellow('Running API unit tests...'));
   execSync(
-    `npm run test --workspace=apps/api -- --coverage --coverageDirectory="${process.cwd()}/coverage/raw/api/unit" --coverageReporters=text-summary --coverageReporters=text --coverageReporters=html --coverageReporters=lcov --coverageReporters=json --coverageReporters=json-summary --testResultsProcessor=jest-sonar-reporter`,
+    `npm run test --workspace=apps/api -- --coverage --coverageDirectory="${process.cwd()}/coverage/api/unit" --coverageReporters=text-summary --coverageReporters=text --coverageReporters=html --coverageReporters=lcov --coverageReporters=json --coverageReporters=json-summary --testResultsProcessor=jest-sonar-reporter`,
     { stdio: 'inherit' }
   );
+  // Move API report immediately after API tests
   moveSonarReports('api');
 
   // Web unit tests
   console.log(chalk.yellow('Running Web unit tests...'));
   execSync(
-    `npm run test --workspace=apps/web -- --coverage --coverageDirectory="${process.cwd()}/coverage/raw/web/unit" --coverageReporters=text-summary --coverageReporters=text --coverageReporters=html --coverageReporters=lcov --coverageReporters=json --coverageReporters=json-summary --testResultsProcessor=jest-sonar-reporter`,
+    `npm run test --workspace=apps/web -- --coverage --coverageDirectory="${process.cwd()}/coverage/web/unit" --coverageReporters=text-summary --coverageReporters=text --coverageReporters=html --coverageReporters=lcov --coverageReporters=json --coverageReporters=json-summary --testResultsProcessor=jest-sonar-reporter`,
     { stdio: 'inherit' }
   );
+  // Move Web unit report immediately after web unit tests
   moveSonarReports('web-unit');
 }
 
@@ -117,9 +129,10 @@ function runUnitTests() {
 function runSnapshotTests() {
   console.log(chalk.blue('📸 Running snapshot tests...'));
   execSync(
-    `npm run test --workspace=apps/web -- --testPathPattern=snapshot --coverage --coverageDirectory="${process.cwd()}/coverage/raw/web/snapshot" --coverageReporters=text-summary --coverageReporters=text --coverageReporters=html --coverageReporters=lcov --coverageReporters=json --coverageReporters=json-summary --testResultsProcessor=jest-sonar-reporter`,
+    `npm run test --workspace=apps/web -- --testPathPattern=snapshot --coverage --coverageDirectory="${process.cwd()}/coverage/web/snapshot" --coverageReporters=text-summary --coverageReporters=text --coverageReporters=html --coverageReporters=lcov --coverageReporters=json --coverageReporters=json-summary --testResultsProcessor=jest-sonar-reporter`,
     { stdio: 'inherit' }
   );
+  // Move Web snapshot report immediately after snapshot tests
   moveSonarReports('web-snapshot');
 }
 
@@ -149,9 +162,9 @@ function combineCoverage() {
   console.log(chalk.blue('🔄 Combining coverage reports...'));
 
   const covDirs = [
-    'coverage/raw/api/unit',
-    'coverage/raw/web/unit',
-    'coverage/raw/web/snapshot',
+    'coverage/api/unit',
+    'coverage/web/unit',
+    'coverage/web/snapshot',
   ];
 
   // Combine LCOV files
@@ -183,8 +196,7 @@ function combineCoverage() {
     .filter((file) => fs.existsSync(file));
 
   if (inputFiles.length > 0) {
-    const outputDir = 'coverage/reports/sonar';
-    const outputFile = path.join(outputDir, 'sonar-report.xml');
+    const outputFile = path.join('coverage/combined/sonar-report.xml');
 
     // Read and parse the first file as the base
     const parser = new DOMParser();
@@ -222,9 +234,9 @@ function generateReport(detailed = false) {
   console.log(chalk.blue('📊 Generating coverage report...'));
 
   const reports = {
-    'API Unit': 'coverage/raw/api/unit/lcov-report/index.html',
-    'Web Unit': 'coverage/raw/web/unit/lcov-report/index.html',
-    'Web Snapshot': 'coverage/raw/web/snapshot/lcov-report/index.html',
+    'API Unit': 'coverage/api/unit/lcov-report/index.html',
+    'Web Unit': 'coverage/web/unit/lcov-report/index.html',
+    'Web Snapshot': 'coverage/web/snapshot/lcov-report/index.html',
     Combined: 'coverage/combined/lcov-report/index.html',
   };
 
@@ -235,8 +247,8 @@ function generateReport(detailed = false) {
     try {
       // Use the coverage data from the most recent test run
       const recentCoverage = detailed
-        ? 'coverage/raw/web/unit/coverage-final.json'
-        : 'coverage/raw/web/unit/coverage-summary.json';
+        ? 'coverage/web/unit/coverage-final.json'
+        : 'coverage/web/unit/coverage-summary.json';
 
       if (fs.existsSync(recentCoverage)) {
         const data = JSON.parse(fs.readFileSync(recentCoverage, 'utf8'));
@@ -293,9 +305,9 @@ function generateReport(detailed = false) {
 function openReports() {
   console.log(chalk.blue('🔍 Opening coverage reports...'));
   const reports = [
-    'coverage/raw/api/unit/lcov-report/index.html',
-    'coverage/raw/web/unit/lcov-report/index.html',
-    'coverage/raw/web/snapshot/lcov-report/index.html',
+    'coverage/api/unit/lcov-report/index.html',
+    'coverage/web/unit/lcov-report/index.html',
+    'coverage/web/snapshot/lcov-report/index.html',
     'coverage/combined/lcov-report/index.html',
   ].filter((file) => fs.existsSync(file));
 
@@ -370,7 +382,7 @@ async function main() {
     })
     .option('clean', {
       type: 'boolean',
-      default: true,
+      default: false,
       description: 'Clean coverage directories before running',
     })
     .option('trend', {
@@ -378,25 +390,73 @@ async function main() {
       default: true,
       description: 'Save coverage trend data',
     })
+    .option('combine', {
+      type: 'boolean',
+      default: true,
+      description: 'Combine coverage reports after generation',
+    })
     .help().argv;
 
   try {
-    if (argv.clean) {
+    // Get the explicitly provided arguments
+    const explicitArgs = process.argv.slice(2);
+
+    // Check if this is just a clean command (explicitly set to none and no other flags)
+    const isCleanCommand =
+      argv.type === 'none' &&
+      !argv.open &&
+      !argv.report &&
+      !argv.detailed &&
+      !argv.clean &&
+      !argv.combine;
+
+    // Check if this is just a combine command
+    const isCombineCommand =
+      argv.combine &&
+      !argv.open &&
+      !argv.report &&
+      !argv.detailed &&
+      !argv.clean &&
+      argv.type === 'none';
+
+    // Clean if explicitly requested, it's the clean command, or we're running all tests
+    const shouldClean = argv.clean || isCleanCommand || argv.type === 'all';
+
+    if (shouldClean) {
       cleanCoverage();
+      // Only exit early if this is the clean command
+      if (isCleanCommand) {
+        console.log(
+          chalk.green('✨ Coverage directories cleaned successfully!')
+        );
+        return;
+      }
     }
 
-    if (argv.type === 'all' || argv.type === 'unit') {
-      runUnitTests();
+    // Create test directories only if we're running tests
+    if (argv.type !== 'none' && !isCombineCommand) {
+      ensureTestDirectories(argv.type);
     }
 
-    if (argv.type === 'all' || argv.type === 'snapshot') {
-      runSnapshotTests();
+    // Run tests if we're not just combining
+    if (!isCombineCommand) {
+      if (argv.type === 'all' || argv.type === 'unit') {
+        runUnitTests();
+      }
+
+      if (argv.type === 'all' || argv.type === 'snapshot') {
+        runSnapshotTests();
+      }
     }
 
-    combineCoverage();
+    // Only create combine directories and combine if requested
+    if (argv.combine) {
+      ensureCombineDirectories();
+      combineCoverage();
 
-    if (argv.trend) {
-      saveCoverageTrend();
+      if (argv.trend) {
+        saveCoverageTrend();
+      }
     }
 
     if (argv.report) {
