@@ -1,2 +1,2 @@
 #!/bin/sh
-./scripts/pre-commit-checks.sh
+node ./scripts/pre-commit.js
