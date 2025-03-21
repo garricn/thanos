@@ -1,14 +1,2 @@
 #!/bin/sh
-
-# Check if package.json and package-lock.json are in sync
-if git diff --staged --name-only | grep -q "package.json"; then
-  echo "Checking if package.json and package-lock.json are in sync..."
-  if ! npm ci --dry-run > /dev/null 2>&1; then
-    echo "Error: package.json and package-lock.json are out of sync."
-    echo "Please run 'npm install' to update package-lock.json before committing."
-    exit 1
-  fi
-fi
-
-# Run the pre-commit script
-npm run pre-commit
+./scripts/pre-commit-checks.sh

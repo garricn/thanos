@@ -1,10 +1,2 @@
-#!/usr/bin/env bash
-
-echo "Running pre-push checks..."
-
-# Set environment variables for non-interactive environment
-export CI=true
-export FORCE_COLOR=1
-
-# Run our local CI script
-./scripts/local-ci.sh
+#!/bin/sh
+./scripts/pre-push-checks.sh
