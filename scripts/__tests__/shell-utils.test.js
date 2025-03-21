@@ -59,6 +59,7 @@ const { mockExit, mockConsoleLog, mockConsoleError } = setupTestEnvironment();
 import {
   switchNodeVersion,
   getCurrentNodeVersion,
+  exec,
 } from '../lib/shell-utils.js';
 
 describe('shell-utils', () => {
@@ -144,6 +145,24 @@ describe('shell-utils', () => {
       // Assert
       expect(version).toBe('18');
       expect(mockExecSync).toHaveBeenCalledWith('node -v', expect.any(Object));
+    });
+  });
+
+  describe('exec', () => {
+    it('executes command with default options', () => {
+      // Arrange
+      const command = 'echo "hello"';
+      mockExecSync.mockReturnValue('hello\n');
+
+      // Act
+      const result = exec(mockExecSync, command);
+
+      // Assert
+      expect(result).toBe('hello\n');
+      expect(mockExecSync).toHaveBeenCalledWith(command, {
+        stdio: 'inherit',
+        encoding: 'utf-8',
+      });
     });
   });
 });
