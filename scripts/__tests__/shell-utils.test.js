@@ -3,7 +3,7 @@ import {
   cleanDeep,
   checkNodeVersion,
   switchNodeVersion,
-} from '../shell-utils.js';
+} from '../lib/shell-utils.js';
 
 // Mock process.exit to prevent tests from exiting
 jest.spyOn(process, 'exit').mockImplementation(() => {});

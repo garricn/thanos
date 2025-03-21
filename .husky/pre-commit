@@ -1,2 +1,2 @@
 #!/bin/sh
-node ./scripts/pre-commit.js
+node ./scripts/hooks/pre-commit.js

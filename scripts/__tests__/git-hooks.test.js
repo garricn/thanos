@@ -1,5 +1,5 @@
 import { jest } from '@jest/globals';
-import { runPreCommitChecks, runPrePushChecks } from '../git-hooks.js';
+import { runPreCommitChecks, runPrePushChecks } from '../hooks/git-hooks.js';
 
 describe('git-hooks', () => {
   let mockExecSync;

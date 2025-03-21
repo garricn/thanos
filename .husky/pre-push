@@ -1,2 +1,2 @@
 #!/bin/sh
-node ./scripts/pre-push.js
+node ./scripts/hooks/pre-push.js

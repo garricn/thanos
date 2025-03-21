@@ -1,7 +1,8 @@
 /** @type {import('jest').Config} */
 export default {
+  rootDir: '../..',
   testEnvironment: 'node',
-  testMatch: ['**/__tests__/**/*.test.js'],
+  testMatch: ['<rootDir>/scripts/__tests__/**/*.test.js'],
   collectCoverage: true,
   coverageDirectory: 'coverage/scripts',
   coverageReporters: ['text', 'lcov'],
