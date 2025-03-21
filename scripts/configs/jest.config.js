@@ -1,0 +1,15 @@
+/** @type {import('jest').Config} */
+export default {
+  rootDir: '../..',
+  testEnvironment: 'node',
+  testMatch: ['<rootDir>/scripts/__tests__/**/*.test.js'],
+  collectCoverage: true,
+  coverageDirectory: 'coverage/scripts',
+  coverageReporters: ['text', 'lcov'],
+  verbose: true,
+  transform: {},
+  transformIgnorePatterns: ['/node_modules/(?!wait-on)'],
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
+};

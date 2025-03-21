@@ -1,6 +1,6 @@
 {
   "*.{js,jsx,ts,tsx}": [
-    "eslint --fix",
+    "eslint --config configs/lint/eslint.config.mjs --fix",
     "prettier --config configs/lint/.prettierrc --ignore-path configs/lint/.prettierignore --write"
   ],
   "*.{json,md}": [
