@@ -21,7 +21,7 @@ export default {
   coverageDirectory: '../../coverage/apps/api',
   testMatch: ['<rootDir>/tests/**/*.test.ts', '<rootDir>/tests/**/*.spec.ts'],
   testPathIgnorePatterns: ['<rootDir>/tests/src/main.path.spec.ts'],
-  setupFilesAfterEnv: ['<rootDir>/../../scripts/jest.setup.js'],
+  setupFilesAfterEnv: ['<rootDir>/../../scripts/configs/jest.setup.js'],
   testResultsProcessor: 'jest-sonar-reporter',
   collectCoverageFrom: [
     '<rootDir>/src/**/*.ts',

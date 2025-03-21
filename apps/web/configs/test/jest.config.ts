@@ -24,7 +24,7 @@ export default {
   ],
   setupFilesAfterEnv: [
     '<rootDir>/tests/test-setup.ts',
-    '<rootDir>/../../scripts/jest.setup.js',
+    '<rootDir>/../../scripts/configs/jest.setup.js',
   ],
   testResultsProcessor: 'jest-sonar-reporter',
   moduleNameMapper: {
