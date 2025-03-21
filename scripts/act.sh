@@ -23,10 +23,10 @@ else
   SNYK_TOKEN=${SNYK_TOKEN:-}
 fi
 
-# Build the basic command with essential arguments
-CMD=("act")
+# Build the basic command with workflow file
+CMD=("act" "--bind")
 
-# Handle arguments to pass to act
+# Handle additional arguments
 if [[ $# -gt 0 ]]; then
   CMD+=("$@")
 fi
@@ -45,14 +45,15 @@ if [ -n "$SNYK_TOKEN" ]; then
   CMD+=("-s" "SNYK_TOKEN=$SNYK_TOKEN")
 fi
 
-# Add other essential parameters
-CMD+=(
-  "--artifact-server-path" "./artifacts"
-  "-P" "ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest"
-)
+# Create a .gitignore-like file for act to use for bind mount exclusions
+cat >.act-ignore <<EOF
+node_modules
+*/node_modules
+*/*/node_modules
+EOF
 
 # Print command (without tokens)
-echo "Running: act $* --artifact-server-path ./artifacts -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest"
+echo "Running act (excluding node_modules)"
 
 # Run act passing all provided arguments
 "${CMD[@]}"
