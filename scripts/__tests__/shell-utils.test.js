@@ -430,6 +430,29 @@ describe('shell-utils', () => {
         );
       });
     });
+
+    it('should handle workflow files with invalid node-version format', () => {
+      mockReaddirSync.mockReturnValue(['ci.yml']);
+      mockReadFileSync.mockImplementation((file) => {
+        if (file === '.nvmrc') return '18.17.0';
+        if (file === 'package.json')
+          return JSON.stringify({ engines: { node: '18.17.0' } });
+        if (file === '.github/workflows/ci.yml')
+          return 'node-version: invalid-format';
+        return '';
+      });
+
+      shellUtils.checkNodeVersion(mockExecSync);
+      const calls = mockConsoleLog.mock.calls.map((call) => call[0]);
+      expect(calls).toEqual([
+        '\x1b[33mChecking Node.js version consistency...\x1b[0m',
+        '\n\x1b[33mChecking package.json...\x1b[0m',
+        '\x1b[32m✅ package.json Node.js version matches .nvmrc\x1b[0m',
+        '\n\x1b[33mChecking GitHub Actions workflows...\x1b[0m',
+        "\x1b[33mℹ️ ci.yml contains node-version but couldn't extract version number. Please check manually.\x1b[0m",
+        '\n\x1b[32m✅ All Node.js version references are in sync with .nvmrc\x1b[0m',
+      ]);
+    });
   });
 
   describe('switchNodeVersion', () => {
@@ -526,6 +549,23 @@ describe('shell-utils', () => {
 
       expect(mockConsoleError).toHaveBeenCalledWith(
         '\x1b[31m❌ Failed to switch to Node.js 18. Current version: v\x1b[0m'
+      );
+      expect(mockExit).toHaveBeenCalledWith(1);
+    });
+
+    it('should handle version switch failure', () => {
+      mockReadFileSync.mockReturnValue('18.17.0');
+      mockExecSync.mockImplementation((cmd) => {
+        if (cmd === 'node -v') return 'v16.0.0';
+        if (cmd.includes('nvm use'))
+          throw new Error('N/A: version "18" is not yet installed');
+        return '';
+      });
+
+      shellUtils.switchNodeVersion(mockExecSync);
+
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        '\x1b[31mError: N/A: version "18" is not yet installed\x1b[0m'
       );
       expect(mockExit).toHaveBeenCalledWith(1);
     });
