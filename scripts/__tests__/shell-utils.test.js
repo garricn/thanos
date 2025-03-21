@@ -194,5 +194,26 @@ describe('shell-utils', () => {
         expect.stringContaining('Using correct Node.js version')
       );
     });
+
+    it('returns false when versions do not match but force is true', () => {
+      // Arrange
+      const requiredVersion = '20';
+      const currentVersion = '18';
+      const force = true;
+
+      // Act
+      const result = checkNodeVersionMatch(
+        requiredVersion,
+        currentVersion,
+        force
+      );
+
+      // Assert
+      expect(result).toBe(false);
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Warning: Using Node.js')
+      );
+      expect(mockExit).not.toHaveBeenCalled();
+    });
   });
 });
