@@ -80,5 +80,23 @@ describe('shell-utils', () => {
       // Verify that we're using the correct version
       expect(mockExecSync).toHaveBeenCalledWith('node -v', expect.any(Object));
     });
+
+    it('exits with error when nvm is not available', () => {
+      // Arrange
+      const { existsSync } = jest.requireMock('node:fs');
+      existsSync.mockImplementation(() => false);
+      mockExecSync.mockImplementation(() => {
+        throw new Error('brew not found');
+      });
+
+      // Act
+      switchNodeVersion(mockExecSync);
+
+      // Assert
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        expect.stringContaining('Could not find nvm')
+      );
+      expect(mockExit).toHaveBeenCalledWith(1);
+    });
   });
 });
