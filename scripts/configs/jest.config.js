@@ -9,4 +9,7 @@ export default {
   verbose: true,
   transform: {},
   transformIgnorePatterns: ['/node_modules/(?!wait-on)'],
+  moduleNameMapper: {
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
 };
