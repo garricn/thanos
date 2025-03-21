@@ -150,7 +150,8 @@ async function runE2ETests(
   waitOnFn = waitOn,
   execSyncFn = execSync,
   consoleFns = console,
-  exitFn = process.exit
+  exitFn = process.exit,
+  spawnFn = spawn
 ) {
   try {
     // Clean up any existing processes
@@ -160,13 +161,13 @@ async function runE2ETests(
     const webServer = startServer(
       'npm run start:web',
       'Web',
-      spawn,
+      spawnFn,
       consoleFns
     );
     const apiServer = startServer(
       'npm run start:api',
       'API',
-      spawn,
+      spawnFn,
       consoleFns
     );
 
@@ -469,6 +470,11 @@ describe('test-e2e-direct', () => {
   });
 
   describe('runE2ETests', () => {
+    beforeEach(() => {
+      // Reset childProcesses
+      childProcesses = [];
+    });
+
     it('should run E2E tests successfully', async () => {
       // Create mocks
       const mockWaitOn = jest.fn().mockResolvedValue(undefined);
@@ -486,8 +492,14 @@ describe('test-e2e-direct', () => {
         killed: false,
       });
 
-      // Call function with mocks
-      await runE2ETests(mockWaitOn, mockExecSync, mockConsole, mockExit);
+      // Call function with our mocks
+      await runE2ETests(
+        mockWaitOn,
+        mockExecSync,
+        mockConsole,
+        mockExit,
+        mockSpawn
+      );
 
       // Verify results
       expect(mockWaitOn).toHaveBeenCalledWith({
@@ -526,7 +538,13 @@ describe('test-e2e-direct', () => {
       });
 
       // Call function with mocks
-      await runE2ETests(mockWaitOn, mockExecSync, mockConsole, mockExit);
+      await runE2ETests(
+        mockWaitOn,
+        mockExecSync,
+        mockConsole,
+        mockExit,
+        mockSpawn
+      );
 
       // Verify results
       expect(mockConsole.error).toHaveBeenCalledWith(
