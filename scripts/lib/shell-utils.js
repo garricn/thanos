@@ -17,7 +17,7 @@ const colors = {
  * @param {object} options Options for execSync
  * @returns {string} Command output
  */
-function exec(execSync, command, options = {}) {
+export function exec(execSync, command, options = {}) {
   const defaultOptions = {
     stdio: 'inherit',
     encoding: 'utf-8',
@@ -31,7 +31,7 @@ function exec(execSync, command, options = {}) {
  * Gets the Node.js version from .nvmrc
  * @returns {string} Node.js version number
  */
-function getRequiredNodeVersion() {
+export function getRequiredNodeVersion() {
   try {
     return readFileSync('.nvmrc', 'utf-8').trim();
   } catch (error) {
@@ -47,7 +47,7 @@ function getRequiredNodeVersion() {
  * @param {Function} execSync Function to execute commands
  * @returns {string} Current Node.js version
  */
-function getCurrentNodeVersion(execSync) {
+export function getCurrentNodeVersion(execSync) {
   try {
     const nodeVersion = execSync('node -v', {
       stdio: 'pipe',
@@ -69,7 +69,11 @@ function getCurrentNodeVersion(execSync) {
  * @param {boolean} force Whether to bypass version check
  * @returns {boolean} True if versions match or force is true
  */
-function checkNodeVersionMatch(requiredVersion, currentVersion, force = false) {
+export function checkNodeVersionMatch(
+  requiredVersion,
+  currentVersion,
+  force = false
+) {
   if (currentVersion !== requiredVersion && !force) {
     console.error(
       `${colors.red}Error: This project requires Node.js version ${requiredVersion}, but you are using v${currentVersion}.${colors.reset}`
