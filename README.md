@@ -19,6 +19,7 @@ Thanos is a scaffolding template for creating new monorepo projects with a pre-c
 - [Code Coverage](./docs/CODE_COVERAGE.md) - Code coverage configuration and reporting
 - [Security Practices](./docs/SECURITY.md) - Security measures and vulnerability management
 - [Local CI Workflows](./docs/LOCAL_CI.md) - Running CI checks locally for consistency
+- [GitHub Actions with Act](./docs/ACT.md) - Running GitHub Actions workflows locally
 - [Docker Setup](./docs/DOCKER.md) - Docker configuration and usage
 - [CI Approaches Comparison](./docs/CI_COMPARISON.md) - Comparison of different CI approaches
 - [Docker Troubleshooting](./docs/DOCKER_TROUBLESHOOTING.md) - Solutions for Docker-related issues

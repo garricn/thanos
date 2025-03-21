@@ -18,27 +18,30 @@
     "build": "npm run build --workspace=apps/api && npm run build --workspace=apps/web",
     "test": "npm run test --workspace=apps/api && npm run test --workspace=apps/web",
     "test:all": "npm run test && npm run test:e2e",
-    "test:unit": "npm run test",
+    "test:unit": "npm run test --workspace=apps/api && npm run test --workspace=apps/web",
+    "test:unit:coverage": "npm run coverage:clean && mkdir -p coverage/api/unit coverage/web/unit && npm run test --workspace=apps/api -- --coverage --coverageDirectory=\"${PWD}/coverage/api/unit\" --coverageReporters=text-summary --coverageReporters=html --coverageReporters=lcov --testResultsProcessor=jest-sonar-reporter && node scripts/jest-sonar-fix.js api && npm run test --workspace=apps/web -- --coverage --coverageDirectory=\"${PWD}/coverage/web/unit\" --coverageReporters=text-summary --coverageReporters=html --coverageReporters=lcov --testResultsProcessor=jest-sonar-reporter && node scripts/jest-sonar-fix.js web-unit",
     "test:snapshot": "npm run test --workspace=apps/web -- --testPathPattern=snapshot",
+    "test:snapshot:coverage": "mkdir -p coverage/web/snapshot && npm run test --workspace=apps/web -- --testPathPattern=snapshot --coverage --coverageDirectory=\"${PWD}/coverage/web/snapshot\" --coverageReporters=text-summary --coverageReporters=html --coverageReporters=lcov --testResultsProcessor=jest-sonar-reporter && node scripts/jest-sonar-fix.js web-snapshot",
     "test:e2e": "./scripts/e2e.sh",
     "local-ci": "./scripts/local-ci.sh",
     "fix-node-version": "echo 'To switch to Node.js '$(cat .nvmrc)', please run: source ./scripts/switch-node.sh'",
     "clean:deep": "./scripts/clean-deep.sh",
-    "cleanup:test-reports": "rm -f test-report.xml */test-report.xml **/test-report.xml && node scripts/cleanup-test-reports.js",
     "validate:node-version": "./scripts/validate-node-version.sh",
     "lint": "npm run lint --workspace=apps/web && npm run lint --workspace=apps/api && npm run lint:md && npm run lint:sh && npm run lint:yaml",
     "lint:md": "markdownlint-cli2 --config configs/lint/.markdownlint-cli2.jsonc \"**/*.md\"",
     "lint:md:fix": "markdownlint-cli2 --config configs/lint/.markdownlint-cli2.jsonc --fix \"**/*.md\"",
     "lint:sh": "shellcheck scripts/*.sh",
-    "lint:yaml": "yamllint -c configs/lint/.yamllint .github/**/*.yml",
+    "lint:yaml": "find . -type f \\( -name '*.yml' -o -name '*.yaml' \\) ! -path '*/node_modules/*' -exec yamllint -c configs/lint/.yamllint {} +",
     "docker:ci": "./scripts/docker-ci.sh",
     "format": "prettier --config configs/lint/.prettierrc --ignore-path configs/lint/.prettierignore --write \"**/*.{js,jsx,mjs,ts,tsx}\" && npm run format:md && npm run format:sh && npm run format:yaml",
     "format:md": "prettier --config configs/lint/.prettierrc --ignore-path configs/lint/.prettierignore --write \"**/*.md\"",
     "format:sh": "shfmt -i 2 -ci -w scripts/*.sh",
-    "format:yaml": "prettier --config configs/lint/.prettierrc --ignore-path configs/lint/.prettierignore --write \".github/**/*.{yml,yaml}\"",
+    "format:yaml": "prettier --config configs/lint/.prettierrc --ignore-path configs/lint/.prettierignore --write \"**/*.{yml,yaml}\"",
     "clean": "rm -rf dist apps/*/dist tmp node_modules/.cache",
     "coverage": "rm -rf coverage && npm run test:coverage --workspace=apps/api && npm run test:coverage --workspace=apps/web && node scripts/combine-coverage.js",
-    "coverage:report": "rm -rf coverage && npm run test:coverage --workspace=apps/api -- --coverageReporters=\"text-summary\" --coverageReporters=\"html\" --coverageReporters=\"lcov\" && npm run test:coverage --workspace=apps/web -- --coverageReporters=\"text-summary\" --coverageReporters=\"html\" --coverageReporters=\"lcov\" && node scripts/combine-coverage.js",
+    "coverage:combine": "mkdir -p coverage/combined && cat coverage/api/unit/lcov.info coverage/web/unit/lcov.info coverage/web/snapshot/lcov.info > coverage/combined/lcov.info",
+    "coverage:combine:xml": "node scripts/combine-sonar-reports.js",
+    "coverage:report": "npm run test:unit:coverage && npm run test:snapshot:coverage && npm run coverage:combine && echo '\nCoverage reports generated at:' && echo \"API Unit: file://$PWD/coverage/api/unit/lcov-report/index.html\" && echo \"Web Unit: file://$PWD/coverage/web/unit/lcov-report/index.html\" && echo \"Web Snapshot: file://$PWD/coverage/web/snapshot/lcov-report/index.html\" && echo \"Combined: file://$PWD/coverage/combined/lcov-report/index.html\"",
     "coverage:open": "npm run coverage:all:open",
     "coverage:all": "rm -rf coverage && npm run test:coverage --workspace=apps/api -- --coverageReporters=\"text-summary\" --coverageReporters=\"html\" --coverageReporters=\"lcov\" && npm run test:coverage --workspace=apps/web -- --coverageReporters=\"text-summary\" --coverageReporters=\"html\" --coverageReporters=\"lcov\" && node scripts/combine-coverage.js",
     "coverage:all:open": "npm run coverage:all && echo '\nCoverage reports generated at:' && echo 'Web: file://${PWD}/coverage/apps/web/lcov-report/index.html' && echo 'API: file://${PWD}/coverage/apps/api/lcov-report/index.html' && open coverage/apps/web/lcov-report/index.html coverage/apps/api/lcov-report/index.html",
@@ -66,7 +69,9 @@
     "validate": "npm run check:deps && npm run check:outdated && npm-run-all --parallel lint type-check security:check validate:actions validate:node-version && npm run test:all && npm run coverage:all",
     "validate:actions": "./scripts/validate-actions.sh",
     "check:deps": "npm ci --dry-run && npm ls --depth=0",
-    "check:outdated": "npm outdated || true"
+    "check:outdated": "npm outdated || true",
+    "act": "./scripts/run-act.sh",
+    "coverage:clean": "rm -rf coverage && rm -f apps/*/test-report.xml"
   },
   "resolutions": {
     "inflight": "1.0.6"
@@ -142,6 +147,7 @@
     "tslib": "^2.3.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.19.0",
-    "wait-on": "^8.0.3"
+    "wait-on": "^8.0.3",
+    "@xmldom/xmldom": "^0.8.10"
   }
 }

@@ -11,6 +11,7 @@ async function runBuild() {
     entryPoints: ['src/main.ts'],
     bundle: true,
     platform: 'node',
+    format: 'esm',
     outfile: 'dist/index.js',
     sourcemap: true,
     external: ['express', 'sqlite3'],

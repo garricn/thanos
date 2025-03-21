@@ -86,8 +86,9 @@ Commands for running CI checks locally to ensure consistency with the GitHub Act
 | `npm run local-ci`         | Run the same checks as the GitHub Actions CI workflow |
 | `npm run validate:actions` | Validate GitHub Actions workflow files                |
 | `npm run docker:ci`        | Run CI checks in a Docker container (requires Docker) |
+| `npm run act`              | Run GitHub Actions workflows locally with act         |
 
-For more details on these commands, see the [Local CI Workflows](./LOCAL_CI.md) documentation.
+For more details on these commands, see the [Local CI Workflows](./LOCAL_CI.md) and [Running GitHub Actions Locally with Act](./ACT.md) documentation.
 
 ## Docker Commands
 

@@ -51,6 +51,30 @@ Runs the local CI checks in a Docker container that closely mimics the GitHub Ac
 npm run docker:ci
 ```
 
+### 4. Act for GitHub Actions (`npm run act`)
+
+Runs GitHub Actions workflows locally using the [nektos/act](https://github.com/nektos/act) tool:
+
+- Executes the actual GitHub workflow files locally
+- Runs in Docker containers similar to GitHub Actions runners
+- Uses your local GitHub tokens for authentication
+- Supports artifacts, secrets, and most GitHub Actions features
+
+**When to use:** When you need to test actual GitHub Actions workflows without pushing to GitHub.
+
+```bash
+# Run with default parameters (push event, main workflow)
+npm run act
+
+# Run a specific event
+npm run act -- pull_request
+
+# Run a specific workflow file
+npm run act -- push -W .github/workflows/specific-workflow.yml
+```
+
+For more details, see the [Running GitHub Actions Locally with Act](./ACT.md) documentation.
+
 ## Setting Up Docker for Local CI
 
 To use the Docker-based CI workflow:

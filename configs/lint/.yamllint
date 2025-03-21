@@ -3,68 +3,68 @@
 extends: default
 
 rules:
-  # 80 chars should be enough, but don't fail if a line is longer
+  # Maximum line length of 120 characters
   line-length:
     max: 120
-    level: warning
-  
+    level: error
+
   # Accept both %Y-%m-%d and %Y-%m-%d %H:%M:%S date formats
   truthy:
     allowed-values: ['true', 'false', 'yes', 'no']
     check-keys: true
-  
+
   # Indentation rules
   indentation:
     spaces: 2
     indent-sequences: true
     check-multi-line-strings: false
-  
+
   # Don't require document start marker
   document-start:
     present: false
-  
+
   # Don't require document end marker
   document-end:
     present: false
-  
+
   # Allow duplicate keys in mappings
   key-duplicates: enable
-  
+
   # Trailing spaces
   trailing-spaces: enable
-  
+
   # Empty lines
   empty-lines:
     max: 2
     max-start: 0
     max-end: 0
-  
+
   # Commas
   commas: enable
-  
+
   # Colons
   colons:
     max-spaces-before: 0
     max-spaces-after: 1
-  
+
   # Comments
   comments:
     require-starting-space: true
     min-spaces-from-content: 1
-  
+
   # Brackets
   brackets:
     min-spaces-inside: 0
     max-spaces-inside: 0
-  
+
   # Braces
   braces:
     min-spaces-inside: 0
     max-spaces-inside: 0
-  
+
   # New lines
   new-line-at-end-of-file: enable
-  
+
   # New lines between items
   new-lines:
-    type: unix 
+    type: unix
