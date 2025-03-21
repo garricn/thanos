@@ -1,17 +1,17 @@
 #!/bin/sh
 
 # Colors for output
-GREEN='\033[0;32m'
-RED='\033[0;31m'
-YELLOW='\033[0;33m'
-NC='\033[0m' # No Color
+YELLOW="\033[1;33m"
+RED="\033[0;31m"
+GREEN="\033[0;32m"
+NC="\033[0m" # No Color
 
 printf "%bRunning pre-push checks...%b\n" "$YELLOW" "$NC"
 
 # Check Node.js version
-printf "\n%bChecking Node.js version...%b\n" "$YELLOW" "$NC"
-if ! npm run validate:node-version; then
-  printf "%b❌ Node.js version check failed%b\n" "$RED" "$NC"
+printf "%bChecking Node.js version...%b\n" "$YELLOW" "$NC"
+if ! npm run node:version; then
+  printf "%bNode.js version check failed%b\n" "$RED" "$NC"
   exit 1
 fi
 

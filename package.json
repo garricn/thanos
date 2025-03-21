@@ -36,6 +36,7 @@
     "lint:md:fix": "markdownlint-cli2 --config configs/lint/.markdownlint-cli2.jsonc --fix \"**/*.md\"",
     "lint:sh": "shellcheck scripts/*.sh",
     "lint:yaml": "find . -type f \\( -name '*.yml' -o -name '*.yaml' \\) ! -path '*/node_modules/*' -exec yamllint -c configs/lint/.yamllint {} +",
+    "node:version": "./scripts/node-version.sh",    
     "prepare": "[ -n \"$CI\" ] || [ -n \"$HUSKY\" -a \"$HUSKY\" = \"0\" ] || husky",
     "security:check": "snyk test",
     "security:fix": "snyk wizard",
@@ -52,8 +53,7 @@
     "type-check": "npm run typecheck --workspace=apps/web && npm run typecheck --workspace=apps/api",
     "type-check:watch": "npm run typecheck --workspace=apps/web -- --watch",
     "update:deps": "npm audit fix && npm install && git add package.json package-lock.json && git commit -m 'Claude: Update dependencies and sync package-lock.json'",
-    "update:deps:force": "npm audit fix --force && npm install && git add package.json package-lock.json && git commit -m 'Claude: Update dependencies with breaking changes and sync package-lock.json'",
-    "validate:node-version": "./scripts/validate-node-version.sh"
+    "update:deps:force": "npm audit fix --force && npm install && git add package.json package-lock.json && git commit -m 'Claude: Update dependencies with breaking changes and sync package-lock.json'"
   },
   "resolutions": {
     "inflight": "1.0.6"
