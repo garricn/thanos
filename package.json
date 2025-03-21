@@ -44,7 +44,7 @@
     "start:web": "npm run dev --workspace=apps/web",
     "test": "npm run test --workspace=apps/api && npm run test --workspace=apps/web",
     "test:all": "npm run test && npm run test:e2e",
-    "test:e2e": "./scripts/e2e.sh",
+    "test:e2e": "./scripts/test-e2e.sh",
     "test:snapshot": "npm run test --workspace=apps/web -- --testPathPattern=snapshot",
     "test:snapshot:coverage": "mkdir -p coverage/web/snapshot && npm run test --workspace=apps/web -- --testPathPattern=snapshot --coverage --coverageDirectory=\"${PWD}/coverage/web/snapshot\" --coverageReporters=text-summary --coverageReporters=html --coverageReporters=lcov --testResultsProcessor=jest-sonar-reporter && node scripts/jest-sonar-fix.js web-snapshot",
     "test:unit": "npm run test --workspace=apps/api && npm run test --workspace=apps/web",
