@@ -215,5 +215,26 @@ describe('shell-utils', () => {
       );
       expect(mockExit).not.toHaveBeenCalled();
     });
+
+    it('exits when versions do not match and force is false', () => {
+      // Arrange
+      const requiredVersion = '20';
+      const currentVersion = '18';
+
+      // Act & Assert
+      // This function should call process.exit(1), so we need to verify
+      // that the appropriate error messages are shown before that happens
+      checkNodeVersionMatch(requiredVersion, currentVersion);
+
+      // Verify console.error was called with expected error message
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        expect.stringContaining(
+          `Error: This project requires Node.js version ${requiredVersion}`
+        )
+      );
+
+      // Verify process.exit was called with code 1
+      expect(mockExit).toHaveBeenCalledWith(1);
+    });
   });
 });
