@@ -31,7 +31,7 @@
     "lint:md": "markdownlint-cli2 --config configs/lint/.markdownlint-cli2.jsonc \"**/*.md\"",
     "lint:md:fix": "markdownlint-cli2 --config configs/lint/.markdownlint-cli2.jsonc --fix \"**/*.md\"",
     "lint:sh": "shellcheck scripts/*.sh",
-    "lint:yaml": "yamllint -c configs/lint/.yamllint \"**/*.{yml,yaml}\"",
+    "lint:yaml": "find . -type f \\( -name '*.yml' -o -name '*.yaml' \\) ! -path '*/node_modules/*' -exec yamllint -c configs/lint/.yamllint {} +",
     "docker:ci": "./scripts/docker-ci.sh",
     "format": "prettier --config configs/lint/.prettierrc --ignore-path configs/lint/.prettierignore --write \"**/*.{js,jsx,mjs,ts,tsx}\" && npm run format:md && npm run format:sh && npm run format:yaml",
     "format:md": "prettier --config configs/lint/.prettierrc --ignore-path configs/lint/.prettierignore --write \"**/*.md\"",
