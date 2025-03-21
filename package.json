@@ -39,7 +39,7 @@
     "lint:yaml": "find . -type f \\( -name '*.yml' -o -name '*.yaml' \\) ! -path '*/node_modules/*' -exec yamllint -c configs/lint/.yamllint {} +",
     "node:version": "./scripts/node-version.sh",
     "prepare": "[ -n \"$CI\" ] || [ -n \"$HUSKY\" -a \"$HUSKY\" = \"0\" ] || husky",
-    "security:check": "snyk test",
+    "security:check": "snyk test --all-projects",
     "security:fix": "snyk wizard",
     "start": "concurrently --kill-others-on-fail \"npm run start:api\" \"npm run start:web\"",
     "start:api": "npm run dev --workspace=apps/api",

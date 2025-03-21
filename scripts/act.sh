@@ -23,8 +23,15 @@ else
   SNYK_TOKEN=${SNYK_TOKEN:-}
 fi
 
+# Create a temporary directory for the workspace
+TEMP_DIR=$(mktemp -d)
+echo "Creating temporary workspace in $TEMP_DIR"
+
+# Copy necessary files (excluding node_modules)
+rsync -a --exclude="node_modules" --exclude="**/node_modules" ./ "$TEMP_DIR/"
+
 # Build the basic command with workflow file
-CMD=("act" "--bind")
+CMD=("act")
 
 # Handle additional arguments
 if [[ $# -gt 0 ]]; then
@@ -45,18 +52,22 @@ if [ -n "$SNYK_TOKEN" ]; then
   CMD+=("-s" "SNYK_TOKEN=$SNYK_TOKEN")
 fi
 
-# Create a .gitignore-like file for act to use for bind mount exclusions
-cat >.act-ignore <<EOF
-node_modules
-*/node_modules
-*/*/node_modules
-EOF
+# Add directories to mount
+CMD+=(
+  "-C" "$TEMP_DIR"
+  "--artifact-server-path" "./artifacts"
+  "-P" "ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest"
+)
 
 # Print command (without tokens)
-echo "Running act (excluding node_modules)"
+echo "Running act from temporary workspace (excluding node_modules)"
 
 # Run act passing all provided arguments
 "${CMD[@]}"
+
+# Clean up temporary directory
+echo "Cleaning up temporary workspace"
+rm -rf "$TEMP_DIR"
 
 # Restore Node.js version if it changed
 AFTER_NODE_VERSION=$(node -v)
