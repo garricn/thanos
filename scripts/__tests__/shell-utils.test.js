@@ -19,6 +19,7 @@ beforeEach(() => {
 
 afterEach(() => {
   process.env = originalEnv;
+  jest.clearAllMocks();
 });
 
 // Mock fs module
@@ -60,6 +61,7 @@ import {
   switchNodeVersion,
   getCurrentNodeVersion,
   exec,
+  getRequiredNodeVersion,
 } from '../lib/shell-utils.js';
 
 describe('shell-utils', () => {
@@ -163,6 +165,16 @@ describe('shell-utils', () => {
         stdio: 'inherit',
         encoding: 'utf-8',
       });
+    });
+  });
+
+  describe('getRequiredNodeVersion', () => {
+    it('returns the Node.js version from .nvmrc', () => {
+      // Act
+      const version = getRequiredNodeVersion();
+
+      // Assert
+      expect(version).toBe('20');
     });
   });
 });
