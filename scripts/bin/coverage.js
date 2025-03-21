@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '../..');
 
 // Ensure test directories exist
-function ensureTestDirectories(type) {
+export function ensureTestDirectories(type) {
   const dirs = [];
 
   if (type === 'all' || type === 'unit') {
@@ -32,7 +32,7 @@ function ensureTestDirectories(type) {
 }
 
 // Ensure combine directories exist
-function ensureCombineDirectories() {
+export function ensureCombineDirectories() {
   const dirs = ['coverage/combined'];
 
   dirs.forEach((dir) => {
@@ -43,13 +43,13 @@ function ensureCombineDirectories() {
 }
 
 // Clean coverage directories
-function cleanCoverage() {
+export function cleanCoverage() {
   console.log(chalk.blue('🧹 Cleaning coverage directories...'));
   execSync('rm -rf coverage', { stdio: 'inherit' });
 }
 
 // Move Sonar report files to their correct locations
-function moveSonarReports(reportType) {
+export function moveSonarReports(reportType) {
   const apiReportSource = path.join(projectRoot, 'apps/api/test-report.xml');
   const webReportSource = path.join(projectRoot, 'apps/web/test-report.xml');
   const apiReportDest = path.join(
@@ -103,7 +103,7 @@ function moveSonarReports(reportType) {
 }
 
 // Run unit tests with coverage
-function runUnitTests() {
+export function runUnitTests() {
   console.log(chalk.blue('🧪 Running unit tests...'));
 
   // API unit tests
@@ -126,7 +126,7 @@ function runUnitTests() {
 }
 
 // Run snapshot tests with coverage
-function runSnapshotTests() {
+export function runSnapshotTests() {
   console.log(chalk.blue('📸 Running snapshot tests...'));
   execSync(
     `npm run test --workspace=apps/web -- --testPathPattern=snapshot --coverage --coverageDirectory="${process.cwd()}/coverage/web/snapshot" --coverageReporters=text-summary --coverageReporters=text --coverageReporters=html --coverageReporters=lcov --coverageReporters=json --coverageReporters=json-summary --testResultsProcessor=jest-sonar-reporter`,
@@ -158,7 +158,7 @@ function copyRecursiveSync(src, dest) {
 }
 
 // Combine coverage reports
-function combineCoverage() {
+export function combineCoverage() {
   console.log(chalk.blue('🔄 Combining coverage reports...'));
 
   const covDirs = [
@@ -230,7 +230,7 @@ function combineCoverage() {
 }
 
 // Generate coverage report
-function generateReport(detailed = false) {
+export function generateReport(detailed = false) {
   console.log(chalk.blue('📊 Generating coverage report...'));
 
   const reports = {
@@ -302,7 +302,7 @@ function generateReport(detailed = false) {
 }
 
 // Open coverage reports
-function openReports() {
+export function openReports() {
   console.log(chalk.blue('🔍 Opening coverage reports...'));
   const reports = [
     'coverage/api/unit/lcov-report/index.html',
@@ -319,7 +319,7 @@ function openReports() {
 }
 
 // Save coverage trend
-function saveCoverageTrend() {
+export function saveCoverageTrend() {
   const trendFile = 'coverage/trend.json';
   const trend = fs.existsSync(trendFile)
     ? JSON.parse(fs.readFileSync(trendFile, 'utf8'))
@@ -357,7 +357,7 @@ function saveCoverageTrend() {
 }
 
 // Main function
-async function main() {
+export async function main() {
   const argv = yargs(hideBin(process.argv))
     .option('type', {
       choices: ['unit', 'snapshot', 'all', 'none'],
@@ -474,4 +474,7 @@ async function main() {
   }
 }
 
-main();
+// Only run main if this is the main module
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main();
+}
