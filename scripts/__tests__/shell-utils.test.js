@@ -62,6 +62,7 @@ import {
   getCurrentNodeVersion,
   exec,
   getRequiredNodeVersion,
+  checkNodeVersionMatch,
 } from '../lib/shell-utils.js';
 
 describe('shell-utils', () => {
@@ -175,6 +176,23 @@ describe('shell-utils', () => {
 
       // Assert
       expect(version).toBe('20');
+    });
+  });
+
+  describe('checkNodeVersionMatch', () => {
+    it('returns true when versions match', () => {
+      // Arrange
+      const requiredVersion = '20';
+      const currentVersion = '20';
+
+      // Act
+      const result = checkNodeVersionMatch(requiredVersion, currentVersion);
+
+      // Assert
+      expect(result).toBe(true);
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Using correct Node.js version')
+      );
     });
   });
 });
