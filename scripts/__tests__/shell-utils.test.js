@@ -28,6 +28,46 @@ const mockConsoleError = jest
   .spyOn(console, 'error')
   .mockImplementation(() => {});
 
+// High-level mock states
+const mockStates = {
+  versionCheck: {
+    pass: {
+      requiredVersion: '18',
+      currentVersion: '18',
+      force: false,
+    },
+    fail: {
+      requiredVersion: '18',
+      currentVersion: '16',
+      force: false,
+    },
+    force: {
+      requiredVersion: '18',
+      currentVersion: '16',
+      force: true,
+    },
+  },
+  clean: {
+    normal: {
+      nodeVersion: '18',
+      npmVersion: '9.0.0',
+      jestCache: true,
+    },
+    dryRun: {
+      nodeVersion: '18',
+      npmVersion: '9.0.0',
+      jestCache: true,
+      dryRun: true,
+    },
+    force: {
+      nodeVersion: '16',
+      npmVersion: '9.0.0',
+      jestCache: true,
+      force: true,
+    },
+  },
+};
+
 describe('shell-utils', () => {
   beforeEach(() => {
     mockExecSync.mockClear();
@@ -37,6 +77,165 @@ describe('shell-utils', () => {
     mockExit.mockClear();
     mockConsoleLog.mockClear();
     mockConsoleError.mockClear();
+  });
+
+  describe('version management', () => {
+    it('should pass when Node.js version matches', () => {
+      const state = mockStates.versionCheck.pass;
+      mockReadFileSync.mockReturnValue(state.requiredVersion);
+      mockExecSync.mockReturnValue(`v${state.currentVersion}.0.0`);
+
+      const result = shellUtils.checkNodeVersionMatch(
+        state.requiredVersion,
+        state.currentVersion,
+        state.force
+      );
+
+      expect(result).toBe(true);
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining(
+          `✓ Using correct Node.js version: v${state.currentVersion}`
+        )
+      );
+    });
+
+    it('should fail when Node.js version does not match', () => {
+      const state = mockStates.versionCheck.fail;
+      mockReadFileSync.mockReturnValue(state.requiredVersion);
+      mockExecSync.mockReturnValue(`v${state.currentVersion}.0.0`);
+
+      shellUtils.checkNodeVersionMatch(
+        state.requiredVersion,
+        state.currentVersion,
+        state.force
+      );
+
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        expect.stringContaining(
+          `Error: This project requires Node.js version ${state.requiredVersion}`
+        )
+      );
+      expect(mockExit).toHaveBeenCalledWith(1);
+    });
+
+    it('should warn but continue when force flag is used', () => {
+      const state = mockStates.versionCheck.force;
+      mockReadFileSync.mockReturnValue(state.requiredVersion);
+      mockExecSync.mockReturnValue(`v${state.currentVersion}.0.0`);
+
+      const result = shellUtils.checkNodeVersionMatch(
+        state.requiredVersion,
+        state.currentVersion,
+        state.force
+      );
+
+      expect(result).toBe(false);
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining(
+          `⚠️ Warning: Using Node.js v${state.currentVersion}`
+        )
+      );
+      expect(mockExit).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('clean operations', () => {
+    it('should perform a full clean when no options provided', () => {
+      const state = mockStates.clean.normal;
+      mockExecSync
+        .mockReturnValueOnce(`v${state.nodeVersion}.0.0`) // node -v
+        .mockReturnValueOnce('') // rm -rf
+        .mockReturnValueOnce('') // npm cache clean
+        .mockReturnValueOnce('') // jest cache clear
+        .mockReturnValueOnce('') // npm install
+        .mockReturnValue(`v${state.nodeVersion}.0.0`); // final node -v
+
+      shellUtils.cleanDeep([], mockExecSync);
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('🧹 Starting deep clean')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('✓ Removed generated files and directories')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('✓ Cleaned npm cache')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('✓ Cleared Jest cache')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('✓ Installed dependencies')
+      );
+    });
+
+    it('should show what would be done in dry run mode', () => {
+      const state = mockStates.clean.dryRun;
+      mockExecSync.mockReturnValue(`v${state.nodeVersion}.0.0`);
+
+      shellUtils.cleanDeep(['--dry-run'], mockExecSync);
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Running in dry-run mode')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Would remove: node_modules package-lock.json dist tmp coverage .nyc_output ./*.log logs'
+        )
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Would run: npm cache clean --force')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Would run: npx jest --clearCache')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Would run: npm install')
+      );
+      expect(mockExecSync).toHaveBeenCalledTimes(2); // Only node -v and npm -v
+    });
+
+    it('should bypass version check in force mode', () => {
+      const state = mockStates.clean.force;
+      mockExecSync
+        .mockReturnValueOnce(`v${state.nodeVersion}.0.0`) // node -v
+        .mockReturnValueOnce('') // rm -rf
+        .mockReturnValueOnce('') // npm cache clean
+        .mockReturnValueOnce('') // jest cache clear
+        .mockReturnValueOnce('') // npm install
+        .mockReturnValue(`v${state.nodeVersion}.0.0`); // final node -v
+
+      shellUtils.cleanDeep(['--force'], mockExecSync);
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Force mode enabled')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('✓ Removed generated files and directories')
+      );
+    });
+
+    it('should handle Jest cache clear failure gracefully', () => {
+      const state = mockStates.clean.normal;
+      mockExecSync
+        .mockReturnValueOnce(`v${state.nodeVersion}.0.0`) // node -v
+        .mockReturnValueOnce('') // rm -rf
+        .mockReturnValueOnce('') // npm cache clean
+        .mockImplementationOnce(() => {
+          throw new Error('Command not found: jest');
+        }) // jest cache clear
+        .mockReturnValueOnce('') // npm install
+        .mockReturnValue(`v${state.nodeVersion}.0.0`); // final node -v
+
+      shellUtils.cleanDeep([], mockExecSync);
+
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('⚠️ Jest cache clear might have failed')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('✓ Installed dependencies')
+      );
+    });
   });
 
   describe('exec', () => {
