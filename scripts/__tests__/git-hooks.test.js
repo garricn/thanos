@@ -89,6 +89,41 @@ describe('git-hooks', () => {
         expect.any(Object)
       );
     });
+
+    it('should handle grep returning non-zero when no TypeScript files are found', async () => {
+      mockExecSync.mockImplementation((cmd, opts) => {
+        if (
+          cmd ===
+          'git diff --cached --name-only --diff-filter=ACMR | grep -E \\.tsx?$'
+        ) {
+          throw new Error('grep: no matches found'); // Simulate grep returning non-zero
+        }
+        return ''; // Default empty return
+      });
+
+      await runPreCommitChecks(mockExecSync);
+
+      // Should still run lint-staged even if no TS files are found
+      expect(mockExecSync).toHaveBeenCalledWith(
+        'npx lint-staged --config configs/lint/.lintstagedrc.json',
+        expect.any(Object)
+      );
+    });
+
+    it('should handle errors during pre-commit checks', async () => {
+      mockExecSync.mockImplementation((cmd) => {
+        if (
+          cmd === 'npx lint-staged --config configs/lint/.lintstagedrc.json'
+        ) {
+          throw new Error('Lint failed');
+        }
+        return '';
+      });
+
+      await expect(runPreCommitChecks(mockExecSync)).rejects.toThrow(
+        'Lint failed'
+      );
+    });
   });
 
   describe('runPrePushChecks', () => {
@@ -113,6 +148,48 @@ describe('git-hooks', () => {
         'Node version check failed'
       );
       expect(mockExecSync).toHaveBeenCalledTimes(1); // Should stop after first failure
+    });
+
+    it('should run all pre-push checks in sequence', async () => {
+      mockExecSync.mockImplementation((cmd) => {
+        if (cmd === 'npm run node:version') return 'v18.17.0';
+        if (cmd === 'npm run type-check') return '';
+        if (cmd === 'npm run lint') return '';
+        if (cmd === 'npm run test:unit') return '';
+        return '';
+      });
+
+      await runPrePushChecks(mockExecSync);
+
+      expect(mockExecSync).toHaveBeenCalledWith(
+        'npm run node:version',
+        expect.any(Object)
+      );
+      expect(mockExecSync).toHaveBeenCalledWith(
+        'npm run type-check',
+        expect.any(Object)
+      );
+      expect(mockExecSync).toHaveBeenCalledWith(
+        'npm run lint',
+        expect.any(Object)
+      );
+      expect(mockExecSync).toHaveBeenCalledWith(
+        'npm run test:unit',
+        expect.any(Object)
+      );
+    });
+
+    it('should handle errors during pre-push checks', async () => {
+      mockExecSync.mockImplementation((cmd) => {
+        if (cmd === 'npm run node:version') {
+          throw new Error('Node version check failed');
+        }
+        return '';
+      });
+
+      await expect(runPrePushChecks(mockExecSync)).rejects.toThrow(
+        'Node version check failed'
+      );
     });
   });
 });
