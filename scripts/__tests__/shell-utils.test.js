@@ -98,5 +98,30 @@ describe('shell-utils', () => {
       );
       expect(mockExit).toHaveBeenCalledWith(1);
     });
+
+    it('exits with error when Node.js version switch fails', () => {
+      // Arrange
+      mockExecSync.mockImplementation((command) => {
+        if (command === 'node -v') {
+          return 'v20.0.0';
+        }
+        if (command === 'brew --prefix nvm') {
+          return '/usr/local/opt/nvm';
+        }
+        if (command.includes('source') && command.includes('nvm use')) {
+          throw new Error('Failed to switch Node.js version');
+        }
+        return '';
+      });
+
+      // Act
+      switchNodeVersion(mockExecSync);
+
+      // Assert
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to switch Node.js version')
+      );
+      expect(mockExit).toHaveBeenCalledWith(1);
+    });
   });
 });
