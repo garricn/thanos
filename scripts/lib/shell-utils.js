@@ -382,4 +382,5 @@ export default {
   cleanDeep,
   checkNodeVersion,
   switchNodeVersion,
+  exec,
 };
