@@ -1,6 +1,6 @@
-import fs from 'fs';
-import path from 'path';
-import { execSync as defaultExecSync } from 'child_process';
+import { readFileSync, existsSync } from 'node:fs';
+import path from 'node:path';
+import { execSync as defaultExecSync } from 'node:child_process';
 
 // ANSI color codes
 const colors = {
@@ -33,7 +33,7 @@ function exec(execSync, command, options = {}) {
  */
 function getRequiredNodeVersion() {
   try {
-    return fs.readFileSync('.nvmrc', 'utf-8').trim();
+    return readFileSync('.nvmrc', 'utf-8').trim();
   } catch (error) {
     console.error(
       `${colors.red}Error: Could not read .nvmrc file.${colors.reset}`
@@ -235,7 +235,7 @@ export function checkNodeVersion(execSync = defaultExecSync) {
   // Check package.json
   console.log(`\n${colors.yellow}Checking package.json...${colors.reset}`);
   try {
-    const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
+    const packageJson = JSON.parse(readFileSync('package.json', 'utf-8'));
     if (!packageJson.engines || !packageJson.engines.node) {
       console.error(
         `${colors.red}❌ Error: No Node.js version specified in package.json engines field${colors.reset}`
@@ -269,17 +269,17 @@ export function checkNodeVersion(execSync = defaultExecSync) {
   );
   const workflowDir = '.github/workflows';
 
-  if (fs.existsSync(workflowDir)) {
-    const workflowFiles = fs.readdirSync(workflowDir);
+  if (existsSync(workflowDir)) {
+    const workflowFiles = readdirSync(workflowDir);
 
     for (const file of workflowFiles) {
       const filePath = path.join(workflowDir, file);
 
       if (
-        fs.statSync(filePath).isFile() &&
+        existsSync(filePath) &&
         (file.endsWith('.yml') || file.endsWith('.yaml'))
       ) {
-        const content = fs.readFileSync(filePath, 'utf-8');
+        const content = readFileSync(filePath, 'utf-8');
         if (content.includes('node-version:')) {
           // Simple regex to extract Node.js version from workflow file
           const matches = content.match(/node-version:\s*([0-9]+)/);
@@ -332,7 +332,7 @@ export function switchNodeVersion(execSync = defaultExecSync) {
 
   try {
     // Try to find nvm
-    if (fs.existsSync('$HOME/.nvm/nvm.sh')) {
+    if (existsSync('$HOME/.nvm/nvm.sh')) {
       nvmSource = '$HOME/.nvm/nvm.sh';
     } else {
       // Try to use brew to find nvm
@@ -341,7 +341,7 @@ export function switchNodeVersion(execSync = defaultExecSync) {
           stdio: 'pipe',
           encoding: 'utf-8',
         }).trim();
-        if (fs.existsSync(`${brewPrefix}/nvm.sh`)) {
+        if (existsSync(`${brewPrefix}/nvm.sh`)) {
           nvmSource = `$(brew --prefix nvm)/nvm.sh`;
         }
       } catch (error) {
@@ -383,4 +383,8 @@ export default {
   checkNodeVersion,
   switchNodeVersion,
   exec,
+  // Export internal functions for testing
+  getRequiredNodeVersion,
+  getCurrentNodeVersion,
+  checkNodeVersionMatch,
 };

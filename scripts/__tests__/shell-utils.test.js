@@ -1,7 +1,23 @@
 import { jest, describe, it, expect, beforeEach } from '@jest/globals';
-import { execSync } from 'node:child_process';
-import fs from 'node:fs';
-import shellUtils from '../lib/shell-utils.js';
+
+// Mock modules
+const mockExecSync = jest.fn();
+const mockReadFileSync = jest.fn();
+const mockExistsSync = jest.fn();
+const mockReaddirSync = jest.fn();
+
+jest.unstable_mockModule('node:child_process', () => ({
+  execSync: mockExecSync,
+}));
+
+jest.unstable_mockModule('node:fs', () => ({
+  readFileSync: mockReadFileSync,
+  existsSync: mockExistsSync,
+  readdirSync: mockReaddirSync,
+}));
+
+// Import after mocking
+const shellUtils = (await import('../lib/shell-utils.js')).default;
 
 // Mock process.exit to prevent tests from exiting
 const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {});
@@ -12,25 +28,12 @@ const mockConsoleError = jest
   .spyOn(console, 'error')
   .mockImplementation(() => {});
 
-// Mock modules
-const mockExecSync = jest.fn();
-const mockReadFileSync = jest.fn();
-const mockExistsSync = jest.fn();
-
-jest.unstable_mockModule('node:child_process', () => ({
-  execSync: mockExecSync,
-}));
-
-jest.unstable_mockModule('node:fs', () => ({
-  readFileSync: mockReadFileSync,
-  existsSync: mockExistsSync,
-}));
-
 describe('shell-utils', () => {
   beforeEach(() => {
     mockExecSync.mockClear();
     mockReadFileSync.mockClear();
     mockExistsSync.mockClear();
+    mockReaddirSync.mockClear();
     mockExit.mockClear();
     mockConsoleLog.mockClear();
     mockConsoleError.mockClear();
@@ -69,6 +72,95 @@ describe('shell-utils', () => {
       });
 
       expect(() => shellUtils.exec(mockExecSync, command)).toThrow(error);
+    });
+  });
+
+  describe('version management', () => {
+    describe('getRequiredNodeVersion', () => {
+      it('reads version from .nvmrc', () => {
+        mockReadFileSync.mockReturnValue('18\n');
+        const version = shellUtils.getRequiredNodeVersion();
+        expect(mockReadFileSync).toHaveBeenCalledWith('.nvmrc', 'utf-8');
+        expect(version).toBe('18');
+      });
+
+      it('exits with error if .nvmrc is not found', () => {
+        mockReadFileSync.mockImplementation(() => {
+          throw new Error('File not found');
+        });
+
+        shellUtils.getRequiredNodeVersion();
+
+        expect(mockConsoleError).toHaveBeenCalledWith(
+          expect.stringContaining(
+            '\x1b[31mError: Could not read .nvmrc file.\x1b[0m'
+          )
+        );
+        expect(mockExit).toHaveBeenCalledWith(1);
+      });
+    });
+
+    describe('getCurrentNodeVersion', () => {
+      it('extracts major version from node -v output', () => {
+        mockExecSync.mockReturnValue('v18.17.0\n');
+        const version = shellUtils.getCurrentNodeVersion(mockExecSync);
+        expect(version).toBe('18');
+        expect(mockExecSync).toHaveBeenCalledWith('node -v', {
+          stdio: 'pipe',
+          encoding: 'utf-8',
+        });
+      });
+
+      it('exits with error if version check fails', () => {
+        mockExecSync.mockImplementation(() => {
+          throw new Error('Command failed');
+        });
+
+        shellUtils.getCurrentNodeVersion(mockExecSync);
+
+        expect(mockConsoleError).toHaveBeenCalledWith(
+          expect.stringContaining(
+            '\x1b[31mError: Could not determine current Node.js version.\x1b[0m'
+          )
+        );
+        expect(mockExit).toHaveBeenCalledWith(1);
+      });
+    });
+
+    describe('checkNodeVersionMatch', () => {
+      it('returns true when versions match', () => {
+        const result = shellUtils.checkNodeVersionMatch('18', '18');
+        expect(result).toBe(true);
+        expect(mockConsoleLog).toHaveBeenCalledWith(
+          expect.stringContaining(
+            '\x1b[32m✓ Using correct Node.js version: v18\x1b[0m'
+          )
+        );
+      });
+
+      it('exits when versions do not match and force is false', () => {
+        shellUtils.checkNodeVersionMatch('18', '16');
+
+        expect(mockConsoleError).toHaveBeenCalledWith(
+          expect.stringContaining(
+            '\x1b[31mError: This project requires Node.js version 18'
+          )
+        );
+        expect(mockConsoleLog).toHaveBeenCalledWith(
+          expect.stringContaining('npm run fix-node-version')
+        );
+        expect(mockExit).toHaveBeenCalledWith(1);
+      });
+
+      it('returns false and warns when versions do not match but force is true', () => {
+        const result = shellUtils.checkNodeVersionMatch('18', '16', true);
+
+        expect(result).toBe(false);
+        expect(mockConsoleLog).toHaveBeenCalledWith(
+          expect.stringContaining('\x1b[33m⚠️ Warning: Using Node.js v16')
+        );
+        expect(mockExit).not.toHaveBeenCalled();
+      });
     });
   });
 
