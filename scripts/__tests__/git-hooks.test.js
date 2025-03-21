@@ -1,27 +1,90 @@
 import { jest } from '@jest/globals';
 import { runPreCommitChecks, runPrePushChecks } from '../hooks/git-hooks.js';
 
-describe('git-hooks', () => {
-  let mockExecSync;
+// Mock child_process.execSync
+const mockExecSync = jest.fn();
+jest.mock('child_process', () => ({
+  execSync: mockExecSync,
+}));
 
+// Higher-level mocks for different states
+const mockGitState = {
+  hasStagedChanges: true,
+  hasTypeScriptFiles: true,
+  hasLintingErrors: false,
+  hasTypeErrors: false,
+};
+
+const mockNpmState = {
+  nodeVersion: 'v18.17.0',
+  testsPass: true,
+  lintPass: true,
+  typePass: true,
+};
+
+// Helper to set up mock state
+const setupMockState = (gitState = mockGitState, npmState = mockNpmState) => {
+  mockExecSync.mockImplementation((command, options = {}) => {
+    if (command.includes('git diff --cached --name-only')) {
+      if (!gitState.hasStagedChanges) {
+        return '';
+      }
+      if (command.includes('grep .ts$')) {
+        if (!gitState.hasTypeScriptFiles) {
+          throw new Error('grep: no matches found');
+        }
+        return 'file.ts\n';
+      }
+      return 'file.ts\n';
+    }
+    if (command.includes('npm run lint')) {
+      if (!npmState.lintPass) {
+        throw new Error('Lint check failed');
+      }
+      return '';
+    }
+    if (command.includes('npm run type-check')) {
+      if (!npmState.typePass) {
+        throw new Error('Type check failed');
+      }
+      return '';
+    }
+    if (command.includes('npm run node:version')) {
+      if (npmState.nodeVersion !== 'v18.17.0') {
+        throw new Error('Node version check failed');
+      }
+      return npmState.nodeVersion;
+    }
+    if (command.includes('npm run test:unit')) {
+      if (!npmState.testsPass) {
+        throw new Error('Test check failed');
+      }
+      return '';
+    }
+    if (command.includes('npx lint-staged')) {
+      if (!npmState.lintPass) {
+        throw new Error('Lint check failed');
+      }
+      return '';
+    }
+    if (command.includes('npx tsc')) {
+      if (!npmState.typePass) {
+        throw new Error('Type check failed');
+      }
+      return '';
+    }
+    return '';
+  });
+};
+
+describe('git-hooks', () => {
   beforeEach(() => {
-    // Create a new mock function for each test
-    mockExecSync = jest.fn();
+    jest.clearAllMocks();
+    setupMockState();
   });
 
   describe('runPreCommitChecks', () => {
     it('should run lint-staged with correct config', async () => {
-      // Set up mock to return different values for different calls
-      mockExecSync.mockImplementation((cmd, opts) => {
-        if (
-          cmd ===
-          'git diff --cached --name-only --diff-filter=ACMR | grep -E \\.tsx?$'
-        ) {
-          return ''; // No TypeScript files
-        }
-        return ''; // Default empty return
-      });
-
       await runPreCommitChecks(mockExecSync);
 
       expect(mockExecSync).toHaveBeenCalledWith(
@@ -31,61 +94,27 @@ describe('git-hooks', () => {
     });
 
     it('should type check staged TypeScript files', async () => {
-      // Set up mock to return TS files for the git diff command
-      mockExecSync.mockImplementation((cmd, opts) => {
-        if (
-          cmd ===
-          'git diff --cached --name-only --diff-filter=ACMR | grep -E \\.tsx?$'
-        ) {
-          return 'file1.ts file2.tsx'; // Return some TS files without newline
-        }
-        return ''; // Default empty return
-      });
-
       await runPreCommitChecks(mockExecSync);
 
-      // Check that lint-staged was called
-      expect(mockExecSync).toHaveBeenCalledWith(
-        'npx lint-staged --config configs/lint/.lintstagedrc.json',
-        expect.any(Object)
-      );
-
-      // Check that git diff was called
       expect(mockExecSync).toHaveBeenCalledWith(
         'git diff --cached --name-only --diff-filter=ACMR | grep -E \\.tsx?$',
         expect.any(Object)
       );
 
-      // Check that tsc was called with the right files
       expect(mockExecSync).toHaveBeenCalledWith(
-        'npx tsc --noEmit file1.ts file2.tsx',
+        'npx tsc --noEmit file.ts',
         expect.any(Object)
       );
     });
 
     it('should skip type checking if no TypeScript files are staged', async () => {
-      // Set up mock to return no TS files for the git diff command
-      mockExecSync.mockImplementation((cmd, opts) => {
-        if (
-          cmd ===
-          'git diff --cached --name-only --diff-filter=ACMR | grep -E \\.tsx?$'
-        ) {
-          return ''; // No TypeScript files
-        }
-        return ''; // Default empty return
-      });
-
+      setupMockState({ ...mockGitState, hasTypeScriptFiles: false });
       await runPreCommitChecks(mockExecSync);
 
-      expect(mockExecSync).toHaveBeenCalledTimes(2); // Only lint-staged and git diff
+      expect(mockExecSync).toHaveBeenCalledTimes(3);
 
-      // Verify it was the right commands
       expect(mockExecSync).toHaveBeenCalledWith(
         'npx lint-staged --config configs/lint/.lintstagedrc.json',
-        expect.any(Object)
-      );
-      expect(mockExecSync).toHaveBeenCalledWith(
-        'git diff --cached --name-only --diff-filter=ACMR | grep -E \\.tsx?$',
         expect.any(Object)
       );
     });
@@ -96,14 +125,13 @@ describe('git-hooks', () => {
           cmd ===
           'git diff --cached --name-only --diff-filter=ACMR | grep -E \\.tsx?$'
         ) {
-          throw new Error('grep: no matches found'); // Simulate grep returning non-zero
+          throw new Error('grep: no matches found');
         }
-        return ''; // Default empty return
+        return '';
       });
 
       await runPreCommitChecks(mockExecSync);
 
-      // Should still run lint-staged even if no TS files are found
       expect(mockExecSync).toHaveBeenCalledWith(
         'npx lint-staged --config configs/lint/.lintstagedrc.json',
         expect.any(Object)
@@ -122,6 +150,24 @@ describe('git-hooks', () => {
 
       await expect(runPreCommitChecks(mockExecSync)).rejects.toThrow(
         'Lint failed'
+      );
+    });
+
+    it('should pass when there are no linting or type errors', async () => {
+      await expect(runPreCommitChecks(mockExecSync)).resolves.not.toThrow();
+    });
+
+    it('should fail when there are linting errors', async () => {
+      setupMockState(mockGitState, { ...mockNpmState, lintPass: false });
+      await expect(runPreCommitChecks(mockExecSync)).rejects.toThrow(
+        'Lint check failed'
+      );
+    });
+
+    it('should fail when there are type errors', async () => {
+      setupMockState(mockGitState, { ...mockNpmState, typePass: false });
+      await expect(runPreCommitChecks(mockExecSync)).rejects.toThrow(
+        'Type check failed'
       );
     });
   });
@@ -147,18 +193,10 @@ describe('git-hooks', () => {
       await expect(runPrePushChecks(mockExecSync)).rejects.toThrow(
         'Node version check failed'
       );
-      expect(mockExecSync).toHaveBeenCalledTimes(1); // Should stop after first failure
+      expect(mockExecSync).toHaveBeenCalledTimes(1);
     });
 
     it('should run all pre-push checks in sequence', async () => {
-      mockExecSync.mockImplementation((cmd) => {
-        if (cmd === 'npm run node:version') return 'v18.17.0';
-        if (cmd === 'npm run type-check') return '';
-        if (cmd === 'npm run lint') return '';
-        if (cmd === 'npm run test:unit') return '';
-        return '';
-      });
-
       await runPrePushChecks(mockExecSync);
 
       expect(mockExecSync).toHaveBeenCalledWith(
@@ -179,14 +217,19 @@ describe('git-hooks', () => {
       );
     });
 
-    it('should handle errors during pre-push checks', async () => {
-      mockExecSync.mockImplementation((cmd) => {
-        if (cmd === 'npm run node:version') {
-          throw new Error('Node version check failed');
-        }
-        return '';
-      });
+    it('should pass when all checks pass', async () => {
+      await expect(runPrePushChecks(mockExecSync)).resolves.not.toThrow();
+    });
 
+    it('should fail when tests fail', async () => {
+      setupMockState(mockGitState, { ...mockNpmState, testsPass: false });
+      await expect(runPrePushChecks(mockExecSync)).rejects.toThrow(
+        'Test check failed'
+      );
+    });
+
+    it('should fail when Node version is incorrect', async () => {
+      setupMockState(mockGitState, { ...mockNpmState, nodeVersion: 'v16.0.0' });
       await expect(runPrePushChecks(mockExecSync)).rejects.toThrow(
         'Node version check failed'
       );
