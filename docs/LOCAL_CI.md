@@ -1,104 +1,94 @@
-# Local CI Workflows
+# Local CI Guide
 
-This document explains the local CI workflows available in this project, which help ensure consistency between your local development environment and the GitHub Actions CI environment.
+This document explains how to use the local CI workflow in the project.
 
-## Available Workflows
+## Overview
 
-### 1. Local CI Script (`npm run local-ci`)
+Local CI allows you to run the same checks that GitHub Actions runs, but on your local machine. This provides quick feedback during development without waiting for cloud CI.
 
-Runs the same checks as the GitHub Actions CI workflow locally:
+## Available CI Methods
 
-- Linting
-- Type checking
-- Unit tests
-- Snapshot tests
-- Optional E2E tests
-- Security checks
-- GitHub Actions workflow validation
+1. **Basic Local CI** (`npm run local-ci`)
+2. **GitHub Actions Local** (`npm run act`)
 
-**When to use:** Before pushing changes to ensure they will pass in the CI environment.
+## Local CI Details
+
+### 1. Basic Local CI (`npm run local-ci`)
+
+Runs essential checks on your local machine:
 
 ```bash
 npm run local-ci
 ```
 
-### 2. GitHub Actions Workflow Validation (`npm run validate:actions`)
+This runs:
 
-Validates your GitHub Actions workflow files using `actionlint` and `yaml-lint`:
+- Linting
+- Type checking
+- Unit tests
+- Build verification
 
-- Checks for syntax errors
-- Validates action versions
-- Ensures proper workflow structure
+### 2. GitHub Actions Local (`npm run act`)
 
-**When to use:** After making changes to any GitHub Actions workflow file (`.github/workflows/*.yml`).
-
-```bash
-npm run validate:actions
-```
-
-### 3. Docker-based CI Environment (`npm run docker:ci`)
-
-Runs the local CI checks in a Docker container that closely mimics the GitHub Actions environment:
-
-- Uses the same Node.js version as GitHub Actions
-- Installs the same dependencies
-- Provides a clean, isolated environment
-
-**When to use:** When you need to debug CI issues or want to ensure your changes work in an environment very similar to GitHub Actions.
+Runs the actual GitHub Actions workflows locally:
 
 ```bash
-# Requires Docker to be installed
-npm run docker:ci
-```
-
-### 4. Act for GitHub Actions (`npm run act`)
-
-Runs GitHub Actions workflows locally using the [nektos/act](https://github.com/nektos/act) tool:
-
-- Executes the actual GitHub workflow files locally
-- Runs in Docker containers similar to GitHub Actions runners
-- Uses your local GitHub tokens for authentication
-- Supports artifacts, secrets, and most GitHub Actions features
-
-**When to use:** When you need to test actual GitHub Actions workflows without pushing to GitHub.
-
-```bash
-# Run with default parameters (push event, main workflow)
 npm run act
-
-# Run a specific event
-npm run act -- pull_request
-
-# Run a specific workflow file
-npm run act -- push -W .github/workflows/specific-workflow.yml
 ```
 
-For more details, see the [Running GitHub Actions Locally with Act](./ACT.md) documentation.
+This requires:
 
-## Setting Up Docker for Local CI
+- [act](https://github.com/nektos/act) to be installed
+- About 20GB of free disk space for container images
 
-To use the Docker-based CI workflow:
+## Setting Up Local CI
 
-1. Install Docker Desktop from [https://www.docker.com/products/docker-desktop/](https://www.docker.com/products/docker-desktop/)
-2. Verify installation with `docker --version`
-3. Run `npm run docker:ci` to test the Docker-based CI environment
+1. Install Node.js (version specified in `.nvmrc`)
+2. Run `npm install` to install dependencies
+3. Install act if you want to run GitHub Actions locally:
 
-## Pre-push Git Hook
+   ```bash
+   brew install act  # macOS
+   ```
 
-A pre-push Git hook is configured to automatically run the local CI checks before pushing to the repository. This helps prevent pushing changes that would fail in the CI environment.
+## Best Practices
 
-## Benefits of Local CI Workflows
-
-- **Catch issues early:** Find and fix problems before they reach the CI environment
-- **Save time:** Avoid waiting for CI failures by catching them locally
-- **Ensure consistency:** Make sure your local environment behaves similarly to the CI environment
-- **Validate GitHub Actions:** Prevent workflow syntax errors and outdated action versions
+1. Run local CI before pushing changes
+2. Use `act` for full workflow testing
+3. Keep dependencies up to date
+4. Monitor test coverage
 
 ## Troubleshooting
 
-If you encounter issues with the local CI workflows:
+### Common Issues
 
-1. Make sure you're using the correct Node.js version (specified in `.nvmrc`)
-2. Ensure all dependencies are installed with `npm ci`
-3. For Docker-based CI, make sure Docker is running
-4. Check the logs for specific error messages
+1. **Node.js Version Mismatch**
+
+   - Use `nvm use` to switch to the correct version
+   - Check `.nvmrc` for the required version
+
+2. **Dependencies Issues**
+
+   - Run `npm install` to update dependencies
+   - Clear node_modules with `npm run clean:deep`
+
+3. **Test Failures**
+   - Check test output for specific failures
+   - Run individual test suites if needed
+
+## Configuration
+
+Local CI configuration is spread across several files:
+
+1. `package.json` - NPM scripts
+2. `.github/workflows/` - GitHub Actions workflows
+3. `configs/` - Various tool configurations
+
+## Contributing
+
+When modifying the CI process:
+
+1. Update both local and GitHub Actions configurations
+2. Test changes with both `local-ci` and `act`
+3. Document any new requirements or steps
+4. Update troubleshooting guides if needed
