@@ -85,3 +85,5 @@ describe('getCurrentNodeVersion', () => {
 After this test is added, run through steps 3-5 before adding another test, even if it's in the same `describe` block.
 
 This pattern ensures we maintain code quality and test coverage while making incremental improvements to the test suite.
+
+Use dependency injection and direct mocking just like the other test files.

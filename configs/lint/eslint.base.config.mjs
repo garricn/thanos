@@ -17,7 +17,8 @@ export default [
     'plugin:@typescript-eslint/recommended',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
-    'plugin:jsx-a11y/recommended'
+    'plugin:jsx-a11y/recommended',
+    'prettier' // Ensure prettier is last
   ),
   {
     languageOptions: {
@@ -48,6 +49,7 @@ export default [
       '**/*.mjs',
     ],
     rules: {
+      quotes: ['error', 'single'],
       'eol-last': ['error', 'always'],
       'react/react-in-jsx-scope': 'off', // Not needed with React 17+
       '@typescript-eslint/no-explicit-any': 'warn',
