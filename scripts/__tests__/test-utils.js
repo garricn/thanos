@@ -10,6 +10,23 @@ export const mockReaddirSync = vi.fn();
 export const mockMkdirSync = vi.fn();
 export const mockSpawn = vi.fn();
 export const mockWaitOn = vi.fn();
+export const mockWriteFileSync = vi.fn();
+
+// Mock DOMParser and XMLSerializer
+export const mockParseFromString = vi.fn();
+export const mockSerializeToString = vi.fn();
+
+global.DOMParser = class {
+  parseFromString(content, type) {
+    return mockParseFromString(content, type);
+  }
+};
+
+global.XMLSerializer = class {
+  serializeToString(doc) {
+    return mockSerializeToString(doc);
+  }
+};
 
 // Mock module imports
 vi.mock('node:child_process', () => ({
@@ -25,10 +42,10 @@ vi.mock('node:fs', () => {
     unlinkSync: mockUnlinkSync,
     readdirSync: mockReaddirSync,
     mkdirSync: mockMkdirSync,
+    writeFileSync: mockWriteFileSync,
     statSync: vi.fn().mockReturnValue({
       isDirectory: vi.fn().mockReturnValue(false),
     }),
-    writeFileSync: vi.fn(),
   };
   return {
     ...fsMock,
@@ -100,6 +117,20 @@ export function setupMockDefaults() {
     return false;
   });
 
+  // Setup XML parser defaults
+  mockParseFromString.mockImplementation(() => ({
+    documentElement: {
+      getElementsByTagName: vi.fn().mockReturnValue({
+        length: 0,
+        item: vi.fn(),
+      }),
+    },
+  }));
+
+  mockSerializeToString.mockReturnValue(
+    '<?xml version="1.0" encoding="UTF-8"?><coverage></coverage>'
+  );
+
   return {
     mockExecSync,
     mockReadFileSync,
@@ -110,6 +141,9 @@ export function setupMockDefaults() {
     mockConsoleLog,
     mockConsoleError,
     mockExit,
+    mockWriteFileSync,
+    mockParseFromString,
+    mockSerializeToString,
   };
 }
 

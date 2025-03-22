@@ -10,8 +10,10 @@ import {
   cleanCoverage,
   runUnitTests,
   runSnapshotTests,
+  combineCoverage,
 } from '../bin/coverage.js';
 import path from 'node:path';
+import fs from 'fs';
 import {
   mockExistsSync,
   mockCopyFileSync,
@@ -20,6 +22,8 @@ import {
   mockConsoleError,
   mockMkdirSync,
   mockExecSync,
+  mockReadFileSync,
+  mockWriteFileSync,
   setupMockDefaults,
 } from './test-utils.js';
 
@@ -32,6 +36,63 @@ describe('Coverage Script', () => {
     mockUnlinkSync.mockReset();
     mockMkdirSync.mockReset();
     mockExecSync.mockReset();
+    mockReadFileSync.mockReset();
+    mockWriteFileSync.mockReset();
+  });
+
+  describe('combineCoverage', () => {
+    it('combines LCOV files from all coverage directories', () => {
+      // Arrange
+      const mockLcovContent1 =
+        'TN:\nSF:src/file1.js\nFNF:1\nFNH:1\nLF:1\nLH:1\nend_of_record\n';
+      const mockLcovContent2 =
+        'TN:\nSF:src/file2.js\nFNF:2\nFNH:2\nLF:2\nLH:2\nend_of_record\n';
+      const mockSonarXml =
+        '<?xml version="1.0" encoding="UTF-8"?><coverage></coverage>';
+
+      mockExistsSync.mockImplementation((path) => {
+        if (
+          path.includes('coverage/api/unit') ||
+          path.includes('coverage/web/unit')
+        )
+          return true;
+        if (path.includes('lcov.info')) return true;
+        if (path.includes('sonar-report.xml')) return true;
+        return false;
+      });
+
+      mockReadFileSync.mockImplementation((path) => {
+        if (path.includes('coverage/api/unit/lcov.info'))
+          return mockLcovContent1;
+        if (path.includes('coverage/web/unit/lcov.info'))
+          return mockLcovContent2;
+        if (path.includes('sonar-report.xml')) return mockSonarXml;
+        return '';
+      });
+
+      // Act
+      combineCoverage();
+
+      // Assert
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Combining coverage reports')
+      );
+
+      // Check LCOV file combination
+      expect(mockWriteFileSync).toHaveBeenCalledWith(
+        'coverage/combined/lcov.info',
+        mockLcovContent1 + '\n' + mockLcovContent2 + '\n'
+      );
+
+      // Check Sonar XML handling
+      expect(mockWriteFileSync).toHaveBeenCalledWith(
+        'coverage/combined/sonar-report.xml',
+        expect.any(String)
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Combined Sonar report created')
+      );
+    });
   });
 
   describe('runSnapshotTests', () => {
