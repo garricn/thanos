@@ -9,6 +9,7 @@ import {
   ensureCombineDirectories,
   cleanCoverage,
   runUnitTests,
+  runSnapshotTests,
 } from '../bin/coverage.js';
 import path from 'node:path';
 import {
@@ -31,6 +32,26 @@ describe('Coverage Script', () => {
     mockUnlinkSync.mockReset();
     mockMkdirSync.mockReset();
     mockExecSync.mockReset();
+  });
+
+  describe('runSnapshotTests', () => {
+    it('runs snapshot tests with coverage', () => {
+      // Act
+      runSnapshotTests();
+
+      // Assert
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Running snapshot tests')
+      );
+
+      // Verify snapshot test command
+      expect(mockExecSync).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'npm run test --workspace=apps/web -- --testPathPattern=snapshot'
+        ),
+        { stdio: 'inherit' }
+      );
+    });
   });
 
   describe('runUnitTests', () => {
