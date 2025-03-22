@@ -150,6 +150,27 @@ describe('shell-utils', () => {
       expect(version).toBe('18');
       expect(mockExecSync).toHaveBeenCalledWith('node -v', expect.any(Object));
     });
+
+    it('exits with error when node version cannot be determined', () => {
+      // Arrange
+      mockExecSync.mockImplementation((command) => {
+        if (command === 'node -v') {
+          throw new Error('Command failed');
+        }
+        return '';
+      });
+
+      // Act
+      getCurrentNodeVersion(mockExecSync);
+
+      // Assert
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Error: Could not determine current Node.js version'
+        )
+      );
+      expect(mockExit).toHaveBeenCalledWith(1);
+    });
   });
 
   describe('exec', () => {
@@ -313,6 +334,35 @@ describe('shell-utils', () => {
       // This is indirectly verified by the fact that our test doesn't fail even if versions don't match
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('Checking Node.js version')
+      );
+    });
+
+    it('handles Jest cache clearing failures gracefully', () => {
+      // Arrange
+      const testExecSync = jest.fn().mockImplementation((command) => {
+        if (command === 'npx jest --clearCache') {
+          throw new Error('Jest cache clear failed');
+        }
+        if (command === 'node -v') {
+          return 'v20.0.0';
+        }
+        if (command === 'npm -v') {
+          return '9.0.0';
+        }
+        return '';
+      });
+
+      // Act
+      cleanDeep([], testExecSync);
+
+      // Assert
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('⚠️ Jest cache clear might have failed')
+      );
+
+      // Verify it continues with the process despite the error
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Checking environment')
       );
     });
   });
