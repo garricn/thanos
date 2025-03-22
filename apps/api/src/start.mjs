@@ -14,12 +14,7 @@ const tsNodeExecutable = resolve(
 // Run TypeScript file with ts-node
 const child = spawn(
   tsNodeExecutable,
-  [
-    '--esm',
-    '--project',
-    '../../configs/build/tsconfig.api.json',
-    resolve(__dirname, 'main.ts'),
-  ],
+  ['--esm', '--project', '../tsconfig.json', resolve(__dirname, 'main.ts')],
   {
     stdio: 'inherit',
     env: {

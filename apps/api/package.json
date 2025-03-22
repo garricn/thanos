@@ -4,13 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "nodemon --watch src --ext ts,js,mjs --exec 'npx tsx --tsconfig ../../configs/build/tsconfig.api.json src/main.ts'",
+    "dev": "nodemon --watch src --ext ts,js,mjs --exec 'npx tsx --tsconfig ./tsconfig.json src/main.ts'",
     "build": "node build.js",
     "start": "node dist/index.js",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest --config configs/test/jest.config.mjs",
     "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --config configs/test/jest.config.mjs --coverage",
     "lint": "eslint --config configs/lint/eslint.config.mjs .",
-    "typecheck": "tsc --noEmit --project ../../configs/build/tsconfig.json"
+    "typecheck": "tsc --noEmit --project ./tsconfig.json"
   },
   "dependencies": {
     "express": "^4.19.2",

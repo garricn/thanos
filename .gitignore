@@ -15,6 +15,8 @@ build
 !**/build/*.json
 !**/build/*.js
 !**/build/*.mjs
+!configs/build
+!apps/*/configs/build
 
 # Test and coverage
 /coverage

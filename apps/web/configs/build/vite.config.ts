@@ -1,10 +1,10 @@
 /// <reference types='vitest' />
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import path from 'path';
+import * as path from 'path';
 
 export default defineConfig(() => ({
-  root: path.resolve(__dirname, '../../../../apps/web'),
+  root: path.resolve(__dirname, '../../'),
   cacheDir: '../../../../node_modules/.vite/web',
   server: {
     port: 4200,

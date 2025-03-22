@@ -5,7 +5,7 @@ export default {
     '^.+\\.[tj]s$': [
       'ts-jest',
       {
-        tsconfig: '<rootDir>/configs/test/tsconfig.spec.json',
+        tsconfig: '<rootDir>/../tsconfig.json',
       },
     ],
   },
@@ -19,7 +19,7 @@ export default {
   setupFilesAfterEnv: ['../../../../scripts/jest.setup.js'],
   globals: {
     'ts-jest': {
-      tsconfig: '<rootDir>/configs/test/tsconfig.spec.json',
+      tsconfig: '<rootDir>/../tsconfig.json',
     },
   },
 };
