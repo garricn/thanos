@@ -228,6 +228,15 @@ jobs:
             libgbm1 \
             libpango-1.0-0 \
             libcairo2
+      - name: Cache Cypress binary
+        uses: actions/cache@v4
+        with:
+          path: /root/.cache/Cypress
+          key: cypress-binary-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            cypress-binary-
+      - name: Verify Cypress
+        run: npx cypress verify || npx cypress install
       - name: Build API and Web
         run: npm run build
       - name: Run E2E tests
