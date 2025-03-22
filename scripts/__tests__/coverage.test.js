@@ -7,6 +7,7 @@ import {
   moveSonarReports,
   ensureTestDirectories,
   ensureCombineDirectories,
+  cleanCoverage,
 } from '../bin/coverage.js';
 import path from 'node:path';
 import {
@@ -16,6 +17,7 @@ import {
   mockConsoleLog,
   mockConsoleError,
   mockMkdirSync,
+  mockExecSync,
   setupMockDefaults,
 } from './test-utils.js';
 
@@ -27,6 +29,22 @@ describe('Coverage Script', () => {
     mockCopyFileSync.mockReset();
     mockUnlinkSync.mockReset();
     mockMkdirSync.mockReset();
+    mockExecSync.mockReset();
+  });
+
+  describe('cleanCoverage', () => {
+    it('cleans coverage directories', () => {
+      // Act
+      cleanCoverage();
+
+      // Assert
+      expect(mockExecSync).toHaveBeenCalledWith('rm -rf coverage', {
+        stdio: 'inherit',
+      });
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Cleaning coverage directories')
+      );
+    });
   });
 
   describe('ensureCombineDirectories', () => {
