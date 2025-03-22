@@ -365,5 +365,45 @@ describe('shell-utils', () => {
         expect.stringContaining('Checking environment')
       );
     });
+
+    it('executes commands in non-dry-run mode', () => {
+      // Arrange
+      const testExecSync = jest.fn().mockImplementation((command) => {
+        if (command === 'node -v') {
+          return 'v20.0.0';
+        }
+        if (command === 'npm -v') {
+          return '9.0.0';
+        }
+        return '';
+      });
+
+      // Act
+      cleanDeep([], testExecSync);
+
+      // Assert
+      // Verify it runs the removal command
+      expect(testExecSync).toHaveBeenCalledWith(
+        'rm -rf node_modules package-lock.json dist tmp coverage .nyc_output ./*.log logs',
+        expect.any(Object)
+      );
+
+      // Verify it cleans npm cache
+      expect(testExecSync).toHaveBeenCalledWith(
+        'npm cache clean --force',
+        expect.any(Object)
+      );
+
+      // Verify it installs dependencies
+      expect(testExecSync).toHaveBeenCalledWith(
+        'npm install',
+        expect.any(Object)
+      );
+
+      // Verify completion message
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Deep cleaning complete')
+      );
+    });
   });
 });
