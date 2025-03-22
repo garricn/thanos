@@ -262,5 +262,34 @@ describe('shell-utils', () => {
       );
       expect(mockExit).toHaveBeenCalledWith(0);
     });
+
+    it('runs in dry-run mode when --dry-run flag is used', () => {
+      // Arrange
+      const args = ['--dry-run'];
+
+      // Act
+      cleanDeep(args, mockExecSync);
+
+      // Assert
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Running in dry-run mode')
+      );
+
+      // Verify it checks Node.js version
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Checking Node.js version')
+      );
+
+      // Verify it shows what would be removed but doesn't actually execute the command
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Would remove:')
+      );
+
+      // Verify it doesn't actually run the removal command
+      expect(mockExecSync).not.toHaveBeenCalledWith(
+        expect.stringContaining('rm -rf'),
+        expect.any(Object)
+      );
+    });
   });
 });
