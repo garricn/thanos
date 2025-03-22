@@ -3,7 +3,11 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { moveSonarReports, ensureTestDirectories } from '../bin/coverage.js';
+import {
+  moveSonarReports,
+  ensureTestDirectories,
+  ensureCombineDirectories,
+} from '../bin/coverage.js';
 import path from 'node:path';
 import {
   mockExistsSync,
@@ -23,6 +27,21 @@ describe('Coverage Script', () => {
     mockCopyFileSync.mockReset();
     mockUnlinkSync.mockReset();
     mockMkdirSync.mockReset();
+  });
+
+  describe('ensureCombineDirectories', () => {
+    it('creates combined coverage directory if it does not exist', () => {
+      // Arrange
+      mockExistsSync.mockReturnValue(false);
+
+      // Act
+      ensureCombineDirectories();
+
+      // Assert
+      expect(mockMkdirSync).toHaveBeenCalledWith('coverage/combined', {
+        recursive: true,
+      });
+    });
   });
 
   describe('ensureTestDirectories', () => {
