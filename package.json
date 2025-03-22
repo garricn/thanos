@@ -27,7 +27,7 @@
     "coverage:report": "node scripts/bin/coverage.js --report",
     "coverage:open": "node scripts/bin/coverage.js --open",
     "coverage:clean": "node scripts/bin/coverage.js",
-    "fix-node-version": "echo 'To switch to Node.js '$(cat .nvmrc)', please run: source scripts/bin/switch-node.js'",
+    "fix-node-version": "node scripts/bin/switch-node.js",
     "format": "prettier --config configs/lint/.prettierrc --ignore-path configs/lint/.prettierignore --write \"**/*.{js,jsx,mjs,ts,tsx}\" && npm run format:md && npm run format:sh && npm run format:yaml",
     "format:md": "prettier --config configs/lint/.prettierrc --ignore-path configs/lint/.prettierignore --write \"**/*.md\"",
     "format:sh": "find scripts -name \"*.sh\" -type f -exec shfmt -i 2 -ci -w {} \\; && [ -f ci_helper.sh ] && shfmt -i 2 -ci -w ci_helper.sh || true",
