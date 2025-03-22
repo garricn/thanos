@@ -512,6 +512,12 @@ describe('Coverage Script', () => {
 });
 
 describe('main', () => {
+  beforeEach(() => {
+    setupMockDefaults();
+    // Reset process.argv
+    process.argv = ['node', 'coverage.js'];
+  });
+
   it('executes clean command when type is none and clean flag is true', async () => {
     // Arrange
     process.argv = ['node', 'coverage.js', '--type=none', '--clean'];
@@ -530,5 +536,43 @@ describe('main', () => {
     expect(mockExecSync).toHaveBeenCalledWith('rm -rf coverage', {
       stdio: 'inherit',
     });
+  });
+
+  it('runs unit tests with coverage when type is unit', async () => {
+    // Arrange
+    process.argv = ['node', 'coverage.js', '--type=unit'];
+    mockExistsSync.mockReturnValue(false);
+
+    // Act
+    await main();
+
+    // Assert
+    expect(mockConsoleLog).toHaveBeenCalledWith('🧪 Running unit tests...');
+    expect(mockConsoleLog).toHaveBeenCalledWith('Running API unit tests...');
+    expect(mockConsoleLog).toHaveBeenCalledWith('Running Web unit tests...');
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '🔄 Combining coverage reports...'
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✨ Coverage operation completed successfully!'
+    );
+
+    // Verify directories were created
+    expect(mockMkdirSync).toHaveBeenCalledWith('coverage/api/unit', {
+      recursive: true,
+    });
+    expect(mockMkdirSync).toHaveBeenCalledWith('coverage/web/unit', {
+      recursive: true,
+    });
+
+    // Verify tests were run
+    expect(mockExecSync).toHaveBeenCalledWith(
+      expect.stringContaining('npm run test --workspace=apps/api'),
+      { stdio: 'inherit' }
+    );
+    expect(mockExecSync).toHaveBeenCalledWith(
+      expect.stringContaining('npm run test --workspace=apps/web'),
+      { stdio: 'inherit' }
+    );
   });
 });
