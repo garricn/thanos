@@ -207,7 +207,7 @@ export async function runE2ETests() {
     console.log(`${colors.yellow}Running API E2E tests...${colors.reset}`);
     try {
       execCmd(
-        'cd apps/api/e2e && vitest run --config configs/test/vitest.config.ts --dir src --verbose'
+        'vitest run --config configs/test/vitest.config.ts apps/api/e2e/src/api/api.test.ts'
       );
       apiExitCode = 0;
     } catch (error) {
