@@ -207,6 +207,60 @@ describe('Coverage Script', () => {
         expect.stringContaining('Coverage Summary')
       );
     });
+
+    it('generates detailed coverage report', () => {
+      // Arrange
+      mockExistsSync.mockImplementation((path) => {
+        return (
+          path.includes('lcov.info') || path.includes('coverage-final.json')
+        );
+      });
+
+      const mockCoverageData = {
+        'src/file1.js': {
+          s: { 0: 1, 1: 0, 2: 1 },
+          statementMap: {},
+          fnMap: {},
+          branchMap: {},
+        },
+        'src/file2.js': {
+          s: { 0: 1, 1: 1, 2: 1 },
+          statementMap: {},
+          fnMap: {},
+          branchMap: {},
+        },
+      };
+
+      mockReadFileSync.mockImplementation((path) => {
+        if (path.includes('coverage-final.json')) {
+          return JSON.stringify(mockCoverageData);
+        }
+        if (path.includes('lcov.info')) {
+          return 'SF:file.js\nLF:10\nLH:5\nend_of_record';
+        }
+        return '';
+      });
+
+      // Act
+      generateReport(true);
+
+      // Assert
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Generating coverage report')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('src/file1.js')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Statements: 2/3 (66.67%)')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('src/file2.js')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Statements: 3/3 (100.00%)')
+      );
+    });
   });
 
   describe('combineCoverage', () => {
