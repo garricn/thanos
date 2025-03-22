@@ -12,7 +12,18 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/**', '**/*.test.js', '**/test-utils.js'],
+      include: ['scripts/bin/**', 'scripts/lib/**', 'scripts/hooks/**'],
+      exclude: [
+        'node_modules/**',
+        '**/*.test.js',
+        '**/test-utils.js',
+        'apps/**',
+        'configs/**',
+        'types/**',
+        'coverage/**',
+        'dist/**',
+        '**/lcov-report/**',
+      ],
     },
     // Test timeout
     testTimeout: 10000,
