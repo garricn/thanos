@@ -1,4 +1,4 @@
-import { jest, describe, test, expect, afterAll } from '@jest/globals';
+import { describe, test, expect, afterAll, vi } from 'vitest';
 import {
   existsSync,
   statSync,
@@ -17,14 +17,14 @@ const __dirname = dirname(__filename);
 const scriptPath = resolve(__dirname, '../bin/act.js');
 
 // Mock child_process
-jest.mock('node:child_process', () => ({
-  execSync: jest.fn().mockImplementation((command) => {
+vi.mock('node:child_process', () => ({
+  execSync: vi.fn().mockImplementation((command) => {
     if (command === 'node -v') return 'v18.16.0';
     return 'mock output';
   }),
-  spawn: jest.fn(() => {
+  spawn: vi.fn(() => {
     const mockProcess = {
-      on: jest.fn((event, callback) => {
+      on: vi.fn((event, callback) => {
         if (event === 'close') {
           setTimeout(() => callback(0), 10);
         }
@@ -36,14 +36,14 @@ jest.mock('node:child_process', () => ({
 }));
 
 // Mock fs methods
-jest.mock('node:fs', () => {
+vi.mock('node:fs', () => {
   const mockFs = {
-    existsSync: jest.fn().mockReturnValue(true),
-    mkdirSync: jest.fn(),
-    mkdtempSync: jest.fn().mockReturnValue('/tmp/mock-dir'),
-    rmSync: jest.fn(),
-    statSync: jest.fn().mockReturnValue({ mode: 0o755 }),
-    readFileSync: jest.fn().mockReturnValue(`
+    existsSync: vi.fn().mockReturnValue(true),
+    mkdirSync: vi.fn(),
+    mkdtempSync: vi.fn().mockReturnValue('/tmp/mock-dir'),
+    rmSync: vi.fn(),
+    statSync: vi.fn().mockReturnValue({ mode: 0o755 }),
+    readFileSync: vi.fn().mockReturnValue(`
       async function runAct() {}
       function execCmd() {}
       function getToken() {}
@@ -57,13 +57,13 @@ jest.mock('node:fs', () => {
 });
 
 // Mock os methods
-jest.mock('node:os', () => ({
-  tmpdir: jest.fn().mockReturnValue('/tmp'),
-  homedir: jest.fn().mockReturnValue('/home/user'),
+vi.mock('node:os', () => ({
+  tmpdir: vi.fn().mockReturnValue('/tmp'),
+  homedir: vi.fn().mockReturnValue('/home/user'),
 }));
 
 // Mock process
-const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => {});
+const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {});
 const originalEnv = process.env;
 process.env = {
   ...originalEnv,

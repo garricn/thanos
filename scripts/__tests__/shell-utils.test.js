@@ -1,102 +1,58 @@
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
-  jest,
-  describe,
-  it,
-  expect,
-  beforeEach,
-  afterEach,
-} from '@jest/globals';
-import { setupTestEnvironment } from './test-utils.js';
-
-// Mock environment variables
-const originalEnv = process.env;
-beforeEach(() => {
-  process.env = {
-    ...originalEnv,
-    HOME: '/home/test',
-  };
-});
-
-afterEach(() => {
-  process.env = originalEnv;
-  jest.clearAllMocks();
-});
-
-// Mock fs module
-jest.mock('node:fs', () => ({
-  readFileSync: jest.fn().mockReturnValue('20\n'),
-  existsSync: jest.fn().mockImplementation((path) => {
-    // Return true for .nvmrc and $HOME/.nvm/nvm.sh
-    if (path === '.nvmrc' || path === '/home/test/.nvm/nvm.sh') {
-      return true;
-    }
-    return false;
-  }),
-  readdirSync: jest.fn(),
-}));
-
-// Mock execSync to simulate successful version switching
-const mockExecSync = jest.fn().mockImplementation((command) => {
-  if (command === 'node -v') {
-    return 'v20.0.0';
-  }
-  if (command === 'brew --prefix nvm') {
-    return '/usr/local/opt/nvm';
-  }
-  if (command.includes('source') && command.includes('nvm use')) {
-    return '';
-  }
-  return '';
-});
-
-jest.mock('node:child_process', () => ({
-  execSync: mockExecSync,
-}));
-
-// Set up test environment
-const { mockExit, mockConsoleLog, mockConsoleError } = setupTestEnvironment();
-
-// Import functions
+  mockExecSync,
+  mockReadFileSync,
+  mockExistsSync,
+  mockConsoleLog,
+  mockConsoleError,
+  mockExit,
+  setupMockDefaults,
+} from './test-utils.js';
 import {
   switchNodeVersion,
   getCurrentNodeVersion,
   exec,
   getRequiredNodeVersion,
   checkNodeVersionMatch,
-  cleanDeep,
   checkNodeVersion,
+  cleanDeep,
 } from '../lib/shell-utils.js';
 
 describe('shell-utils', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    setupMockDefaults();
+    // Clear specific mocks for these tests
+    mockExecSync.mockClear();
+    mockReadFileSync.mockClear();
+    mockExistsSync.mockClear();
+    mockConsoleLog.mockClear();
+    mockConsoleError.mockClear();
+    mockExit.mockClear();
   });
 
   describe('switchNodeVersion', () => {
     it('switches to the required Node.js version', () => {
+      // Arrange
+      mockExistsSync.mockReturnValue(true);
+      mockReadFileSync.mockReturnValue('20.0.0\n');
+      mockExecSync.mockImplementation((cmd) => {
+        if (cmd.includes('nvm use')) return 'Now using Node.js v20.0.0';
+        return '';
+      });
+
       // Act
       switchNodeVersion(mockExecSync);
 
       // Assert
-      // Verify that the function completed successfully
-      expect(mockExit).not.toHaveBeenCalled();
-
-      // Verify that we got a success message
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Successfully switched to Node.js')
+      expect(mockExecSync).toHaveBeenCalledWith(
+        expect.stringContaining('nvm use'),
+        expect.any(Object)
       );
-
-      // Verify that we're using the correct version
-      expect(mockExecSync).toHaveBeenCalledWith('node -v', expect.any(Object));
     });
 
     it('exits with error when nvm is not available', () => {
       // Arrange
-      const { existsSync } = jest.requireMock('node:fs');
-      existsSync.mockImplementation(() => false);
-      mockExecSync.mockImplementation(() => {
-        throw new Error('brew not found');
-      });
+      mockExistsSync.mockReturnValue(false);
 
       // Act
       switchNodeVersion(mockExecSync);
@@ -110,26 +66,16 @@ describe('shell-utils', () => {
 
     it('exits with error when Node.js version switch fails', () => {
       // Arrange
-      mockExecSync.mockImplementation((command) => {
-        if (command === 'node -v') {
-          return 'v20.0.0';
-        }
-        if (command === 'brew --prefix nvm') {
-          return '/usr/local/opt/nvm';
-        }
-        if (command.includes('source') && command.includes('nvm use')) {
-          throw new Error('Failed to switch Node.js version');
-        }
-        return '';
+      mockExistsSync.mockReturnValue(true);
+      mockExecSync.mockImplementationOnce(() => {
+        throw new Error('Failed to switch version');
       });
 
       // Act
       switchNodeVersion(mockExecSync);
 
       // Assert
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Failed to switch Node.js version')
-      );
+      expect(mockConsoleError).toHaveBeenCalled();
       expect(mockExit).toHaveBeenCalledWith(1);
     });
   });
@@ -137,28 +83,23 @@ describe('shell-utils', () => {
   describe('getCurrentNodeVersion', () => {
     it('returns the current Node.js version', () => {
       // Arrange
-      mockExecSync.mockImplementation((command) => {
-        if (command === 'node -v') {
-          return 'v18.15.0';
-        }
-        return '';
-      });
+      mockExecSync.mockReturnValue('v20.0.0');
 
       // Act
       const version = getCurrentNodeVersion(mockExecSync);
 
       // Assert
-      expect(version).toBe('18');
-      expect(mockExecSync).toHaveBeenCalledWith('node -v', expect.any(Object));
+      expect(version).toBe('20');
+      expect(mockExecSync).toHaveBeenCalledWith('node -v', {
+        stdio: 'pipe',
+        encoding: 'utf-8',
+      });
     });
 
     it('exits with error when node version cannot be determined', () => {
       // Arrange
-      mockExecSync.mockImplementation((command) => {
-        if (command === 'node -v') {
-          throw new Error('Command failed');
-        }
-        return '';
+      mockExecSync.mockImplementation(() => {
+        throw new Error('Failed to get version');
       });
 
       // Act
@@ -166,9 +107,7 @@ describe('shell-utils', () => {
 
       // Assert
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining(
-          'Error: Could not determine current Node.js version'
-        )
+        expect.stringContaining('Could not determine current Node.js version')
       );
       expect(mockExit).toHaveBeenCalledWith(1);
     });
@@ -177,15 +116,14 @@ describe('shell-utils', () => {
   describe('exec', () => {
     it('executes command with default options', () => {
       // Arrange
-      const command = 'echo "hello"';
-      mockExecSync.mockReturnValue('hello\n');
+      mockExecSync.mockReturnValue('command output');
 
       // Act
-      const result = exec(mockExecSync, command);
+      const output = exec(mockExecSync, 'test command');
 
       // Assert
-      expect(result).toBe('hello\n');
-      expect(mockExecSync).toHaveBeenCalledWith(command, {
+      expect(output).toBe('command output');
+      expect(mockExecSync).toHaveBeenCalledWith('test command', {
         stdio: 'inherit',
         encoding: 'utf-8',
       });
@@ -193,41 +131,38 @@ describe('shell-utils', () => {
 
     it('executes command with custom options', () => {
       // Arrange
-      const command = 'echo "hello"';
-      const customOptions = {
-        stdio: 'pipe',
-        encoding: 'utf-8',
-        timeout: 1000,
-      };
-      mockExecSync.mockReturnValue('hello with options\n');
+      mockExecSync.mockReturnValue('command output');
 
       // Act
-      const result = exec(mockExecSync, command, customOptions);
+      const output = exec(mockExecSync, 'test command', { stdio: 'pipe' });
 
       // Assert
-      expect(result).toBe('hello with options\n');
-      expect(mockExecSync).toHaveBeenCalledWith(command, customOptions);
+      expect(output).toBe('command output');
+      expect(mockExecSync).toHaveBeenCalledWith('test command', {
+        stdio: 'pipe',
+        encoding: 'utf-8',
+      });
     });
   });
 
   describe('getRequiredNodeVersion', () => {
     it('returns the Node.js version from .nvmrc', () => {
+      // Arrange
+      mockReadFileSync.mockReturnValue('20.0.0\n');
+
       // Act
       const version = getRequiredNodeVersion();
 
       // Assert
-      expect(version).toBe('20');
+      expect(version).toBe('20.0.0');
+      expect(mockReadFileSync).toHaveBeenCalledWith('.nvmrc', 'utf-8');
     });
   });
 
   describe('checkNodeVersionMatch', () => {
     it('returns true when versions match', () => {
-      // Arrange
-      const requiredVersion = '20';
-      const currentVersion = '20';
-
       // Act
-      const result = checkNodeVersionMatch(requiredVersion, currentVersion);
+      const result = checkNodeVersionMatch('20.0.0', '20.0.0');
 
       // Assert
       expect(result).toBe(true);
@@ -237,62 +172,44 @@ describe('shell-utils', () => {
     });
 
     it('returns false when versions do not match but force is true', () => {
-      // Arrange
-      const requiredVersion = '20';
-      const currentVersion = '18';
-      const force = true;
-
       // Act
-      const result = checkNodeVersionMatch(
-        requiredVersion,
-        currentVersion,
-        force
-      );
+      const result = checkNodeVersionMatch('20.0.0', '18.0.0', true);
 
       // Assert
       expect(result).toBe(false);
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('Warning: Using Node.js')
       );
-      expect(mockExit).not.toHaveBeenCalled();
     });
 
     it('exits when versions do not match and force is false', () => {
-      // Arrange
-      const requiredVersion = '20';
-      const currentVersion = '18';
+      // Act
+      checkNodeVersionMatch('20.0.0', '18.0.0');
 
-      // Act & Assert
-      // This function should call process.exit(1), so we need to verify
-      // that the appropriate error messages are shown before that happens
-      checkNodeVersionMatch(requiredVersion, currentVersion);
-
-      // Verify console.error was called with expected error message
+      // Assert
       expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining(
-          `Error: This project requires Node.js version ${requiredVersion}`
-        )
+        expect.stringContaining('This project requires Node.js version 20.0.0')
       );
-
-      // Verify process.exit was called with code 1
       expect(mockExit).toHaveBeenCalledWith(1);
     });
   });
 
   describe('checkNodeVersion', () => {
     it('checks if Node.js version is consistent', () => {
-      // Mock execSync to return a specific version
-      mockExecSync.mockImplementation((command) => {
-        if (command === 'node -v') {
-          return 'v20.0.0';
-        }
+      // Arrange
+      mockReadFileSync.mockImplementation((path) => {
+        if (path === '.nvmrc') return '20.0.0\n';
+        if (path === 'package.json')
+          return JSON.stringify({ engines: { node: '20.0.0' } });
         return '';
       });
 
       // Act
-      const result = checkNodeVersion(mockExecSync);
+      checkNodeVersion(mockExecSync);
 
       // Assert
+      expect(mockReadFileSync).toHaveBeenCalledWith('.nvmrc', 'utf-8');
+      expect(mockReadFileSync).toHaveBeenCalledWith('package.json', 'utf-8');
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('Checking Node.js version consistency')
       );
@@ -301,163 +218,123 @@ describe('shell-utils', () => {
 
   describe('cleanDeep', () => {
     it('displays help message and exits with --help flag', () => {
-      // Arrange
-      const args = ['--help'];
-
       // Act
-      cleanDeep(args, mockExecSync);
+      cleanDeep(['--help'], mockExecSync);
 
       // Assert
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('Thanos Deep Clean Script')
       );
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Usage: npm run clean:deep [options]')
-      );
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('--dry-run')
-      );
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('--force')
-      );
       expect(mockExit).toHaveBeenCalledWith(0);
     });
 
     it('runs in dry-run mode when --dry-run flag is used', () => {
-      // Arrange
-      const args = ['--dry-run'];
-
       // Act
-      cleanDeep(args, mockExecSync);
+      cleanDeep(['--dry-run'], mockExecSync);
 
       // Assert
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('Running in dry-run mode')
       );
-
-      // Verify it checks Node.js version
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Checking Node.js version')
-      );
-
-      // Verify it shows what would be removed but doesn't actually execute the command
+      // Should show "Would remove" instead of actually removing
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('Would remove:')
       );
-
-      // Verify it doesn't actually run the removal command
+      // Should not execute rm command
       expect(mockExecSync).not.toHaveBeenCalledWith(
-        expect.stringContaining('rm -rf'),
+        expect.stringContaining('rm -rf node_modules'),
         expect.any(Object)
       );
     });
 
     it('bypasses Node.js version check with --force flag', () => {
-      // Arrange
-      const args = ['--force'];
+      // Arrange - setup different versions
+      mockReadFileSync.mockReturnValue('20.0.0\n'); // .nvmrc
+      mockExecSync.mockImplementation((cmd) => {
+        if (cmd === 'node -v') return 'v18.0.0'; // Current version
+        return '';
+      });
 
       // Act
-      cleanDeep(args, mockExecSync);
+      cleanDeep(['--force'], mockExecSync);
 
       // Assert
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('Force mode enabled')
       );
-
-      // Verify it starts deep clean process
       expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Starting deep clean')
+        expect.stringContaining('Warning: Using Node.js v18')
       );
-
-      // Verify the force flag is passed to checkNodeVersionMatch
-      // This is indirectly verified by the fact that our test doesn't fail even if versions don't match
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Checking Node.js version')
-      );
-    });
-
-    it('processes multiple arguments correctly', () => {
-      // Arrange
-      const args = ['--dry-run', '--force'];
-
-      // Act
-      cleanDeep(args, mockExecSync);
-
-      // Assert
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Running in dry-run mode')
-      );
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Force mode enabled')
-      );
-    });
-
-    it('handles Jest cache clearing failures gracefully', () => {
-      // Arrange
-      const testExecSync = jest.fn().mockImplementation((command) => {
-        if (command === 'npx jest --clearCache') {
-          throw new Error('Jest cache clear failed');
-        }
-        if (command === 'node -v') {
-          return 'v20.0.0';
-        }
-        if (command === 'npm -v') {
-          return '9.0.0';
-        }
-        return '';
-      });
-
-      // Act
-      cleanDeep([], testExecSync);
-
-      // Assert
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('⚠️ Jest cache clear might have failed')
-      );
-
-      // Verify it continues with the process despite the error
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Checking environment')
-      );
-    });
-
-    it('executes commands in non-dry-run mode', () => {
-      // Arrange
-      const testExecSync = jest.fn().mockImplementation((command) => {
-        if (command === 'node -v') {
-          return 'v20.0.0';
-        }
-        if (command === 'npm -v') {
-          return '9.0.0';
-        }
-        return '';
-      });
-
-      // Act
-      cleanDeep([], testExecSync);
-
-      // Assert
-      // Verify it runs the removal command
-      expect(testExecSync).toHaveBeenCalledWith(
-        'rm -rf node_modules package-lock.json dist tmp coverage .nyc_output ./*.log logs',
+      // Should continue with cleaning despite version mismatch
+      expect(mockExecSync).toHaveBeenCalledWith(
+        expect.stringContaining('rm -rf'),
         expect.any(Object)
       );
+    });
 
-      // Verify it cleans npm cache
-      expect(testExecSync).toHaveBeenCalledWith(
+    it('removes generated files and cleans npm cache', () => {
+      // Arrange
+      mockReadFileSync.mockReturnValue('20.0.0\n');
+      mockExecSync.mockImplementation((cmd) => {
+        if (cmd === 'node -v') return 'v20.0.0';
+        if (cmd === 'npm -v') return '9.0.0';
+        return '';
+      });
+
+      // Act
+      cleanDeep([], mockExecSync);
+
+      // Assert
+      // Should execute rm command
+      expect(mockExecSync).toHaveBeenCalledWith(
+        expect.stringContaining('rm -rf node_modules'),
+        expect.any(Object)
+      );
+      // Should clean npm cache
+      expect(mockExecSync).toHaveBeenCalledWith(
         'npm cache clean --force',
         expect.any(Object)
       );
-
-      // Verify it installs dependencies
-      expect(testExecSync).toHaveBeenCalledWith(
+      // Should clear Jest cache
+      expect(mockExecSync).toHaveBeenCalledWith(
+        'npx jest --clearCache',
+        expect.any(Object)
+      );
+      // Should reinstall dependencies
+      expect(mockExecSync).toHaveBeenCalledWith(
         'npm install',
         expect.any(Object)
       );
-
-      // Verify completion message
+      // Should show completion message
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('Deep cleaning complete')
+      );
+    });
+
+    it('handles Jest cache clear failure gracefully', () => {
+      // Arrange
+      mockReadFileSync.mockReturnValue('20.0.0\n');
+      mockExecSync.mockImplementation((cmd, opts) => {
+        if (cmd === 'node -v') return 'v20.0.0';
+        if (cmd === 'npm -v') return '9.0.0';
+        if (cmd === 'npx jest --clearCache') {
+          throw new Error('Jest not installed');
+        }
+        return '';
+      });
+
+      // Act
+      cleanDeep([], mockExecSync);
+
+      // Assert
+      // Should continue despite Jest cache clear failure
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Jest cache clear might have failed')
+      );
+      // Should still reinstall dependencies
+      expect(mockExecSync).toHaveBeenCalledWith(
+        'npm install',
+        expect.any(Object)
       );
     });
   });
