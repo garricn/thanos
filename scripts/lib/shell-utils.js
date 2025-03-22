@@ -63,6 +63,29 @@ export function getCurrentNodeVersion(execSync) {
 }
 
 /**
+ * Checks if the current Node.js version matches the version in .nvmrc.
+ * If there's a mismatch, prints instructions for switching versions and exits with error code 1.
+ * @param {Function} execSync Function to execute commands
+ * @returns {void} Returns early if versions match, otherwise exits with code 1
+ */
+export function switchNodeVersion(execSync = defaultExecSync) {
+  const requiredVersion = getRequiredNodeVersion();
+  const currentVersion = getCurrentNodeVersion(execSync);
+
+  if (currentVersion === requiredVersion) {
+    console.log(
+      `${colors.green}✅ Already using Node.js v${currentVersion}${colors.reset}`
+    );
+    return;
+  }
+
+  console.error(
+    `${colors.red}Could not find nvm. Please install nvm or switch to Node.js ${requiredVersion} manually.${colors.reset}`
+  );
+  process.exit(1);
+}
+
+/**
  * Check if the current Node.js version matches the required version
  * @param {string} requiredVersion Required Node.js version from .nvmrc
  * @param {string} currentVersion Current Node.js version
@@ -322,63 +345,6 @@ export function checkNodeVersion(execSync = defaultExecSync) {
   console.log(
     `\n${colors.green}✅ All Node.js version references are in sync with .nvmrc${colors.reset}`
   );
-}
-
-/**
- * Switches to the Node.js version specified in .nvmrc
- * @param {Function} execSync Function to execute commands
- */
-export function switchNodeVersion(execSync = defaultExecSync) {
-  const requiredVersion = getRequiredNodeVersion();
-  console.log(`Switching to Node.js ${requiredVersion}...`);
-
-  let nvmSource = '';
-
-  try {
-    // Try to find nvm
-    if (existsSync('$HOME/.nvm/nvm.sh')) {
-      nvmSource = '$HOME/.nvm/nvm.sh';
-    } else {
-      // Try to use brew to find nvm
-      try {
-        const brewPrefix = execSync('brew --prefix nvm', {
-          stdio: 'pipe',
-          encoding: 'utf-8',
-        }).trim();
-        if (existsSync(`${brewPrefix}/nvm.sh`)) {
-          nvmSource = `$(brew --prefix nvm)/nvm.sh`;
-        }
-      } catch (error) {
-        // Brew not found or nvm not installed via brew
-      }
-    }
-
-    if (!nvmSource) {
-      console.error(
-        `${colors.red}Error: Could not find nvm. Please install nvm or switch to Node.js ${requiredVersion} manually.${colors.reset}`
-      );
-      process.exit(1);
-    }
-
-    // Switch to the required Node.js version
-    exec(execSync, `source ${nvmSource} && nvm use ${requiredVersion}`);
-
-    // Verify the switch was successful
-    const currentVersion = getCurrentNodeVersion(execSync);
-    if (currentVersion === requiredVersion) {
-      console.log(
-        `${colors.green}✅ Successfully switched to Node.js v${currentVersion}${colors.reset}`
-      );
-    } else {
-      console.error(
-        `${colors.red}❌ Failed to switch to Node.js ${requiredVersion}. Current version: v${currentVersion}${colors.reset}`
-      );
-      process.exit(1);
-    }
-  } catch (error) {
-    console.error(`${colors.red}Error: ${error.message}${colors.reset}`);
-    process.exit(1);
-  }
 }
 
 // Export functions for CLI usage
