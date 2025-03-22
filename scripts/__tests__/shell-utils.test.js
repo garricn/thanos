@@ -64,6 +64,7 @@ import {
   getRequiredNodeVersion,
   checkNodeVersionMatch,
   cleanDeep,
+  checkNodeVersion,
 } from '../lib/shell-utils.js';
 
 describe('shell-utils', () => {
@@ -257,6 +258,26 @@ describe('shell-utils', () => {
 
       // Verify process.exit was called with code 1
       expect(mockExit).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe('checkNodeVersion', () => {
+    it('checks if Node.js version is consistent', () => {
+      // Mock execSync to return a specific version
+      mockExecSync.mockImplementation((command) => {
+        if (command === 'node -v') {
+          return 'v20.0.0';
+        }
+        return '';
+      });
+
+      // Act
+      const result = checkNodeVersion(mockExecSync);
+
+      // Assert
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Checking Node.js version consistency')
+      );
     });
   });
 
