@@ -62,7 +62,7 @@ export async function runPreCommitChecks(execSync = defaultExecSync) {
     );
     // Create a temporary tsconfig that extends the base config but only includes staged files
     const tempTsConfig = {
-      extends: './tsconfig.json',
+      extends: './configs/build/tsconfig.json',
       include: stagedTsFiles.split('\n'),
       exclude: [],
     };
