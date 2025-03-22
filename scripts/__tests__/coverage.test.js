@@ -63,6 +63,25 @@ describe('Coverage Script', () => {
         recursive: true,
       });
     });
+
+    it('creates snapshot test directory when type is snapshot', () => {
+      // Arrange
+      mockExistsSync.mockReturnValue(false);
+
+      // Act
+      ensureTestDirectories('snapshot');
+
+      // Assert
+      expect(mockMkdirSync).toHaveBeenCalledWith('coverage/web/snapshot', {
+        recursive: true,
+      });
+      expect(mockMkdirSync).not.toHaveBeenCalledWith('coverage/api/unit', {
+        recursive: true,
+      });
+      expect(mockMkdirSync).not.toHaveBeenCalledWith('coverage/web/unit', {
+        recursive: true,
+      });
+    });
   });
 
   describe('moveSonarReports', () => {
