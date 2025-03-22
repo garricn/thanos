@@ -43,3 +43,66 @@ node scripts/cleanup-test-reports.js
 # Generate a mock sonar report if needed
 node scripts/jest-to-sonar.js
 ```
+
+## Testing Strategy
+
+The scripts directory follows a comprehensive testing strategy focused on validating utility scripts and git hooks:
+
+### Test Organization
+
+- Tests are located in `__tests__` directories alongside the scripts they test
+- Shared test utilities are centralized in `__tests__/utils/` for common testing patterns
+- Each test file focuses on specific behaviors rather than implementation details
+
+### Testing Principles
+
+- **Behavior-First**: Tests describe expected script behaviors rather than implementation details
+- **DRY (Don't Repeat Yourself)**: Common test patterns are extracted into shared utilities
+- **Maintainability**: Tests are structured to be easy to update when script behavior changes
+- **Readability**: Clear test descriptions and organization make tests self-documenting
+
+### Test Utilities
+
+The `__tests__/utils/` directory contains shared testing infrastructure:
+
+- `test-utils.js`: Common test setup and teardown functions
+- `shell-utils.js`: Utilities for testing shell script execution and output
+- `git-utils.js`: Helpers for testing git-related operations
+
+### Example Test Structure
+
+```javascript
+const { setupTestEnv, cleanupTestEnv } = require('./utils/test-utils');
+const { runShellCommand } = require('./utils/shell-utils');
+
+describe('script-name', () => {
+  beforeEach(() => {
+    setupTestEnv();
+  });
+
+  afterEach(() => {
+    cleanupTestEnv();
+  });
+
+  it('should perform expected behavior', async () => {
+    const result = await runShellCommand('./script-name');
+    expect(result).toMatchSnapshot();
+  });
+});
+```
+
+### Running Tests
+
+Script tests can be run using:
+
+```bash
+# Run all script tests
+npm run test:scripts
+
+# Run a specific script test
+npm run test:scripts -- scripts/__tests__/git-hooks.test.js
+```
+
+Note: When running specific test files, use the `--` flag to pass arguments to the underlying Jest command.
+
+For more details about the testing infrastructure, see the test utilities documentation in `__tests__/utils/`.

@@ -1,18 +1,13 @@
 #!/usr/bin/env node
 
-import { execSync, spawn } from 'child_process';
-import fs from 'fs';
-import path from 'path';
-import os from 'os';
-import { fileURLToPath } from 'url';
-
-// Get the directory name for the current module
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const rootDir = path.resolve(__dirname, '../..');
+import { execSync, spawn } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import { fileURLToPath } from 'node:url';
 
 // ANSI color codes
-const colors = {
+export const colors = {
   red: '\x1b[31m',
   green: '\x1b[32m',
   yellow: '\x1b[33m',
@@ -26,7 +21,7 @@ const colors = {
  * @param {object} options Options for child_process.execSync
  * @returns {string} The command output
  */
-function execCmd(command, options = {}) {
+export function execCmd(command, options = {}) {
   console.log(`${colors.yellow}Executing: ${command}${colors.reset}`);
   try {
     return execSync(command, {
@@ -41,48 +36,18 @@ function execCmd(command, options = {}) {
 }
 
 /**
- * Get a token from the system keychain (Mac only) or environment variables
- * @param {string} tokenName Name of the token
- * @returns {string} The token value or empty string
- */
-function getToken(tokenName) {
-  try {
-    if (process.platform === 'darwin' && hasCommand('security')) {
-      try {
-        // Try to get from keychain
-        return execCmd(
-          `security find-generic-password -a "${process.env.USER}" -s ${tokenName} -w`,
-          { stdio: 'pipe' }
-        ).trim();
-      } catch (e) {
-        // If keychain access fails, fall back to environment variable
-        return process.env[tokenName.toUpperCase()] || '';
-      }
-    } else {
-      // Use environment variable
-      return process.env[tokenName.toUpperCase()] || '';
-    }
-  } catch (error) {
-    console.error(
-      `${colors.yellow}Could not retrieve ${tokenName}, falling back to empty string${colors.reset}`
-    );
-    return '';
-  }
-}
-
-/**
  * Check if a command exists in PATH
  * @param {string} command Command to check
  * @returns {boolean} True if the command exists
  */
-function hasCommand(command) {
+export function hasCommand(command) {
   try {
     if (process.platform === 'win32') {
       // Windows
-      execCmd(`where ${command}`, { stdio: 'ignore' });
+      execSync(`where ${command}`, { stdio: 'ignore' });
     } else {
       // Unix-like
-      execCmd(`which ${command}`, { stdio: 'ignore' });
+      execSync(`which ${command}`, { stdio: 'ignore' });
     }
     return true;
   } catch (error) {
@@ -91,10 +56,154 @@ function hasCommand(command) {
 }
 
 /**
- * Main function to run GitHub Actions locally using act
+ * Get tokens from environment variables
+ * @returns {Object} Object with token key-value pairs
  */
-async function runAct() {
+export function getTokensFromEnv() {
+  return {
+    GITHUB_TOKEN: process.env.GITHUB_TOKEN || '',
+    SONAR_TOKEN: process.env.SONAR_TOKEN || '',
+    CODECOV_TOKEN: process.env.CODECOV_TOKEN || '',
+    SNYK_TOKEN: process.env.SNYK_TOKEN || '',
+  };
+}
+
+/**
+ * Ensure artifacts directory exists
+ * @param {string} rootDir Root directory of the project
+ * @param {Object} deps Dependencies (for testing)
+ * @returns {string} Path to the artifacts directory
+ */
+export function ensureArtifactsDir(rootDir, deps = {}) {
+  const { fs: fsModule = fs } = deps;
+  const artifactsDir = path.join(rootDir, 'artifacts');
+
+  if (!fsModule.existsSync(artifactsDir)) {
+    fsModule.mkdirSync(artifactsDir, { recursive: true });
+    console.log(
+      `${colors.green}Created artifacts directory: ${artifactsDir}${colors.reset}`
+    );
+  }
+
+  return artifactsDir;
+}
+
+/**
+ * Create a temporary directory for act workspace
+ * @param {Object} deps Dependencies (for testing)
+ * @returns {string} Path to the temporary directory
+ */
+export function createTempDir(deps = {}) {
+  const { fs: fsModule = fs, os: osModule = os } = deps;
+
+  const tempDir = fsModule.mkdtempSync(
+    path.join(osModule.tmpdir(), 'act-workspace-')
+  );
+  console.log(
+    `${colors.green}Creating temporary workspace in ${tempDir}${colors.reset}`
+  );
+
+  return tempDir;
+}
+
+/**
+ * Copy files from project root to temporary directory
+ * @param {string} rootDir Root directory of the project
+ * @param {string} tempDir Temporary directory path
+ * @param {Object} deps Dependencies (for testing)
+ */
+export function copyFilesToTempDir(rootDir, tempDir, deps = {}) {
+  const {
+    execSync: execSyncFn = execSync,
+    hasCommand: hasCommandFn = hasCommand,
+  } = deps;
+
+  console.log(
+    `${colors.green}Running act from temporary workspace (excluding node_modules)${colors.reset}`
+  );
+
+  // Copy necessary files (excluding node_modules) using rsync or robocopy
+  if (process.platform === 'win32') {
+    // Windows - use robocopy or xcopy
+    if (hasCommandFn('robocopy')) {
+      execSyncFn(
+        `robocopy "${rootDir}" "${tempDir}" /E /XD node_modules *\\node_modules /NFL /NDL /NJH /NJS`,
+        { stdio: 'inherit' }
+      );
+    } else {
+      execSyncFn(
+        `xcopy "${rootDir}" "${tempDir}" /E /I /Y /EXCLUDE:node_modules`,
+        { stdio: 'inherit' }
+      );
+    }
+  } else {
+    // Unix-like - use rsync
+    execSyncFn(
+      `rsync -a --exclude="node_modules" --exclude="**/node_modules" ${rootDir}/ ${tempDir}/`,
+      { stdio: 'inherit' }
+    );
+  }
+
+  return tempDir;
+}
+
+/**
+ * Builds the act command with all necessary arguments
+ * @param {Object} tokens Key-value pairs of tokens to be added as secrets
+ * @param {string} tempDir Temporary directory path where act will run
+ * @param {string[]} args Additional arguments to pass to act
+ * @returns {string[]} Array of command parts
+ */
+export function buildActCommand(tokens = {}, tempDir, args = []) {
+  const cmd = ['act'];
+
+  // Add args passed to the script
+  if (args.length > 0) {
+    cmd.push(...args);
+  }
+
+  // Add secrets if available
+  Object.entries(tokens).forEach(([key, value]) => {
+    if (value) {
+      cmd.push('-s', `${key}=${value}`);
+    }
+  });
+
+  // Add directories to mount
+  cmd.push(
+    '-C',
+    tempDir,
+    '--artifact-server-path',
+    './artifacts',
+    '-P',
+    'ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest'
+  );
+
+  return cmd;
+}
+
+/**
+ * Main function to run GitHub Actions locally using act
+ * @param {string[]} args Command-line arguments
+ * @param {Object} deps Dependencies (for testing)
+ * @returns {Promise<boolean>} True if act exited successfully, false otherwise
+ */
+export default async function runAct(args = process.argv.slice(2), deps = {}) {
+  const {
+    fs: fsModule = fs,
+    os: osModule = os,
+    execSync: execSyncFn = execSync,
+    spawn: spawnFn = spawn,
+    path: pathModule = path,
+    hasCommand: hasCommandFn = hasCommand,
+  } = deps;
+
   try {
+    // Get the directory name for the current module
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = pathModule.dirname(__filename);
+    const rootDir = pathModule.resolve(__dirname, '../..');
+
     // Store current Node.js version
     const currentNodeVersion = execCmd('node -v', { stdio: 'pipe' }).trim();
     console.log(
@@ -102,98 +211,38 @@ async function runAct() {
     );
 
     // Create artifacts directory if it doesn't exist
-    const artifactsDir = path.join(rootDir, 'artifacts');
-    if (!fs.existsSync(artifactsDir)) {
-      fs.mkdirSync(artifactsDir, { recursive: true });
-      console.log(
-        `${colors.green}Created artifacts directory: ${artifactsDir}${colors.reset}`
-      );
-    }
+    ensureArtifactsDir(rootDir, { fs: fsModule });
 
-    // Get tokens
-    const tokens = {
-      GITHUB_TOKEN: getToken('github-token'),
-      SONAR_TOKEN: getToken('sonar-token'),
-      CODECOV_TOKEN: getToken('codecov-token'),
-      SNYK_TOKEN: getToken('snyk-token'),
-    };
+    // Get tokens from environment variables
+    const tokens = getTokensFromEnv();
 
     // Create a temporary directory
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'act-workspace-'));
-    console.log(
-      `${colors.green}Creating temporary workspace in ${tempDir}${colors.reset}`
-    );
+    const tempDir = createTempDir({ fs: fsModule, os: osModule });
 
-    // Copy necessary files (excluding node_modules) using rsync or robocopy
-    if (process.platform === 'win32') {
-      // Windows - use robocopy or xcopy
-      if (hasCommand('robocopy')) {
-        execCmd(
-          `robocopy "${rootDir}" "${tempDir}" /E /XD node_modules *\\node_modules /NFL /NDL /NJH /NJS`,
-          { stdio: 'inherit' }
-        );
-      } else {
-        execCmd(
-          `xcopy "${rootDir}" "${tempDir}" /E /I /Y /EXCLUDE:node_modules`,
-          { stdio: 'inherit' }
-        );
-      }
-    } else {
-      // Unix-like - use rsync
-      execCmd(
-        `rsync -a --exclude="node_modules" --exclude="**/node_modules" ${rootDir}/ ${tempDir}/`,
-        { stdio: 'inherit' }
-      );
-    }
-
-    // Build the command array
-    const cmd = ['act'];
-    const cmdForDisplay = ['act'];
-
-    // Add args passed to this script
-    const args = process.argv.slice(2);
-    if (args.length > 0) {
-      cmd.push(...args);
-      cmdForDisplay.push(...args);
-    }
-
-    // Add secrets if available
-    Object.entries(tokens).forEach(([key, value]) => {
-      if (value) {
-        cmd.push('-s', `${key}=${value}`);
-        cmdForDisplay.push('-s', `${key}=***`); // Don't show actual tokens in logs
-      }
+    // Copy files to temporary directory
+    copyFilesToTempDir(rootDir, tempDir, {
+      execSync: execSyncFn,
+      hasCommand: hasCommandFn,
     });
 
-    // Add directories to mount
-    cmd.push(
-      '-C',
+    // Build the act command
+    const cmd = buildActCommand(tokens, tempDir, args);
+    const cmdForDisplay = buildActCommand(
+      Object.fromEntries(
+        Object.entries(tokens).map(([key, value]) => [key, value ? '***' : ''])
+      ),
       tempDir,
-      '--artifact-server-path',
-      './artifacts',
-      '-P',
-      'ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest'
-    );
-    cmdForDisplay.push(
-      '-C',
-      tempDir,
-      '--artifact-server-path',
-      './artifacts',
-      '-P',
-      'ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest'
+      args
     );
 
     // Print command (without tokens)
-    console.log(
-      `${colors.green}Running act from temporary workspace (excluding node_modules)${colors.reset}`
-    );
     console.log(
       `${colors.blue}Command: ${cmdForDisplay.join(' ')}${colors.reset}`
     );
 
     // Run act with all the arguments
     const result = await new Promise((resolve, reject) => {
-      const actProcess = spawn('act', cmd.slice(1), {
+      const actProcess = spawnFn('act', cmd.slice(1), {
         stdio: 'inherit',
         shell: true,
       });
@@ -221,7 +270,7 @@ async function runAct() {
     console.log(
       `${colors.green}Cleaning up temporary workspace${colors.reset}`
     );
-    fs.rmSync(tempDir, { recursive: true, force: true });
+    fsModule.rmSync(tempDir, { recursive: true, force: true });
 
     // Restore Node.js version if it changed
     const afterNodeVersion = execCmd('node -v', { stdio: 'pipe' }).trim();
@@ -237,27 +286,21 @@ async function runAct() {
           env: {
             ...process.env,
             // Enable nvm to work in the script
-            NVM_DIR: process.env.NVM_DIR || `${os.homedir()}/.nvm`,
+            NVM_DIR: process.env.NVM_DIR || `${osModule.homedir()}/.nvm`,
           },
         });
       } catch (error) {
         console.error(
           `${colors.red}Failed to restore Node.js version: ${error.message}${colors.reset}`
         );
-        console.error(
-          `${colors.yellow}You may need to manually restore your Node.js version${colors.reset}`
-        );
       }
     }
 
-    process.exit(result ? 0 : 1);
+    return result;
   } catch (error) {
     console.error(
       `${colors.red}Error running act: ${error.message}${colors.reset}`
     );
-    process.exit(1);
+    return false;
   }
 }
-
-// Start the script
-runAct();

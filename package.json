@@ -47,7 +47,9 @@
     "test": "npm run test --workspace=apps/api && npm run test --workspace=apps/web",
     "test:all": "npm run test && npm run test:e2e",
     "test:e2e": "node scripts/bin/test-e2e.js",
-    "test:scripts": "NODE_OPTIONS='--experimental-vm-modules' jest --config=scripts/configs/jest.config.js",
+    "test:scripts": "vitest run --config=scripts/configs/vitest.config.js",
+    "test:scripts:watch": "vitest --config=scripts/configs/vitest.config.js",
+    "test:scripts:coverage": "vitest run --coverage --config=scripts/configs/vitest.config.js",
     "test:snapshot": "npm run test --workspace=apps/web -- --testPathPattern=snapshot",
     "test:snapshot:coverage": "npm run coverage:snapshot -- --no-combine",
     "test:unit": "npm run test --workspace=apps/api && npm run test --workspace=apps/web",
@@ -95,6 +97,7 @@
     "@typescript-eslint/eslint-plugin": "^8.26.1",
     "@typescript-eslint/parser": "^8.26.1",
     "@vitejs/plugin-react": "^4.2.0",
+    "@vitest/coverage-v8": "^3.0.9",
     "@vitest/ui": "^3.0.0",
     "@xmldom/xmldom": "^0.8.10",
     "autoprefixer": "^10.4.20",
@@ -133,6 +136,7 @@
     "tslib": "^2.3.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.19.0",
+    "vitest": "^3.0.9",
     "wait-on": "^8.0.3",
     "yargs": "^17.7.2"
   }
