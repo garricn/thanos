@@ -8,6 +8,7 @@ import {
   ensureTestDirectories,
   ensureCombineDirectories,
   cleanCoverage,
+  runUnitTests,
 } from '../bin/coverage.js';
 import path from 'node:path';
 import {
@@ -30,6 +31,36 @@ describe('Coverage Script', () => {
     mockUnlinkSync.mockReset();
     mockMkdirSync.mockReset();
     mockExecSync.mockReset();
+  });
+
+  describe('runUnitTests', () => {
+    it('runs unit tests for API and Web with coverage', () => {
+      // Act
+      runUnitTests();
+
+      // Assert
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Running unit tests')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Running API unit tests')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Running Web unit tests')
+      );
+
+      // Verify API test command
+      expect(mockExecSync).toHaveBeenCalledWith(
+        expect.stringContaining('npm run test --workspace=apps/api'),
+        { stdio: 'inherit' }
+      );
+
+      // Verify Web test command
+      expect(mockExecSync).toHaveBeenCalledWith(
+        expect.stringContaining('npm run test --workspace=apps/web'),
+        { stdio: 'inherit' }
+      );
+    });
   });
 
   describe('cleanCoverage', () => {
