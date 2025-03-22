@@ -10,7 +10,11 @@ dist
 tmp
 out-tsc
 build
-**/build
+**/build/*
+!**/build/*.ts
+!**/build/*.json
+!**/build/*.js
+!**/build/*.mjs
 
 # Test and coverage
 /coverage

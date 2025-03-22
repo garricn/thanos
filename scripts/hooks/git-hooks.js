@@ -60,10 +60,23 @@ export async function runPreCommitChecks(execSync = defaultExecSync) {
     console.log(
       `${colors.yellow}\nType checking staged TypeScript files...${colors.reset}`
     );
+    // Create a temporary tsconfig that extends the base config but only includes staged files
+    const tempTsConfig = {
+      extends: './tsconfig.json',
+      include: stagedTsFiles.split('\n'),
+      exclude: [],
+    };
+    const tempTsConfigPath = './tsconfig.staged.json';
     exec(
       execSync,
-      `npx tsc --noEmit --project ./tsconfig.json ${stagedTsFiles}`
+      `echo '${JSON.stringify(tempTsConfig)}' > ${tempTsConfigPath}`
     );
+    try {
+      exec(execSync, `npx tsc --noEmit --project ${tempTsConfigPath}`);
+    } finally {
+      // Clean up the temporary config
+      exec(execSync, `rm ${tempTsConfigPath}`);
+    }
   }
 
   console.log(
