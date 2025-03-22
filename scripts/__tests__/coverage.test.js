@@ -11,6 +11,7 @@ import {
   runUnitTests,
   runSnapshotTests,
   combineCoverage,
+  generateReport,
 } from '../bin/coverage.js';
 import path from 'node:path';
 import fs from 'fs';
@@ -24,6 +25,8 @@ import {
   mockExecSync,
   mockReadFileSync,
   mockWriteFileSync,
+  mockParseFromString,
+  mockSerializeToString,
   setupMockDefaults,
 } from './test-utils.js';
 
@@ -38,6 +41,34 @@ describe('Coverage Script', () => {
     mockExecSync.mockReset();
     mockReadFileSync.mockReset();
     mockWriteFileSync.mockReset();
+  });
+
+  describe('generateReport', () => {
+    it('generates coverage report', () => {
+      // Arrange
+      mockExistsSync.mockImplementation((path) => {
+        return path.includes('lcov.info') || path.includes('lcov-report');
+      });
+
+      // Mock the existence of the coverage reports
+      mockReadFileSync.mockImplementation((path) => {
+        if (path.includes('lcov.info')) {
+          return 'SF:file.js\nLF:10\nLH:5\nend_of_record';
+        }
+        return '';
+      });
+
+      // Act
+      generateReport();
+
+      // Assert
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Generating coverage report')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Coverage Summary')
+      );
+    });
   });
 
   describe('combineCoverage', () => {
