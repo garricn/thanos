@@ -2,9 +2,9 @@
   "extends": "../../configs/build/tsconfig.json",
   "compilerOptions": {
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "outDir": "./dist",
-    "types": ["jest", "node", "vite/client"],
+    "types": ["jest", "node"],
     "target": "ES2022",
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
@@ -18,7 +18,11 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": ["src/**/*", "tests/**/*", "configs/**/*"],
   "exclude": ["node_modules", "dist", "e2e/**/*"]

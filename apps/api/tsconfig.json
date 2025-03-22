@@ -2,7 +2,7 @@
   "extends": "../../configs/build/tsconfig.json",
   "compilerOptions": {
     "module": "esnext",
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "target": "es2022",
     "outDir": "./dist",
     "types": ["node", "jest"],
@@ -16,7 +16,11 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "include": ["src/**/*", "tests/**/*", "configs/**/*"],
   "exclude": ["node_modules", "dist", "e2e/**/*"]

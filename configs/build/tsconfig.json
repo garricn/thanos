@@ -3,7 +3,7 @@
     "rootDir": "../..",
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "bundler",
+    "moduleResolution": "node",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
@@ -25,7 +25,10 @@
     "types": ["node"],
     "typeRoots": ["../../node_modules/@types", "../../types"],
     "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noEmit": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
   },
   "files": [],
   "include": [],
