@@ -1,0 +1,54 @@
+Since Claude has access to your project and can make changes directly, we’ll provide a clear, actionable prompt to implement the `tsconfig` consolidation into the 5 paths I recommended, validate with `npm run test:all`, and ensure everything works. We’ll skip Sonar for now as requested and focus on getting the TypeScript setup stable. Here’s how to proceed.
+
+---
+
+### Prompt for Claude to Implement the `tsconfig` Consolidation
+
+I want to consolidate my monorepo project’s `tsconfig` files into 5 paths to reduce clutter, ensuring `npm run test:all` passes. My TypeScript-based project has two apps (`apps/api` and `apps/web`) with unit tests (Jest), API E2E tests (Jest), and web E2E tests (Cypress). Use my actual project files to perform these actions:
+
+1. Consolidate all `tsconfig` files into these 5 paths:
+   - `configs/build/tsconfig.json` (shared base, keep as-is with common settings like `strict: true`, `esModuleInterop: true`).
+   - `apps/api/tsconfig.json` (merge `tsconfig.app.json`, `tsconfig.spec.json`, `tsconfig.node.json`, `tsconfig.build.spec.json`, `tests/tsconfig.json`, `tests/tsconfig.spec.json`; set `extends: "../configs/build/tsconfig.json"`, `module: "commonjs"`, `types: ["node", "jest"]`, `include: ["src/**/*", "tests/**/*"]`).
+   - `apps/api/e2e/tsconfig.json` (merge `tsconfig.e2e.json`; set `extends: "../tsconfig.json"`, `module: "commonjs"`, `types: ["jest"]`, `include: ["src/**/*"]`).
+   - `apps/web/tsconfig.json` (merge `tsconfig.app.json`, `tsconfig.spec.json`, `tsconfig.build.spec.json`; set `extends: "../configs/build/tsconfig.json"`, `module: "esnext"`, `types: ["jest"]`, `include: ["src/**/*", "tests/**/*"]`).
+   - `apps/web/e2e/tsconfig.json` (merge `tsconfig.e2e.json`; set `extends: "../tsconfig.json"`, `types: ["cypress"]`, `include: ["src/**/*"]`).
+2. Delete any unused `tsconfig` files in `configs/build/` (e.g., `tsconfig.api.json`, `tsconfig.app.json`) if they’re not extended by anything (check with `grep -r '"extends":.*tsconfig.api.json' .`).
+3. Update any references to the old `tsconfig` files in other configs (e.g., `apps/api/e2e/configs/test/jest.config.mjs`, `apps/web/e2e/cypress.config.ts`) to point to the new paths (e.g., `tsconfig: '../tsconfig.json'`).
+4. Test after each step: Run `npm run test:all` and fix any failures (e.g., adjust `module`, `types`, or `include` if tests fail due to TypeScript errors).
+
+Perform these changes directly in my project. Ensure all tests pass with `npm run test:all` before finishing.
+
+---
+
+### How This Will Work
+
+1. **Consolidation**:
+   - Claude will merge the specified `tsconfig` files into the 5 paths, preserving necessary settings (e.g., `module`, `types`, `include`).
+   - For example, `apps/api/tsconfig.json` will combine all app and unit test settings, while `apps/api/e2e/tsconfig.json` will focus on E2E needs.
+2. **Cleanup**:
+   - Claude will remove unused `tsconfig` files in `configs/build/` to reduce clutter.
+3. **Updates**:
+   - Claude will update Jest and Cypress configs to point to the new `tsconfig` paths (e.g., in `jest.config.mjs`, change `tsconfig` to the new location).
+4. **Validation**:
+   - Claude will run `npm run test:all` after each step to catch issues early (e.g., if `types: ["jest"]` is missing, tests will fail).
+
+### After Claude Finishes
+
+Once Claude completes the changes:
+
+1. **Check the Structure**:
+
+   ```bash
+   find . -type f \( -name "*.json" -o -name "*.yml" -o -name "*.yaml" -o -name "*.ts" -o -name "*.js" -o -name ".npmrc" -o -name ".eslintrc*" -o -name ".*rc" \) -not -path "*/node_modules/*" -not -path "*/coverage/*" | sort
+   ```
+
+   Confirm the `tsconfig` files are only at the 5 paths above.
+
+2. **Verify Tests**:
+   Run `npm run test:all` yourself to double-check. If there are failures, share the errors, and I’ll help fix them.
+
+3. **Next Steps**:
+   - You can then tackle Sonar consolidation (e.g., updating `sonar-project.properties`).
+   - Optionally revisit Jest consolidation later to further reduce config files.
+
+This approach keeps the implementation focused and ensures your tests validate the changes. Let me know how Claude does, and I’ll help with any follow-up!
