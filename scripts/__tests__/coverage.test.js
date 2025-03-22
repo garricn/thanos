@@ -44,6 +44,25 @@ describe('Coverage Script', () => {
         recursive: true,
       });
     });
+
+    it('creates all test directories when type is all', () => {
+      // Arrange
+      mockExistsSync.mockReturnValue(false);
+
+      // Act
+      ensureTestDirectories('all');
+
+      // Assert
+      expect(mockMkdirSync).toHaveBeenCalledWith('coverage/api/unit', {
+        recursive: true,
+      });
+      expect(mockMkdirSync).toHaveBeenCalledWith('coverage/web/unit', {
+        recursive: true,
+      });
+      expect(mockMkdirSync).toHaveBeenCalledWith('coverage/web/snapshot', {
+        recursive: true,
+      });
+    });
   });
 
   describe('moveSonarReports', () => {
