@@ -376,6 +376,22 @@ describe('shell-utils', () => {
       );
     });
 
+    it('processes multiple arguments correctly', () => {
+      // Arrange
+      const args = ['--dry-run', '--force'];
+
+      // Act
+      cleanDeep(args, mockExecSync);
+
+      // Assert
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Running in dry-run mode')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Force mode enabled')
+      );
+    });
+
     it('handles Jest cache clearing failures gracefully', () => {
       // Arrange
       const testExecSync = jest.fn().mockImplementation((command) => {
