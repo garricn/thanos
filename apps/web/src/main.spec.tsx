@@ -1,24 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { vi } from 'vitest';
 // App is used in the imported main.tsx, so we need to import it for mocking
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import App from './App';
 
 // Mock React and ReactDOM
-jest.mock('react', () => ({
-  ...jest.requireActual('react'),
+vi.mock('react', () => ({
+  ...vi.importActual('react'),
   StrictMode: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-jest.mock('react-dom/client', () => ({
-  createRoot: jest.fn(() => ({
-    render: jest.fn(),
+vi.mock('react-dom/client', () => ({
+  createRoot: vi.fn(() => ({
+    render: vi.fn(),
   })),
 }));
 
 // Mock document.getElementById
 const originalGetElementById = document.getElementById;
-const mockGetElementById = jest.fn(() => document.createElement('div'));
+const mockGetElementById = vi.fn(() => document.createElement('div'));
 
 describe('main.tsx', () => {
   beforeAll(() => {
