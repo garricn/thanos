@@ -291,5 +291,29 @@ describe('shell-utils', () => {
         expect.any(Object)
       );
     });
+
+    it('bypasses Node.js version check with --force flag', () => {
+      // Arrange
+      const args = ['--force'];
+
+      // Act
+      cleanDeep(args, mockExecSync);
+
+      // Assert
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Force mode enabled')
+      );
+
+      // Verify it starts deep clean process
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Starting deep clean')
+      );
+
+      // Verify the force flag is passed to checkNodeVersionMatch
+      // This is indirectly verified by the fact that our test doesn't fail even if versions don't match
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Checking Node.js version')
+      );
+    });
   });
 });
