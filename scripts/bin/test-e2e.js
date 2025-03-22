@@ -147,9 +147,18 @@ export function cleanup() {
   setTimeout(() => {
     // Force kill any remaining processes on the ports
     killProcessesOnPorts([4200, 3000]);
+
+    // Force kill any remaining child processes
+    childProcesses.forEach((proc) => {
+      if (!proc.killed) {
+        proc.kill('SIGKILL');
+      }
+    });
+
     console.log(
       `${colors.green}All servers have been shut down.${colors.reset}`
     );
+    process.exit(0);
   }, 2000);
 }
 
