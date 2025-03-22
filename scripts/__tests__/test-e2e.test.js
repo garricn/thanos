@@ -234,6 +234,49 @@ describe('test-e2e', () => {
       // Clean up spy
       stdoutWriteSpy.mockRestore();
     });
+
+    it('should capture stderr output', () => {
+      // Arrange - create write spy for stderr to track what the implementation writes
+      const stderrWriteSpy = vi
+        .spyOn(process.stderr, 'write')
+        .mockImplementation(() => {});
+
+      // Create a custom child process for this test
+      const customChild = {
+        stdout: { on: vi.fn() },
+        stderr: {
+          on: vi.fn().mockImplementation((event, cb) => {
+            if (event === 'data') {
+              // Store the callback to call it later
+              customChild._errorCallback = cb;
+            }
+            return customChild.stderr;
+          }),
+        },
+        on: vi.fn(),
+        kill: vi.fn(),
+        killed: false,
+        // Store callback to simulate calling it later
+        _errorCallback: null,
+      };
+
+      mockSpawn.mockReturnValueOnce(customChild);
+
+      // Act
+      startServer('npm run start:web', 'Web');
+
+      // Now simulate server emitting error output
+      expect(customChild._errorCallback).not.toBeNull();
+      customChild._errorCallback('Error starting server');
+
+      // Assert
+      expect(stderrWriteSpy).toHaveBeenCalledWith(
+        '[Web] Error starting server'
+      );
+
+      // Clean up spy
+      stderrWriteSpy.mockRestore();
+    });
   });
 
   describe('cleanup', () => {
