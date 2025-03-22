@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { moveSonarReports } from '../bin/coverage.js';
+import { moveSonarReports, ensureTestDirectories } from '../bin/coverage.js';
 import path from 'node:path';
 import {
   mockExistsSync,
@@ -11,6 +11,7 @@ import {
   mockUnlinkSync,
   mockConsoleLog,
   mockConsoleError,
+  mockMkdirSync,
   setupMockDefaults,
 } from './test-utils.js';
 
@@ -21,6 +22,28 @@ describe('Coverage Script', () => {
     mockExistsSync.mockReset();
     mockCopyFileSync.mockReset();
     mockUnlinkSync.mockReset();
+    mockMkdirSync.mockReset();
+  });
+
+  describe('ensureTestDirectories', () => {
+    it('creates unit test directories when type is unit', () => {
+      // Arrange
+      mockExistsSync.mockReturnValue(false);
+
+      // Act
+      ensureTestDirectories('unit');
+
+      // Assert
+      expect(mockMkdirSync).toHaveBeenCalledWith('coverage/api/unit', {
+        recursive: true,
+      });
+      expect(mockMkdirSync).toHaveBeenCalledWith('coverage/web/unit', {
+        recursive: true,
+      });
+      expect(mockMkdirSync).not.toHaveBeenCalledWith('coverage/web/snapshot', {
+        recursive: true,
+      });
+    });
   });
 
   describe('moveSonarReports', () => {
