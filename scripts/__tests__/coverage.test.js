@@ -2,7 +2,7 @@
  * Tests for the coverage script
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import {
   moveSonarReports,
   ensureTestDirectories,
@@ -13,6 +13,7 @@ import {
   combineCoverage,
   generateReport,
   openReports,
+  saveCoverageTrend,
 } from '../bin/coverage.js';
 import path from 'node:path';
 import fs from 'fs';
@@ -42,6 +43,106 @@ describe('Coverage Script', () => {
     mockExecSync.mockReset();
     mockReadFileSync.mockReset();
     mockWriteFileSync.mockReset();
+  });
+
+  describe('saveCoverageTrend', () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+      vi.setSystemTime(new Date('2024-01-01'));
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('creates new trend file when none exists', () => {
+      // Arrange
+      mockExistsSync.mockImplementation((path) => {
+        return path.includes('lcov.info');
+      });
+      mockReadFileSync.mockImplementation((path) => {
+        if (path.includes('lcov.info')) {
+          return 'LF:10\nLH:5\nend_of_record';
+        }
+        return '';
+      });
+
+      // Act
+      saveCoverageTrend();
+
+      // Assert
+      expect(mockWriteFileSync).toHaveBeenCalledWith(
+        'coverage/trend.json',
+        expect.stringContaining('2024-01-01')
+      );
+      const savedData = JSON.parse(mockWriteFileSync.mock.calls[0][1]);
+      expect(savedData).toEqual([
+        {
+          date: '2024-01-01T00:00:00.000Z',
+          coverage: 50.0,
+          totalLines: 10,
+          linesCovered: 5,
+        },
+      ]);
+    });
+
+    it('appends to existing trend file', () => {
+      // Arrange
+      mockExistsSync.mockImplementation((path) => {
+        return path.includes('lcov.info') || path.includes('trend.json');
+      });
+      mockReadFileSync.mockImplementation((path) => {
+        if (path.includes('lcov.info')) {
+          return 'LF:10\nLH:5\nend_of_record';
+        }
+        if (path.includes('trend.json')) {
+          return JSON.stringify([
+            {
+              date: '2023-12-31T00:00:00.000Z',
+              coverage: 40.0,
+              totalLines: 10,
+              linesCovered: 4,
+            },
+          ]);
+        }
+        return '';
+      });
+
+      // Act
+      saveCoverageTrend();
+
+      // Assert
+      expect(mockWriteFileSync).toHaveBeenCalledWith(
+        'coverage/trend.json',
+        expect.stringContaining('2024-01-01')
+      );
+      const savedData = JSON.parse(mockWriteFileSync.mock.calls[0][1]);
+      expect(savedData).toEqual([
+        {
+          date: '2023-12-31T00:00:00.000Z',
+          coverage: 40.0,
+          totalLines: 10,
+          linesCovered: 4,
+        },
+        {
+          date: '2024-01-01T00:00:00.000Z',
+          coverage: 50.0,
+          totalLines: 10,
+          linesCovered: 5,
+        },
+      ]);
+    });
+
+    it('handles case when no coverage data exists', () => {
+      // Arrange
+      mockExistsSync.mockReturnValue(false);
+
+      // Act
+      saveCoverageTrend();
+
+      // Assert
+      expect(mockWriteFileSync).not.toHaveBeenCalled();
+    });
   });
 
   describe('openReports', () => {
