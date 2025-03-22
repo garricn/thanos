@@ -1,27 +1,9 @@
 {
-  "extends": "../../configs/build/tsconfig.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "module": "esnext",
-    "moduleResolution": "node",
-    "target": "es2022",
-    "outDir": "./dist",
-    "types": ["node", "jest"],
-    "esModuleInterop": true,
-    "allowJs": true,
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-    "removeComments": true,
-    "allowSyntheticDefaultImports": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "outDir": "dist/api",
+    "types": ["node", "vitest/globals"]
   },
-  "include": ["src/**/*", "tests/**/*", "configs/**/*"],
-  "exclude": ["node_modules", "dist", "e2e/**/*"]
+  "include": ["src/**/*", "tests/**/*", "e2e/src/**/*"],
+  "exclude": ["node_modules", "dist", "coverage"]
 }

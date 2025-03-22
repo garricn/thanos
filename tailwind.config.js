@@ -1,26 +1,22 @@
 import { join } from 'path';
 import glob from 'glob';
 
-// Simple replacement for createGlobPatternsForDependencies
+// Adjusted to work from the root directory
 const createContentPaths = (baseDir) => {
-  // This pattern catches common component file patterns
   return [
     join(
       baseDir,
-      '../../apps/web/{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html}'
+      './apps/web/{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html}'
     ),
-    join(baseDir, '../../node_modules/@radix-ui/**/*.{js,ts,jsx,tsx}'),
-    join(baseDir, '../../node_modules/lucide-react/**/*.{js,ts,jsx,tsx}'),
+    join(baseDir, './node_modules/@radix-ui/**/*.{js,ts,jsx,tsx}'),
+    join(baseDir, './node_modules/lucide-react/**/*.{js,ts,jsx,tsx}'),
   ];
 };
 
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
-    join(
-      __dirname,
-      '{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html}'
-    ),
+    './apps/web/{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html}', // Adjusted from root
     ...createContentPaths(__dirname),
   ],
   theme: {

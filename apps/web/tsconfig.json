@@ -1,29 +1,10 @@
 {
-  "extends": "../../configs/build/tsconfig.json",
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "module": "esnext",
-    "moduleResolution": "node",
-    "outDir": "./dist",
-    "types": ["jest", "node"],
-    "target": "ES2022",
-    "useDefineForClassFields": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "allowJs": false,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
+    "outDir": "dist/web",
     "jsx": "react-jsx",
-    "allowImportingTsExtensions": true,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/*"]
-    }
+    "types": ["node", "vitest/globals"]
   },
-  "include": ["src/**/*", "tests/**/*", "configs/**/*"],
-  "exclude": ["node_modules", "dist", "e2e/**/*"]
+  "include": ["src/**/*", "tests/**/*"],
+  "exclude": ["node_modules", "dist", "coverage"]
 }

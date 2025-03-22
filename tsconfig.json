@@ -1,0 +1,58 @@
+{
+  "compilerOptions": {
+    "rootDir": ".", // Adjusted from "../.." to root
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "esnext",
+    "lib": ["es2022", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".", // Adjusted from "../.." to root
+    "paths": {
+      "@thanos/api/*": ["apps/api/src/*"], // Updated to include /src
+      "@thanos/web/*": ["apps/web/src/*"], // Updated to include /src
+      "@thanos/scripts/*": ["scripts/*"] // Added for scripts
+    },
+    "jsx": "react-jsx",
+    "allowJs": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "types": ["node", "vitest/globals"], // Added vitest/globals for test globals
+    "typeRoots": ["./node_modules/@types", "./types"], // Adjusted from "../../"
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true
+  },
+  "include": [
+    "apps/api/src/**/*",
+    "apps/api/tests/**/*",
+    "apps/api/e2e/src/**/*",
+    "apps/web/src/**/*",
+    "apps/web/tests/**/*",
+    "apps/web/e2e/**/*",
+    "scripts/**/*",
+    "*.config.ts",
+    "*.config.mjs"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "**/dist/**/*",
+    "**/node_modules/**/*"
+  ],
+  "references": [
+    { "path": "./apps/api/tsconfig.json" },
+    { "path": "./apps/web/tsconfig.json" },
+    { "path": "./scripts/tsconfig.json" }
+  ],
+  "compileOnSave": false
+}
