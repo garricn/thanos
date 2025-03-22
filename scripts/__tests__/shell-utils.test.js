@@ -63,6 +63,7 @@ import {
   exec,
   getRequiredNodeVersion,
   checkNodeVersionMatch,
+  cleanDeep,
 } from '../lib/shell-utils.js';
 
 describe('shell-utils', () => {
@@ -235,6 +236,31 @@ describe('shell-utils', () => {
 
       // Verify process.exit was called with code 1
       expect(mockExit).toHaveBeenCalledWith(1);
+    });
+  });
+
+  describe('cleanDeep', () => {
+    it('displays help message and exits with --help flag', () => {
+      // Arrange
+      const args = ['--help'];
+
+      // Act
+      cleanDeep(args, mockExecSync);
+
+      // Assert
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Thanos Deep Clean Script')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Usage: npm run clean:deep [options]')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('--dry-run')
+      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('--force')
+      );
+      expect(mockExit).toHaveBeenCalledWith(0);
     });
   });
 });
