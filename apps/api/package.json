@@ -7,8 +7,8 @@
     "dev": "nodemon --watch src --ext ts,js,mjs --exec 'npx tsx --tsconfig ./tsconfig.json src/main.ts'",
     "build": "node build.js",
     "start": "node dist/index.js",
-    "test": "NODE_OPTIONS='--experimental-vm-modules' jest --config configs/test/jest.config.mjs",
-    "test:coverage": "NODE_OPTIONS='--experimental-vm-modules' jest --config configs/test/jest.config.mjs --coverage",
+    "test": "vitest run --config configs/test/vitest.config.ts --dir tests",
+    "test:coverage": "vitest run --coverage --config configs/test/vitest.config.ts --dir tests",
     "lint": "eslint --config configs/lint/eslint.config.mjs .",
     "typecheck": "tsc --noEmit --project ./tsconfig.json"
   },

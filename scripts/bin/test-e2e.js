@@ -207,7 +207,7 @@ export async function runE2ETests() {
     console.log(`${colors.yellow}Running API E2E tests...${colors.reset}`);
     try {
       execCmd(
-        "cd apps/api/e2e && NODE_OPTIONS='--experimental-vm-modules' npx jest --config configs/test/jest.config.mjs --verbose --no-cache"
+        'cd apps/api/e2e && vitest run --config configs/test/vitest.config.ts --dir src --verbose'
       );
       apiExitCode = 0;
     } catch (error) {
