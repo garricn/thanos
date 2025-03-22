@@ -190,6 +190,24 @@ describe('shell-utils', () => {
         encoding: 'utf-8',
       });
     });
+
+    it('executes command with custom options', () => {
+      // Arrange
+      const command = 'echo "hello"';
+      const customOptions = {
+        stdio: 'pipe',
+        encoding: 'utf-8',
+        timeout: 1000,
+      };
+      mockExecSync.mockReturnValue('hello with options\n');
+
+      // Act
+      const result = exec(mockExecSync, command, customOptions);
+
+      // Assert
+      expect(result).toBe('hello with options\n');
+      expect(mockExecSync).toHaveBeenCalledWith(command, customOptions);
+    });
   });
 
   describe('getRequiredNodeVersion', () => {
