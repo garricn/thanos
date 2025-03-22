@@ -4,12 +4,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --config configs/build/vite.config.ts",
-    "build": "vite build --config configs/build/vite.config.ts",
-    "preview": "vite preview --config configs/build/vite.config.ts",
-    "test": "vitest run --config configs/test/vitest.config.ts --dir tests",
-    "test:coverage": "vitest run --coverage --config configs/test/vitest.config.ts --dir tests",
-    "lint": "eslint --config configs/lint/eslint.config.mjs .",
+    "dev": "vite --config ../../vite.config.ts",
+    "build": "vite build --config ../../vite.config.ts",
+    "preview": "vite preview --config ../../vite.config.ts",
+    "test": "vitest run --config ../../vitest.workspace.ts --dir tests",
+    "test:coverage": "vitest run --coverage --config ../../vitest.workspace.ts --dir tests",
+    "lint": "eslint --config ../../eslint.config.mjs .",
     "typecheck": "tsc --noEmit --project ./tsconfig.json"
   },
   "dependencies": {

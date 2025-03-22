@@ -2,7 +2,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
-import { copyFileSync } from 'fs';
+import { copyFileSync, existsSync } from 'fs';
 
 // Simple plugin to copy MD files to the build directory
 const copyMdPlugin = (patterns = ['*.md']) => ({
@@ -11,9 +11,12 @@ const copyMdPlugin = (patterns = ['*.md']) => ({
     patterns.forEach((pattern) => {
       if (pattern === '*.md') {
         try {
-          copyFileSync('README.md', 'dist/web/README.md');
+          const readmePath = resolve(__dirname, 'README.md');
+          if (existsSync(readmePath)) {
+            copyFileSync(readmePath, resolve(__dirname, 'dist/web/README.md'));
+          }
         } catch (e) {
-          console.error('Error copying README.md:', e);
+          console.warn('Warning: Could not copy README.md:', e);
         }
       }
     });
@@ -42,14 +45,15 @@ export default defineConfig(() => ({
   ],
   resolve: {
     alias: {
-      '@app': resolve(__dirname, './apps/web/src'), // From your old config
-      '@api': resolve(__dirname, './apps/api/src'), // Added for API
-      '@scripts': resolve(__dirname, './scripts'), // Added for scripts
+      '@app': resolve(__dirname, './apps/web/src'),
+      '@api': resolve(__dirname, './apps/api/src'),
+      '@scripts': resolve(__dirname, './scripts'),
     },
   },
-  root: './apps/web', // Focus on web app
+  root: resolve(__dirname, 'apps/web'),
+  publicDir: resolve(__dirname, 'apps/web/public'),
   build: {
-    outDir: resolve(__dirname, 'dist/web'), // Adjusted output path
+    outDir: resolve(__dirname, 'dist/web'),
     reportCompressedSize: true,
     commonjsOptions: {
       transformMixedEsModules: true,
