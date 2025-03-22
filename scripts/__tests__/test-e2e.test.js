@@ -154,6 +154,36 @@ describe('test-e2e', () => {
         expect.stringContaining('Cleaning up any existing processes')
       );
     });
+
+    it('should handle Windows platform differently', () => {
+      // Store original platform value
+      const originalPlatform = process.platform;
+
+      // Mock the platform as Windows
+      Object.defineProperty(process, 'platform', {
+        value: 'win32',
+        configurable: true,
+      });
+
+      // Reset the mock to clear previous calls
+      mockExecSync.mockReset();
+
+      // Call the function
+      killProcessesOnPorts([4200]);
+
+      // Verify Windows-specific behavior - netstat command is called
+      // For Windows it calls find on each port separately
+      expect(mockExecSync).toHaveBeenCalledWith(
+        expect.stringContaining('netstat -ano | findstr :4200'),
+        expect.any(Object)
+      );
+
+      // Restore the original platform value
+      Object.defineProperty(process, 'platform', {
+        value: originalPlatform,
+        configurable: true,
+      });
+    });
   });
 
   describe('startServer', () => {
@@ -281,6 +311,16 @@ describe('test-e2e', () => {
 
   describe('cleanup', () => {
     it('should attempt to kill child processes', () => {
+      // Store original platform value to restore it later
+      const originalPlatform = process.platform;
+
+      // Reset mocks and force Unix-like platform for consistent testing
+      mockExecSync.mockReset();
+      Object.defineProperty(process, 'platform', {
+        value: 'darwin',
+        configurable: true,
+      });
+
       // Act
       cleanup();
 
@@ -292,6 +332,12 @@ describe('test-e2e', () => {
         expect.stringContaining('lsof -ti:'),
         expect.any(Object)
       );
+
+      // Restore original platform
+      Object.defineProperty(process, 'platform', {
+        value: originalPlatform,
+        configurable: true,
+      });
     });
 
     it('should handle kill command failures gracefully', () => {
