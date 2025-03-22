@@ -12,6 +12,7 @@ import {
   runSnapshotTests,
   combineCoverage,
   generateReport,
+  openReports,
 } from '../bin/coverage.js';
 import path from 'node:path';
 import fs from 'fs';
@@ -41,6 +42,41 @@ describe('Coverage Script', () => {
     mockExecSync.mockReset();
     mockReadFileSync.mockReset();
     mockWriteFileSync.mockReset();
+  });
+
+  describe('openReports', () => {
+    it('opens coverage reports in the browser', () => {
+      // Arrange
+      mockExistsSync.mockReturnValue(true);
+
+      // Act
+      openReports();
+
+      // Assert
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Opening coverage reports')
+      );
+
+      // Should call execSync with open command for all reports
+      expect(mockExecSync).toHaveBeenCalledWith(
+        'open coverage/api/unit/lcov-report/index.html coverage/web/unit/lcov-report/index.html coverage/web/snapshot/lcov-report/index.html coverage/combined/lcov-report/index.html',
+        expect.any(Object)
+      );
+    });
+
+    it('handles case when no reports exist', () => {
+      // Arrange
+      mockExistsSync.mockReturnValue(false);
+
+      // Act
+      openReports();
+
+      // Assert
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('No coverage reports found to open')
+      );
+      expect(mockExecSync).not.toHaveBeenCalled();
+    });
   });
 
   describe('generateReport', () => {
