@@ -14,6 +14,7 @@ import {
   generateReport,
   openReports,
   saveCoverageTrend,
+  main,
 } from '../bin/coverage.js';
 import path from 'node:path';
 import fs from 'fs';
@@ -506,6 +507,28 @@ describe('Coverage Script', () => {
       expect(mockConsoleError).toHaveBeenCalledWith(
         expect.stringContaining('Error moving file')
       );
+    });
+  });
+});
+
+describe('main', () => {
+  it('executes clean command when type is none and clean flag is true', async () => {
+    // Arrange
+    process.argv = ['node', 'coverage.js', '--type=none', '--clean'];
+    mockExistsSync.mockReturnValue(false);
+
+    // Act
+    await main();
+
+    // Assert
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '🧹 Cleaning coverage directories...'
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      '✨ Coverage operation completed successfully!'
+    );
+    expect(mockExecSync).toHaveBeenCalledWith('rm -rf coverage', {
+      stdio: 'inherit',
     });
   });
 });
