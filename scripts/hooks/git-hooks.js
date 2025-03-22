@@ -60,7 +60,10 @@ export async function runPreCommitChecks(execSync = defaultExecSync) {
     console.log(
       `${colors.yellow}\nType checking staged TypeScript files...${colors.reset}`
     );
-    exec(execSync, `npx tsc --noEmit ${stagedTsFiles}`);
+    exec(
+      execSync,
+      `npx tsc --noEmit --project ./tsconfig.json ${stagedTsFiles}`
+    );
   }
 
   console.log(
