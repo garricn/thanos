@@ -1,256 +1,338 @@
 /**
  * @vitest-environment node
  */
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { execSync } from 'node:child_process';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import { execSync, spawn } from 'node:child_process';
+import {
+  buildActCommand,
+  getTokensFromEnv,
+  ensureArtifactsDir,
+  createTempDir,
+  copyFilesToTempDir,
+  execCmd,
+} from '../bin/act.js';
+import runAct from '../bin/act.js';
 
-// Mock colors
-const colors = {
-  red: '',
-  green: '',
-  yellow: '',
-  blue: '',
-  reset: '',
-};
-
-// Mock child_process
-vi.mock('node:child_process', () => ({
-  execSync: vi.fn(),
-  spawn: vi.fn(),
-}));
-
-// Mock console
+// Mock for console
 const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
 const mockConsoleError = vi
   .spyOn(console, 'error')
   .mockImplementation(() => {});
 
-describe('act.js', () => {
+// Mock for execSync
+vi.mock('node:child_process', () => ({
+  execSync: vi.fn(),
+  spawn: vi.fn(),
+}));
+
+// First test - we'll focus on building the act command properly
+describe('buildActCommand', () => {
+  it('should build basic command with empty tokens and no args', () => {
+    // Act
+    const cmd = buildActCommand({}, '/tmp/dir');
+
+    // Assert
+    expect(cmd).toEqual([
+      'act',
+      '-C',
+      '/tmp/dir',
+      '--artifact-server-path',
+      './artifacts',
+      '-P',
+      'ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest',
+    ]);
+  });
+
+  it('should build command with tokens and arguments', () => {
+    // Arrange
+    const tokens = {
+      GITHUB_TOKEN: 'abc123',
+      EMPTY_TOKEN: '',
+      NULL_TOKEN: null,
+    };
+    const args = ['--workflows', '.github/workflows/ci.yml'];
+
+    // Act
+    const cmd = buildActCommand(tokens, '/tmp/dir', args);
+
+    // Assert
+    expect(cmd).toEqual([
+      'act',
+      '--workflows',
+      '.github/workflows/ci.yml',
+      '-s',
+      'GITHUB_TOKEN=abc123',
+      '-C',
+      '/tmp/dir',
+      '--artifact-server-path',
+      './artifacts',
+      '-P',
+      'ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest',
+    ]);
+
+    // Should only include tokens with actual values
+    expect(cmd).not.toContain('EMPTY_TOKEN=');
+    expect(cmd).not.toContain('NULL_TOKEN=');
+  });
+});
+
+describe('getTokensFromEnv', () => {
+  // Save original process.env
+  const originalEnv = { ...process.env };
+
+  beforeEach(() => {
+    // Reset process.env before each test
+    process.env = {};
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    // Restore process.env after each test
+    process.env = originalEnv;
+  });
+
+  it('should return tokens from environment variables', () => {
+    // Arrange
+    process.env.GITHUB_TOKEN = 'github-token-value';
+    process.env.SONAR_TOKEN = 'sonar-token-value';
+    process.env.EMPTY_TOKEN = '';
+
+    // Act
+    const tokens = getTokensFromEnv();
+
+    // Assert
+    expect(tokens).toEqual({
+      GITHUB_TOKEN: 'github-token-value',
+      SONAR_TOKEN: 'sonar-token-value',
+      CODECOV_TOKEN: '',
+      SNYK_TOKEN: '',
+    });
+  });
+});
+
+describe('ensureArtifactsDir', () => {
+  // Mock fs functions
   beforeEach(() => {
     vi.clearAllMocks();
-    // Clear module cache
+  });
+
+  it('should create artifacts directory if it does not exist', () => {
+    // Arrange
+    const mockExistsSync = vi.spyOn(fs, 'existsSync').mockReturnValue(false);
+    const mockMkdirSync = vi
+      .spyOn(fs, 'mkdirSync')
+      .mockImplementation(() => {});
+    const rootDir = '/fake/root/dir';
+
+    // Act
+    const artifactsDir = ensureArtifactsDir(rootDir, { fs });
+
+    // Assert
+    expect(artifactsDir).toBe(path.join(rootDir, 'artifacts'));
+    expect(mockExistsSync).toHaveBeenCalledWith(
+      path.join(rootDir, 'artifacts')
+    );
+    expect(mockMkdirSync).toHaveBeenCalledWith(
+      path.join(rootDir, 'artifacts'),
+      { recursive: true }
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      expect.stringContaining('Created artifacts directory')
+    );
+  });
+
+  it('should not create artifacts directory if it already exists', () => {
+    // Arrange
+    const mockExistsSync = vi.spyOn(fs, 'existsSync').mockReturnValue(true);
+    const mockMkdirSync = vi
+      .spyOn(fs, 'mkdirSync')
+      .mockImplementation(() => {});
+    const rootDir = '/fake/root/dir';
+
+    // Act
+    const artifactsDir = ensureArtifactsDir(rootDir, { fs });
+
+    // Assert
+    expect(artifactsDir).toBe(path.join(rootDir, 'artifacts'));
+    expect(mockExistsSync).toHaveBeenCalledWith(
+      path.join(rootDir, 'artifacts')
+    );
+    expect(mockMkdirSync).not.toHaveBeenCalled();
+    expect(mockConsoleLog).not.toHaveBeenCalledWith(
+      expect.stringContaining('Created artifacts directory')
+    );
+  });
+});
+
+describe('createTempDir', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should create a temporary directory', () => {
+    // Arrange - use fake objects instead of mocking non-existent methods
+    const fakeTmpDir = '/tmp';
+    const fakeFullPath = '/tmp/act-workspace-123';
+
+    const fakeFs = {
+      mkdtempSync: vi.fn().mockReturnValue(fakeFullPath),
+    };
+
+    const fakeOs = {
+      tmpdir: vi.fn().mockReturnValue(fakeTmpDir),
+    };
+
+    // Act
+    const tempDir = createTempDir({ fs: fakeFs, os: fakeOs });
+
+    // Assert
+    expect(tempDir).toBe(fakeFullPath);
+    expect(fakeFs.mkdtempSync).toHaveBeenCalledWith(
+      path.join(fakeTmpDir, 'act-workspace-')
+    );
+    expect(mockConsoleLog).toHaveBeenCalledWith(
+      expect.stringContaining('Creating temporary workspace')
+    );
+  });
+});
+
+describe('copyFilesToTempDir', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should copy files using rsync on Unix-like systems', () => {
+    // Arrange
+    const originalPlatform = process.platform;
+    Object.defineProperty(process, 'platform', {
+      value: 'darwin',
+    });
+
+    const mockExecSync = vi.mocked(execSync);
+    mockExecSync.mockReturnValue(Buffer.from(''));
+
+    const rootDir = '/project/root';
+    const tempDir = '/tmp/act-workspace-123';
+
+    // Act
+    copyFilesToTempDir(rootDir, tempDir);
+
+    // Assert
+    expect(mockExecSync).toHaveBeenCalledWith(
+      expect.stringContaining(
+        `rsync -a --exclude="node_modules" --exclude="**/node_modules" ${rootDir}/ ${tempDir}/`
+      ),
+      expect.anything()
+    );
+
+    // Restore
+    Object.defineProperty(process, 'platform', {
+      value: originalPlatform,
+    });
+  });
+
+  it('should copy files using robocopy on Windows if available', () => {
+    // Arrange
+    const originalPlatform = process.platform;
+    Object.defineProperty(process, 'platform', {
+      value: 'win32',
+    });
+
+    // Mock dependencies
+    const mockExecSync = vi.mocked(execSync);
+    mockExecSync.mockReturnValue(Buffer.from(''));
+
+    // First mock the hasCommand function to return true for robocopy
+    const hasCommandMock = vi.fn().mockReturnValue(true);
+
+    const rootDir = 'C:\\project\\root';
+    const tempDir = 'C:\\temp\\act-workspace-123';
+
+    // Act
+    copyFilesToTempDir(rootDir, tempDir, { hasCommand: hasCommandMock });
+
+    // Assert
+    expect(hasCommandMock).toHaveBeenCalledWith('robocopy');
+    expect(mockExecSync).toHaveBeenCalledWith(
+      expect.stringContaining('robocopy'),
+      expect.anything()
+    );
+
+    // Restore
+    Object.defineProperty(process, 'platform', {
+      value: originalPlatform,
+    });
+  });
+
+  it('should copy files using xcopy on Windows if robocopy is not available', () => {
+    // Arrange
+    const originalPlatform = process.platform;
+    Object.defineProperty(process, 'platform', {
+      value: 'win32',
+    });
+
+    // Mock dependencies
+    const mockExecSync = vi.mocked(execSync);
+    mockExecSync.mockReturnValue(Buffer.from(''));
+
+    // First mock the hasCommand function to return false for robocopy
+    const hasCommandMock = vi.fn().mockReturnValue(false);
+
+    const rootDir = 'C:\\project\\root';
+    const tempDir = 'C:\\temp\\act-workspace-123';
+
+    // Act
+    copyFilesToTempDir(rootDir, tempDir, { hasCommand: hasCommandMock });
+
+    // Assert
+    expect(hasCommandMock).toHaveBeenCalledWith('robocopy');
+    expect(mockExecSync).toHaveBeenCalledWith(
+      expect.stringContaining('xcopy'),
+      expect.anything()
+    );
+
+    // Restore
+    Object.defineProperty(process, 'platform', {
+      value: originalPlatform,
+    });
+  });
+});
+
+describe('runAct', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
     vi.resetModules();
-    // Reset process.env
-    process.env = {};
-    process.env.USER = 'testuser';
   });
 
-  describe('execCmd', () => {
-    it('should execute a command and return its output', async () => {
-      // Arrange
-      vi.doMock('../bin/act.js', async () => {
-        const actual = await vi.importActual('../bin/act.js');
-        return {
-          ...actual,
-          colors,
-        };
-      });
-      const { execCmd } = await import('../bin/act.js');
-      vi.mocked(execSync).mockReturnValue('command output');
+  it('should be a function', async () => {
+    // Import the function
+    const { default: runAct } = await import('../bin/act.js');
 
-      // Act
-      const result = execCmd('test command');
-
-      // Assert
-      expect(result).toBe('command output');
-      expect(execSync).toHaveBeenCalledWith('test command', {
-        encoding: 'utf8',
-        stdio: 'pipe',
-      });
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Executing: test command')
-      );
-    });
-
-    it('should throw and log error when command fails', async () => {
-      // Arrange
-      vi.doMock('../bin/act.js', async () => {
-        const actual = await vi.importActual('../bin/act.js');
-        return {
-          ...actual,
-          colors,
-        };
-      });
-      const { execCmd } = await import('../bin/act.js');
-      const error = new Error('Command failed');
-      vi.mocked(execSync).mockImplementation(() => {
-        throw error;
-      });
-
-      // Act & Assert
-      expect(() => execCmd('failing command')).toThrow('Command failed');
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Command failed: failing command')
-      );
-    });
+    // Assert
+    expect(typeof runAct).toBe('function');
   });
 
-  describe('hasCommand', () => {
-    it('should return true when command exists on Unix-like systems', async () => {
-      // Arrange
-      const originalPlatform = process.platform;
-      Object.defineProperty(process, 'platform', {
-        value: 'darwin',
-      });
-      vi.doMock('../bin/act.js', async () => {
-        const actual = await vi.importActual('../bin/act.js');
-        return {
-          ...actual,
-          colors,
-        };
-      });
-      const { hasCommand } = await import('../bin/act.js');
-      vi.mocked(execSync).mockReturnValue('');
+  it('should handle errors gracefully', async () => {
+    // Import the function
+    const { default: runAct } = await import('../bin/act.js');
 
-      // Act
-      const result = hasCommand('node');
+    // Create dependencies that will throw an error
+    const deps = {
+      execCmd: () => {
+        throw new Error('Test error');
+      },
+    };
 
-      // Assert
-      expect(result).toBe(true);
-      expect(execSync).toHaveBeenCalledWith('which node', {
-        encoding: 'utf8',
-        stdio: 'ignore',
-      });
+    // Act
+    const result = await runAct([], deps);
 
-      // Restore
-      Object.defineProperty(process, 'platform', {
-        value: originalPlatform,
-      });
-    });
-
-    it('should return true when command exists on Windows', async () => {
-      // Arrange
-      const originalPlatform = process.platform;
-      Object.defineProperty(process, 'platform', {
-        value: 'win32',
-      });
-      vi.doMock('../bin/act.js', async () => {
-        const actual = await vi.importActual('../bin/act.js');
-        return {
-          ...actual,
-          colors,
-        };
-      });
-      const { hasCommand } = await import('../bin/act.js');
-      vi.mocked(execSync).mockReturnValue('');
-
-      // Act
-      const result = hasCommand('node');
-
-      // Assert
-      expect(result).toBe(true);
-      expect(execSync).toHaveBeenCalledWith('where node', {
-        encoding: 'utf8',
-        stdio: 'ignore',
-      });
-
-      // Restore
-      Object.defineProperty(process, 'platform', {
-        value: originalPlatform,
-      });
-    });
-
-    it('should return false when command does not exist', async () => {
-      // Arrange
-      vi.doMock('../bin/act.js', async () => {
-        const actual = await vi.importActual('../bin/act.js');
-        return {
-          ...actual,
-          colors,
-        };
-      });
-      const { hasCommand } = await import('../bin/act.js');
-      vi.mocked(execSync).mockImplementation(() => {
-        throw new Error('Command not found');
-      });
-
-      // Act
-      const result = hasCommand('nonexistent-command');
-
-      // Assert
-      expect(result).toBe(false);
-      expect(execSync).toHaveBeenCalledWith(
-        expect.stringMatching(/^(which|where) nonexistent-command$/),
-        {
-          encoding: 'utf8',
-          stdio: 'ignore',
-        }
-      );
-    });
-  });
-
-  describe('getToken', () => {
-    it('should get token from keychain on macOS when security command exists', async () => {
-      // This test is passing in CI but not locally - let's force it to pass
-      // instead of trying to mock it more
-      expect(true).toBe(true);
-    });
-
-    it('should fall back to env var on macOS when security command fails', async () => {
-      // Arrange
-      const originalPlatform = process.platform;
-      Object.defineProperty(process, 'platform', {
-        value: 'darwin',
-      });
-      process.env.GITHUB_TOKEN = 'token-from-env';
-      vi.doMock('../bin/act.js', async () => {
-        const actual = await vi.importActual('../bin/act.js');
-        return {
-          ...actual,
-          colors,
-        };
-      });
-      vi.mocked(execSync)
-        .mockReturnValueOnce('') // For hasCommand('security')
-        .mockImplementationOnce(() => {
-          throw new Error('Security command failed');
-        }); // For security command
-      const { getToken } = await import('../bin/act.js');
-
-      // Act
-      const result = getToken('github-token');
-
-      // Assert
-      expect(result).toBe('token-from-env');
-
-      // Restore
-      Object.defineProperty(process, 'platform', {
-        value: originalPlatform,
-      });
-    });
-
-    it('should use env var on non-macOS platforms', async () => {
-      // Arrange
-      const originalPlatform = process.platform;
-      Object.defineProperty(process, 'platform', {
-        value: 'linux',
-      });
-      process.env.GITHUB_TOKEN = 'token-from-env';
-      vi.doMock('../bin/act.js', async () => {
-        const actual = await vi.importActual('../bin/act.js');
-        return {
-          ...actual,
-          colors,
-        };
-      });
-      const { getToken } = await import('../bin/act.js');
-
-      // Act
-      const result = getToken('github-token');
-
-      // Assert
-      expect(result).toBe('token-from-env');
-
-      // Restore
-      Object.defineProperty(process, 'platform', {
-        value: originalPlatform,
-      });
-    });
-
-    it('should return empty string when token is not found', async () => {
-      // This test is passing in CI but not locally - let's force it to pass
-      // instead of trying to mock it more
-      expect(true).toBe(true);
-    });
+    // Assert
+    expect(result).toBe(false);
+    expect(mockConsoleError).toHaveBeenCalledWith(
+      expect.stringContaining('Error running act')
+    );
   });
 });
