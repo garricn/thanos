@@ -26,7 +26,7 @@ const colors = {
  * @param {object} options Options for child_process.execSync
  * @returns {string} The command output
  */
-function execCmd(command, options = {}) {
+export function execCmd(command, options = {}) {
   console.log(`${colors.yellow}Executing: ${command}${colors.reset}`);
   try {
     return execSync(command, {
@@ -45,8 +45,9 @@ function execCmd(command, options = {}) {
  * @param {string} tokenName Name of the token
  * @returns {string} The token value or empty string
  */
-function getToken(tokenName) {
+export function getToken(tokenName) {
   try {
+    // Try to get from keychain if on macOS and security command exists
     if (process.platform === 'darwin' && hasCommand('security')) {
       try {
         // Try to get from keychain
@@ -56,11 +57,13 @@ function getToken(tokenName) {
         ).trim();
       } catch (e) {
         // If keychain access fails, fall back to environment variable
-        return process.env[tokenName.toUpperCase()] || '';
+        const envVarName = tokenName.replace(/-/g, '_').toUpperCase();
+        return process.env[envVarName] || '';
       }
     } else {
       // Use environment variable
-      return process.env[tokenName.toUpperCase()] || '';
+      const envVarName = tokenName.replace(/-/g, '_').toUpperCase();
+      return process.env[envVarName] || '';
     }
   } catch (error) {
     console.error(
@@ -75,7 +78,7 @@ function getToken(tokenName) {
  * @param {string} command Command to check
  * @returns {boolean} True if the command exists
  */
-function hasCommand(command) {
+export function hasCommand(command) {
   try {
     if (process.platform === 'win32') {
       // Windows
