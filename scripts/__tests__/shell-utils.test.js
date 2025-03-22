@@ -31,28 +31,25 @@ describe('shell-utils', () => {
   });
 
   describe('switchNodeVersion', () => {
-    it('switches to the required Node.js version', () => {
+    it('returns early if already using correct version', () => {
       // Arrange
-      mockExistsSync.mockReturnValue(true);
-      mockReadFileSync.mockReturnValue('20.0.0\n');
-      mockExecSync.mockImplementation((cmd) => {
-        if (cmd.includes('nvm use')) return 'Now using Node.js v20.0.0';
-        return '';
-      });
+      mockReadFileSync.mockReturnValue('20\n');
+      mockExecSync.mockReturnValue('v20.0.0');
 
       // Act
       switchNodeVersion(mockExecSync);
 
       // Assert
-      expect(mockExecSync).toHaveBeenCalledWith(
-        expect.stringContaining('nvm use'),
-        expect.any(Object)
+      expect(mockConsoleLog).toHaveBeenCalledWith(
+        expect.stringContaining('Already using Node.js v20')
       );
+      expect(mockExit).not.toHaveBeenCalled();
     });
 
-    it('exits with error when nvm is not available', () => {
+    it('prints error and exits when version mismatch', () => {
       // Arrange
-      mockExistsSync.mockReturnValue(false);
+      mockReadFileSync.mockReturnValue('20\n');
+      mockExecSync.mockReturnValue('v22.0.0');
 
       // Act
       switchNodeVersion(mockExecSync);
@@ -64,18 +61,19 @@ describe('shell-utils', () => {
       expect(mockExit).toHaveBeenCalledWith(1);
     });
 
-    it('exits with error when Node.js version switch fails', () => {
+    it('exits with error when node version cannot be determined', () => {
       // Arrange
-      mockExistsSync.mockReturnValue(true);
       mockExecSync.mockImplementationOnce(() => {
-        throw new Error('Failed to switch version');
+        throw new Error('Failed to get version');
       });
 
       // Act
       switchNodeVersion(mockExecSync);
 
       // Assert
-      expect(mockConsoleError).toHaveBeenCalled();
+      expect(mockConsoleError).toHaveBeenCalledWith(
+        expect.stringContaining('Could not determine current Node.js version')
+      );
       expect(mockExit).toHaveBeenCalledWith(1);
     });
   });
