@@ -53,6 +53,7 @@
     "start": "concurrently --kill-others-on-fail \"npm run start:api\" \"npm run start:web\"",
     "start:api": "npm run dev --workspace=apps/api",
     "start:web": "npm run dev --workspace=apps/web",
+    "test": "npm-run-all test:unit test:e2e",
     "test:api": "npm-run-all test:api:unit test:api:e2e",
     "test:api:e2e": "npm run test:e2e --workspace=apps/api",
     "test:api:unit": "npm run test --workspace=apps/api",
