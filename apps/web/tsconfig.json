@@ -3,7 +3,11 @@
   "compilerOptions": {
     "outDir": "dist/web",
     "jsx": "react-jsx",
-    "types": ["node", "vitest/globals"]
+    "types": ["node", "vitest/globals"],
+    "typeRoots": ["../../node_modules/@types", "../../node_modules"],
+    "composite": true,
+    "declaration": true,
+    "emitDeclarationOnly": true
   },
   "include": ["src/**/*", "tests/**/*"],
   "exclude": ["node_modules", "dist", "coverage"]
