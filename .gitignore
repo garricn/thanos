@@ -32,6 +32,7 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 *.log
 artifacts
+*.tsbuildinfo
 
 # IDEs and editors
 .idea
