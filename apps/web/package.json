@@ -7,8 +7,8 @@
     "dev": "vite --config ../../vite.config.ts",
     "build": "vite build --config ../../vite.config.ts",
     "preview": "vite preview --config ../../vite.config.ts",
-    "test": "vitest run --config ../../vitest.workspace.ts --dir tests",
-    "test:coverage": "vitest run --coverage --config ../../vitest.workspace.ts --dir tests",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "lint": "eslint --config ../../eslint.config.mjs .",
     "typecheck": "tsc --noEmit --project ./tsconfig.json"
   },

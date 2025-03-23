@@ -7,7 +7,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    include: ['tests/**/*.test.{ts,tsx}', 'src/**/*.test.{ts,tsx}'],
+    include: ['tests/**/*.{test,spec}.{ts,tsx}', 'src/**/*.{test,spec}.{ts,tsx}'],
     exclude: [
       '**/node_modules/**',
       '**/dist/**',
@@ -19,7 +19,7 @@ export default defineConfig({
       reporter: ['text', 'json', 'html', 'lcov'],
       reportsDirectory: path.resolve(__dirname, 'coverage'),
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['**/*.test.{ts,tsx}', 'coverage/**', 'dist/**'],
+      exclude: ['**/*.{test,spec}.{ts,tsx}', 'coverage/**', 'dist/**'],
     },
     testTimeout: 30000,
   },
