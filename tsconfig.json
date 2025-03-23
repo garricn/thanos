@@ -39,7 +39,6 @@
     "apps/web/src/**/*",
     "apps/web/tests/**/*",
     "apps/web/e2e/**/*",
-    "scripts/**/*",
     "*.config.ts",
     "*.config.mjs"
   ],
@@ -48,12 +47,9 @@
     "dist",
     "coverage",
     "**/dist/**/*",
-    "**/node_modules/**/*"
+    "**/node_modules/**/*",
+    "scripts/**/*"
   ],
-  "references": [
-    { "path": "./apps/api/tsconfig.json" },
-    { "path": "./apps/web/tsconfig.json" },
-    { "path": "./scripts/tsconfig.json" }
-  ],
+  "references": [{ "path": "./apps/api/tsconfig.json" }, { "path": "./apps/web/tsconfig.json" }],
   "compileOnSave": false
 }
