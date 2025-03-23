@@ -9,7 +9,7 @@
     "preview": "vite preview --config ../../vite.config.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "lint": "eslint --config ../../eslint.config.mjs . cypress/",
+    "lint": "eslint --config ../../eslint.config.mjs --ignore-pattern 'coverage/**' . cypress/",
     "typecheck": "tsc --noEmit --project ./tsconfig.json",
     "test:e2e": "cd ../.. && cypress run"
   },
