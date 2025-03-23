@@ -42,6 +42,19 @@ export default [
       'eol-last': ['error', 'always'],
     },
   },
+  // JavaScript config files
+  {
+    files: ['**/*.config.js', 'tailwind.config.js', 'postcss.config.js'],
+    languageOptions: {
+      parser: js.parser,
+      ecmaVersion: 'latest',
+      sourceType: 'module',
+    },
+    rules: {
+      '@typescript-eslint/no-var-requires': 'off',
+      'no-undef': 'off',
+    },
+  },
   // TypeScript and extended configs
   {
     files: ['**/*.{ts,tsx,cts,mts}'],
@@ -107,7 +120,7 @@ export default [
   },
   // Config file overrides
   {
-    files: ['**/*.config.{js,ts}', '**/vite.config.{js,ts}', '**/vitest.config.{js,ts}', 'vitest.workspace.ts'],
+    files: ['**/*.config.ts', '**/vite.config.ts', '**/vitest.config.ts', 'vitest.workspace.ts'],
     rules: {
       'import/no-default-export': 'off',
     },
