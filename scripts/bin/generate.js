@@ -81,9 +81,7 @@ async function runSetupCommands(targetDir) {
 
     console.log('Setup commands completed successfully.');
   } catch (error) {
-    console.warn(
-      'Warning: Setup commands failed. You may need to run them manually.'
-    );
+    console.warn('Warning: Setup commands failed. You may need to run them manually.');
     console.error(error.message);
   }
 }
@@ -126,9 +124,7 @@ async function updateAppTitle(targetDir, projectName) {
 
 // Function to check if directory is empty or get confirmation to proceed
 async function checkDirectoryAndConfirm() {
-  const files = fs
-    .readdirSync(targetDir)
-    .filter((f) => !f.startsWith('.') && f !== 'node_modules');
+  const files = fs.readdirSync(targetDir).filter(f => !f.startsWith('.') && f !== 'node_modules');
 
   if (files.length > 0) {
     const { proceed } = await inquirer.prompt([
@@ -166,7 +162,7 @@ async function main() {
   // Copy files from thanos template to current directory
   console.log(`Copying files from template to current directory...`);
   fs.copySync(thanosDir, targetDir, {
-    filter: (src) => {
+    filter: src => {
       const relativePath = path.relative(thanosDir, src);
       return (
         !relativePath.startsWith('node_modules') &&
@@ -202,9 +198,7 @@ async function main() {
 
   // Write updated package.json
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-  console.log(
-    'Updated package.json with project name and added start:no-daemon script'
-  );
+  console.log('Updated package.json with project name and added start:no-daemon script');
 
   // Update README.md
   const readmePath = path.join(targetDir, 'README.md');
@@ -350,9 +344,7 @@ Thumbs.db
     // Run additional setup commands
     await runSetupCommands(targetDir);
   } catch (error) {
-    console.warn(
-      'Warning: Git initialization or dependency installation failed.'
-    );
+    console.warn('Warning: Git initialization or dependency installation failed.');
     console.error(error.message);
   }
 
@@ -392,7 +384,7 @@ Notes:
 `);
 }
 
-main().catch((err) => {
+main().catch(err => {
   console.error('Error:', err);
   process.exit(1);
 });

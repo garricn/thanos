@@ -2,12 +2,9 @@ import { join } from 'path';
 import glob from 'glob';
 
 // Adjusted to work from the root directory
-const createContentPaths = (baseDir) => {
+const createContentPaths = baseDir => {
   return [
-    join(
-      baseDir,
-      './apps/web/{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html}'
-    ),
+    join(baseDir, './apps/web/{src,pages,components,app}/**/*!(*.stories|*.spec).{ts,tsx,html}'),
     join(baseDir, './node_modules/@radix-ui/**/*.{js,ts,jsx,tsx}'),
     join(baseDir, './node_modules/lucide-react/**/*.{js,ts,jsx,tsx}'),
   ];

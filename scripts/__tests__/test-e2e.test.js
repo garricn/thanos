@@ -23,14 +23,12 @@ import {
 } from '../bin/test-e2e.js';
 
 // Mock path
-vi.mock('node:path', async (importOriginal) => {
+vi.mock('node:path', async importOriginal => {
   const actual = await importOriginal();
   return {
     ...actual,
     resolve: vi.fn().mockImplementation((...args) => args.join('/')),
-    dirname: vi
-      .fn()
-      .mockImplementation((path) => path.split('/').slice(0, -1).join('/')),
+    dirname: vi.fn().mockImplementation(path => path.split('/').slice(0, -1).join('/')),
   };
 });
 
@@ -80,7 +78,7 @@ describe('test-e2e', () => {
     mockSpawn.mockReturnValue(mockChildProcess);
 
     // Mock setTimeout to execute immediately
-    vi.spyOn(global, 'setTimeout').mockImplementation((cb) => cb());
+    vi.spyOn(global, 'setTimeout').mockImplementation(cb => cb());
 
     // Make sure other mocks are properly reset
     mockConsoleLog.mockClear();
@@ -127,14 +125,11 @@ describe('test-e2e', () => {
       killProcessesOnPorts([4200, 3000], 'darwin');
 
       // Assert
-      expect(mockExecSync).toHaveBeenCalledWith(
-        'lsof -ti:4200,3000 | xargs kill -9',
-        { stdio: 'pipe' }
-      );
+      expect(mockExecSync).toHaveBeenCalledWith('lsof -ti:4200,3000 | xargs kill -9', {
+        stdio: 'pipe',
+      });
       expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining(
-          'Cleaning up any existing processes on ports 4200,3000'
-        )
+        expect.stringContaining('Cleaning up any existing processes on ports 4200,3000')
       );
     });
 
@@ -198,9 +193,7 @@ describe('test-e2e', () => {
         env: expect.any(Object),
       });
       expect(result).toBeDefined();
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Starting Web server')
-      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('Starting Web server'));
     });
 
     it('should handle server start errors', () => {
@@ -211,9 +204,7 @@ describe('test-e2e', () => {
       startServer('npm run start:web', 'Web');
 
       // Find the error handler and call it
-      const errorHandler = mockChild.on.mock.calls.find(
-        (call) => call[0] === 'error'
-      )[1];
+      const errorHandler = mockChild.on.mock.calls.find(call => call[0] === 'error')[1];
 
       // This should not throw an exception
       expect(() => {
@@ -223,9 +214,7 @@ describe('test-e2e', () => {
 
     it('should capture server output', () => {
       // Arrange - create write spy for stdout to track what the implementation writes
-      const stdoutWriteSpy = vi
-        .spyOn(process.stdout, 'write')
-        .mockImplementation(() => {});
+      const stdoutWriteSpy = vi.spyOn(process.stdout, 'write').mockImplementation(() => {});
 
       // Create a custom child process for this test
       const customChild = {
@@ -257,9 +246,7 @@ describe('test-e2e', () => {
 
       // Assert - need to check what was written to stdout since the implementation
       // writes directly to process.stdout rather than using console.log
-      expect(stdoutWriteSpy).toHaveBeenCalledWith(
-        '[Web] Server running on port 4200'
-      );
+      expect(stdoutWriteSpy).toHaveBeenCalledWith('[Web] Server running on port 4200');
 
       // Clean up spy
       stdoutWriteSpy.mockRestore();
@@ -267,9 +254,7 @@ describe('test-e2e', () => {
 
     it('should capture stderr output', () => {
       // Arrange - create write spy for stderr to track what the implementation writes
-      const stderrWriteSpy = vi
-        .spyOn(process.stderr, 'write')
-        .mockImplementation(() => {});
+      const stderrWriteSpy = vi.spyOn(process.stderr, 'write').mockImplementation(() => {});
 
       // Create a custom child process for this test
       const customChild = {
@@ -300,9 +285,7 @@ describe('test-e2e', () => {
       customChild._errorCallback('Error starting server');
 
       // Assert
-      expect(stderrWriteSpy).toHaveBeenCalledWith(
-        '[Web] Error starting server'
-      );
+      expect(stderrWriteSpy).toHaveBeenCalledWith('[Web] Error starting server');
 
       // Clean up spy
       stderrWriteSpy.mockRestore();
@@ -325,9 +308,7 @@ describe('test-e2e', () => {
       cleanup();
 
       // Assert
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Shutting down servers')
-      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('Shutting down servers'));
       expect(mockExecSync).toHaveBeenCalledWith(
         expect.stringContaining('lsof -ti:'),
         expect.any(Object)
@@ -377,9 +358,7 @@ describe('test-e2e', () => {
       });
 
       // Check that success message was logged
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('All E2E tests passed')
-      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('All E2E tests passed'));
 
       // Verify exit with success code
       expect(mockExit).toHaveBeenCalledWith(0);

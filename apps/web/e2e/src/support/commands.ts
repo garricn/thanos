@@ -10,6 +10,9 @@
 // https://on.cypress.io/custom-commands
 // ***********************************************
 
+// Ensure this file is treated as a module
+export {};
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
@@ -22,7 +25,10 @@ declare global {
 
 // -- This is a parent command --
 Cypress.Commands.add('login', (email, password) => {
-  console.log('Custom command example: Login', email, password);
+  cy.visit('/login');
+  cy.get('[data-testid="email"]').type(email);
+  cy.get('[data-testid="password"]').type(password);
+  cy.get('[data-testid="submit"]').click();
 });
 //
 // -- This is a child command --

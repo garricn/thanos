@@ -35,9 +35,7 @@ export function getRequiredNodeVersion() {
   try {
     return readFileSync('.nvmrc', 'utf-8').trim();
   } catch (error) {
-    console.error(
-      `${colors.red}Error: Could not read .nvmrc file.${colors.reset}`
-    );
+    console.error(`${colors.red}Error: Could not read .nvmrc file.${colors.reset}`);
     process.exit(1);
   }
 }
@@ -69,18 +67,12 @@ export function getCurrentNodeVersion(execSync) {
  * @param {boolean} force Whether to bypass version check
  * @returns {boolean} True if versions match or force is true
  */
-export function checkNodeVersionMatch(
-  requiredVersion,
-  currentVersion,
-  force = false
-) {
+export function checkNodeVersionMatch(requiredVersion, currentVersion, force = false) {
   if (currentVersion !== requiredVersion && !force) {
     console.error(
       `${colors.red}Error: This project requires Node.js version ${requiredVersion}, but you are using v${currentVersion}.${colors.reset}`
     );
-    console.log(
-      `Please run: ${colors.yellow}npm run fix-node-version${colors.reset}`
-    );
+    console.log(`Please run: ${colors.yellow}npm run fix-node-version${colors.reset}`);
     console.log(
       `Or use ${colors.yellow}--force${colors.reset} to bypass this check (not recommended).`
     );
@@ -94,9 +86,7 @@ export function checkNodeVersionMatch(
     return false;
   }
 
-  console.log(
-    `${colors.green}✓ Using correct Node.js version: v${currentVersion}${colors.reset}`
-  );
+  console.log(`${colors.green}✓ Using correct Node.js version: v${currentVersion}${colors.reset}`);
   return true;
 }
 
@@ -121,12 +111,8 @@ export function cleanDeep(args = [], execSync = defaultExecSync) {
       console.log();
       console.log('Options:');
       console.log('  --help      Show this help message');
-      console.log(
-        '  --dry-run   Show what would be done without making any changes'
-      );
-      console.log(
-        '  --force     Bypass the Node.js version check (not recommended)'
-      );
+      console.log('  --dry-run   Show what would be done without making any changes');
+      console.log('  --force     Bypass the Node.js version check (not recommended)');
       console.log();
       console.log('Example:');
       console.log('  npm run clean:deep -- --dry-run');
@@ -167,9 +153,7 @@ export function cleanDeep(args = [], execSync = defaultExecSync) {
       execSync,
       'rm -rf node_modules package-lock.json dist tmp coverage .nyc_output ./*.log logs'
     );
-    console.log(
-      `${colors.green}✓ Removed generated files and directories${colors.reset}`
-    );
+    console.log(`${colors.green}✓ Removed generated files and directories${colors.reset}`);
   }
 
   // Step 2: Clean npm cache
@@ -182,9 +166,7 @@ export function cleanDeep(args = [], execSync = defaultExecSync) {
   }
 
   // Step 3: Clear Jest cache
-  console.log(
-    `\n${colors.yellow}Step 3: Clearing Jest cache...${colors.reset}`
-  );
+  console.log(`\n${colors.yellow}Step 3: Clearing Jest cache...${colors.reset}`);
   if (dryRun) {
     console.log('Would run: npx jest --clearCache');
   } else {
@@ -200,17 +182,13 @@ export function cleanDeep(args = [], execSync = defaultExecSync) {
   }
 
   // Step 4: Display Node.js and npm versions
-  console.log(
-    `\n${colors.yellow}Step 4: Checking environment...${colors.reset}`
-  );
+  console.log(`\n${colors.yellow}Step 4: Checking environment...${colors.reset}`);
   console.log(
     `Using Node.js v${currentNodeVersion} and npm ${exec(execSync, 'npm -v', { stdio: 'pipe' }).trim()}`
   );
 
   // Step 5: Install dependencies
-  console.log(
-    `\n${colors.yellow}Step 5: Installing dependencies...${colors.reset}`
-  );
+  console.log(`\n${colors.yellow}Step 5: Installing dependencies...${colors.reset}`);
   if (dryRun) {
     console.log('Would run: npm install');
   } else {
@@ -229,9 +207,7 @@ export function cleanDeep(args = [], execSync = defaultExecSync) {
  * @param {Function} execSync Function to execute commands
  */
 export function checkNodeVersion(execSync = defaultExecSync) {
-  console.log(
-    `${colors.yellow}Checking Node.js version consistency...${colors.reset}`
-  );
+  console.log(`${colors.yellow}Checking Node.js version consistency...${colors.reset}`);
 
   // Get required Node.js version from .nvmrc
   const requiredVersion = getRequiredNodeVersion();
@@ -257,9 +233,7 @@ export function checkNodeVersion(execSync = defaultExecSync) {
       );
       process.exit(1);
     }
-    console.log(
-      `${colors.green}✅ package.json Node.js version matches .nvmrc${colors.reset}`
-    );
+    console.log(`${colors.green}✅ package.json Node.js version matches .nvmrc${colors.reset}`);
   } catch (error) {
     console.error(
       `${colors.red}❌ Error: Could not read package.json: ${error.message}${colors.reset}`
@@ -268,9 +242,7 @@ export function checkNodeVersion(execSync = defaultExecSync) {
   }
 
   // Check GitHub Actions workflow files
-  console.log(
-    `\n${colors.yellow}Checking GitHub Actions workflows...${colors.reset}`
-  );
+  console.log(`\n${colors.yellow}Checking GitHub Actions workflows...${colors.reset}`);
   const workflowDir = '.github/workflows';
 
   if (existsSync(workflowDir)) {
@@ -279,10 +251,7 @@ export function checkNodeVersion(execSync = defaultExecSync) {
     for (const file of workflowFiles) {
       const filePath = path.join(workflowDir, file);
 
-      if (
-        existsSync(filePath) &&
-        (file.endsWith('.yml') || file.endsWith('.yaml'))
-      ) {
+      if (existsSync(filePath) && (file.endsWith('.yml') || file.endsWith('.yaml'))) {
         const content = readFileSync(filePath, 'utf-8');
         if (content.includes('node-version:')) {
           // Simple regex to extract Node.js version from workflow file
@@ -298,9 +267,7 @@ export function checkNodeVersion(execSync = defaultExecSync) {
               );
               process.exit(1);
             }
-            console.log(
-              `${colors.green}✅ ${file} Node.js version matches .nvmrc${colors.reset}`
-            );
+            console.log(`${colors.green}✅ ${file} Node.js version matches .nvmrc${colors.reset}`);
           } else {
             console.log(
               `${colors.yellow}ℹ️ ${file} contains node-version but couldn't extract version number. Please check manually.${colors.reset}`
@@ -314,9 +281,7 @@ export function checkNodeVersion(execSync = defaultExecSync) {
       }
     }
   } else {
-    console.log(
-      `${colors.yellow}ℹ️ No GitHub Actions workflow directory found.${colors.reset}`
-    );
+    console.log(`${colors.yellow}ℹ️ No GitHub Actions workflow directory found.${colors.reset}`);
   }
 
   console.log(

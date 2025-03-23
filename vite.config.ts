@@ -8,7 +8,7 @@ import { copyFileSync, existsSync } from 'fs';
 const copyMdPlugin = (patterns = ['*.md']) => ({
   name: 'copy-md-plugin',
   closeBundle() {
-    patterns.forEach((pattern) => {
+    patterns.forEach(pattern => {
       if (pattern === '*.md') {
         try {
           const readmePath = resolve(__dirname, 'README.md');

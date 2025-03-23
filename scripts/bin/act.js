@@ -80,9 +80,7 @@ export function ensureArtifactsDir(rootDir, deps = {}) {
 
   if (!fsModule.existsSync(artifactsDir)) {
     fsModule.mkdirSync(artifactsDir, { recursive: true });
-    console.log(
-      `${colors.green}Created artifacts directory: ${artifactsDir}${colors.reset}`
-    );
+    console.log(`${colors.green}Created artifacts directory: ${artifactsDir}${colors.reset}`);
   }
 
   return artifactsDir;
@@ -96,12 +94,8 @@ export function ensureArtifactsDir(rootDir, deps = {}) {
 export function createTempDir(deps = {}) {
   const { fs: fsModule = fs, os: osModule = os } = deps;
 
-  const tempDir = fsModule.mkdtempSync(
-    path.join(osModule.tmpdir(), 'act-workspace-')
-  );
-  console.log(
-    `${colors.green}Creating temporary workspace in ${tempDir}${colors.reset}`
-  );
+  const tempDir = fsModule.mkdtempSync(path.join(osModule.tmpdir(), 'act-workspace-'));
+  console.log(`${colors.green}Creating temporary workspace in ${tempDir}${colors.reset}`);
 
   return tempDir;
 }
@@ -113,10 +107,7 @@ export function createTempDir(deps = {}) {
  * @param {Object} deps Dependencies (for testing)
  */
 export function copyFilesToTempDir(rootDir, tempDir, deps = {}) {
-  const {
-    execSync: execSyncFn = execSync,
-    hasCommand: hasCommandFn = hasCommand,
-  } = deps;
+  const { execSync: execSyncFn = execSync, hasCommand: hasCommandFn = hasCommand } = deps;
 
   console.log(
     `${colors.green}Running act from temporary workspace (excluding node_modules)${colors.reset}`
@@ -131,10 +122,9 @@ export function copyFilesToTempDir(rootDir, tempDir, deps = {}) {
         { stdio: 'inherit' }
       );
     } else {
-      execSyncFn(
-        `xcopy "${rootDir}" "${tempDir}" /E /I /Y /EXCLUDE:node_modules`,
-        { stdio: 'inherit' }
-      );
+      execSyncFn(`xcopy "${rootDir}" "${tempDir}" /E /I /Y /EXCLUDE:node_modules`, {
+        stdio: 'inherit',
+      });
     }
   } else {
     // Unix-like - use rsync
@@ -206,9 +196,7 @@ export default async function runAct(args = process.argv.slice(2), deps = {}) {
 
     // Store current Node.js version
     const currentNodeVersion = execCmd('node -v', { stdio: 'pipe' }).trim();
-    console.log(
-      `${colors.blue}Current Node.js version: ${currentNodeVersion}${colors.reset}`
-    );
+    console.log(`${colors.blue}Current Node.js version: ${currentNodeVersion}${colors.reset}`);
 
     // Create artifacts directory if it doesn't exist
     ensureArtifactsDir(rootDir, { fs: fsModule });
@@ -228,17 +216,13 @@ export default async function runAct(args = process.argv.slice(2), deps = {}) {
     // Build the act command
     const cmd = buildActCommand(tokens, tempDir, args);
     const cmdForDisplay = buildActCommand(
-      Object.fromEntries(
-        Object.entries(tokens).map(([key, value]) => [key, value ? '***' : ''])
-      ),
+      Object.fromEntries(Object.entries(tokens).map(([key, value]) => [key, value ? '***' : ''])),
       tempDir,
       args
     );
 
     // Print command (without tokens)
-    console.log(
-      `${colors.blue}Command: ${cmdForDisplay.join(' ')}${colors.reset}`
-    );
+    console.log(`${colors.blue}Command: ${cmdForDisplay.join(' ')}${colors.reset}`);
 
     // Run act with all the arguments
     const result = await new Promise((resolve, reject) => {
@@ -247,29 +231,23 @@ export default async function runAct(args = process.argv.slice(2), deps = {}) {
         shell: true,
       });
 
-      actProcess.on('error', (error) => {
-        console.error(
-          `${colors.red}Failed to start act: ${error.message}${colors.reset}`
-        );
+      actProcess.on('error', error => {
+        console.error(`${colors.red}Failed to start act: ${error.message}${colors.reset}`);
         reject(error);
       });
 
-      actProcess.on('close', (code) => {
+      actProcess.on('close', code => {
         if (code === 0) {
           resolve(true);
         } else {
-          console.error(
-            `${colors.red}act exited with code ${code}${colors.reset}`
-          );
+          console.error(`${colors.red}act exited with code ${code}${colors.reset}`);
           resolve(false);
         }
       });
     });
 
     // Clean up temporary directory
-    console.log(
-      `${colors.green}Cleaning up temporary workspace${colors.reset}`
-    );
+    console.log(`${colors.green}Cleaning up temporary workspace${colors.reset}`);
     fsModule.rmSync(tempDir, { recursive: true, force: true });
 
     // Restore Node.js version if it changed
@@ -298,9 +276,7 @@ export default async function runAct(args = process.argv.slice(2), deps = {}) {
 
     return result;
   } catch (error) {
-    console.error(
-      `${colors.red}Error running act: ${error.message}${colors.reset}`
-    );
+    console.error(`${colors.red}Error running act: ${error.message}${colors.reset}`);
     return false;
   }
 }

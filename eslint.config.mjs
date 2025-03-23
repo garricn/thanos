@@ -1,21 +1,11 @@
 import globals from 'globals';
 import js from '@eslint/js';
-import { FlatCompat } from '@eslint/eslintrc';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import prettierPlugin from 'eslint-config-prettier';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
 
 export default [
   // Base JavaScript rules
@@ -28,28 +18,23 @@ export default [
       '**/*.json',
       '**/*.md',
       '**/*.css',
-      '**/jest.config.ts',
       '**/babel.config.js',
       '**/tailwind.config.js',
       '**/postcss.config.js',
-      '**/vite.config.ts',
-      '**/vitest.config.ts',
-      '**/cypress.config.ts',
       '**/build.js',
-      '**/scripts/**',
       '**/public/**',
       '**/temp/**',
       '**/tmp/**',
       '**/.github/**',
-      '**/e2e/src/*.{js,jsx}',
-      '**/e2e/src/**/*.{js,jsx}',
-      '**/tests/*.{js,jsx}',
-      '**/tests/**/*.{js,jsx}',
     ],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
-      globals: { ...globals.node, ...globals.browser },
+      globals: {
+        ...globals.node,
+        ...globals.browser,
+        ...globals.jest, // For test globals like describe, it, expect
+      },
     },
     rules: {
       ...js.configs.recommended.rules,
@@ -64,24 +49,25 @@ export default [
       parser: tsParser,
       parserOptions: {
         ecmaFeatures: { jsx: true },
-        project: './tsconfig.json',
+        project: ['./tsconfig.json', './apps/*/tsconfig.json', './apps/*/e2e/tsconfig.json'],
       },
     },
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+      react: reactPlugin,
+      'react-hooks': reactHooksPlugin,
+      'jsx-a11y': jsxA11yPlugin,
+    },
     rules: {
-      ...compat.extends(
-        'plugin:@typescript-eslint/recommended',
-        'plugin:react/recommended',
-        'plugin:react-hooks/recommended',
-        'plugin:jsx-a11y/recommended',
-        'prettier' // Ensure Prettier is last
-      )[0].rules,
+      ...tsPlugin.configs.recommended.rules,
+      ...reactPlugin.configs.recommended.rules,
+      ...reactHooksPlugin.configs.recommended.rules,
+      ...jsxA11yPlugin.configs.recommended.rules,
+      ...prettierPlugin.rules,
       'react/react-in-jsx-scope': 'off', // Not needed with React 17+
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        { argsIgnorePattern: '^_' },
-      ],
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
     settings: {
       react: { version: 'detect' },
@@ -93,6 +79,32 @@ export default [
     rules: {
       '@typescript-eslint/no-var-requires': 'off',
       'no-undef': 'off', // For CommonJS modules
+    },
+  },
+  // Test file overrides
+  {
+    files: ['**/*.{spec,test}.{ts,tsx}', '**/e2e/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.jest, // For test globals
+        cy: true, // For Cypress
+        Cypress: true,
+        expect: true,
+        vi: true, // For Vitest
+        describe: true,
+        it: true,
+        beforeEach: true,
+        afterEach: true,
+        beforeAll: true,
+        afterAll: true,
+      },
+    },
+  },
+  // Config file overrides
+  {
+    files: ['**/*.config.{js,ts}', '**/vite.config.{js,ts}', '**/vitest.config.{js,ts}'],
+    rules: {
+      'import/no-default-export': 'off',
     },
   },
   // Sub-project specific overrides (optional)

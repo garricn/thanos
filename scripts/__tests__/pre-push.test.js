@@ -45,7 +45,7 @@ describe('pre-push', () => {
     // Act
     // We need to catch the unhandled rejection that will happen in pre-push.js
     // This is normal behavior in the test since we're testing error handling
-    const unhandledRejection = (event) => {
+    const unhandledRejection = event => {
       event.preventDefault();
     };
 
@@ -56,7 +56,7 @@ describe('pre-push', () => {
 
       // Allow time for the promise rejection to be processed
       await vi.waitFor(() => {
-        return mockExit.mock.calls.some((call) => call[0] === 1);
+        return mockExit.mock.calls.some(call => call[0] === 1);
       });
 
       // Assert

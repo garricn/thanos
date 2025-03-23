@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "rootDir": ".", // Adjusted from "../.." to root
+    "rootDir": ".",
     "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
+    "declaration": true,
+    "moduleResolution": "bundler",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "importHelpers": true,
@@ -12,24 +12,25 @@
     "lib": ["es2022", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "baseUrl": ".", // Adjusted from "../.." to root
+    "baseUrl": ".",
     "paths": {
-      "@thanos/api/*": ["apps/api/src/*"], // Updated to include /src
-      "@thanos/web/*": ["apps/web/src/*"], // Updated to include /src
-      "@thanos/scripts/*": ["scripts/*"] // Added for scripts
+      "@thanos/api/*": ["apps/api/src/*"],
+      "@thanos/web/*": ["apps/web/src/*"],
+      "@thanos/scripts/*": ["scripts/*"]
     },
     "jsx": "react-jsx",
     "allowJs": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
-    "types": ["node", "vitest/globals"], // Added vitest/globals for test globals
-    "typeRoots": ["./node_modules/@types", "./types"], // Adjusted from "../../"
-    "allowImportingTsExtensions": true,
-    "noEmit": true,
+    "types": ["node"],
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "emitDeclarationOnly": true,
+    "composite": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "isolatedModules": true
+    "isolatedModules": true,
+    "allowImportingTsExtensions": true
   },
   "include": [
     "apps/api/src/**/*",

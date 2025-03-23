@@ -57,9 +57,7 @@ vi.mock('node:fs', () => {
 vi.mock('node:path', () => {
   const pathMock = {
     resolve: vi.fn().mockImplementation((...args) => args.join('/')),
-    dirname: vi
-      .fn()
-      .mockImplementation((path) => path.split('/').slice(0, -1).join('/')),
+    dirname: vi.fn().mockImplementation(path => path.split('/').slice(0, -1).join('/')),
     join: vi.fn().mockImplementation((...args) => args.join('/')),
   };
   return {
@@ -69,9 +67,7 @@ vi.mock('node:path', () => {
 });
 
 vi.mock('node:url', () => ({
-  fileURLToPath: vi
-    .fn()
-    .mockImplementation((url) => url.replace('file://', '')),
+  fileURLToPath: vi.fn().mockImplementation(url => url.replace('file://', '')),
 }));
 
 vi.mock('wait-on', () => ({
@@ -79,12 +75,8 @@ vi.mock('wait-on', () => ({
 }));
 
 // Mock console methods
-export const mockConsoleLog = vi
-  .spyOn(console, 'log')
-  .mockImplementation(() => {});
-export const mockConsoleError = vi
-  .spyOn(console, 'error')
-  .mockImplementation(() => {});
+export const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
+export const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 // Mock process.exit
 export const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {});
@@ -97,20 +89,20 @@ export function setupMockDefaults() {
   vi.clearAllMocks();
 
   // Setup execSync defaults
-  mockExecSync.mockImplementation((command) => {
+  mockExecSync.mockImplementation(command => {
     if (command === 'node -v') return 'v20.0.0';
     if (command === 'npm -v') return '9.0.0';
     return '';
   });
 
   // Setup readFileSync defaults
-  mockReadFileSync.mockImplementation((path) => {
+  mockReadFileSync.mockImplementation(path => {
     if (path === '.nvmrc') return '20.0.0\n';
     return '';
   });
 
   // Setup existsSync defaults
-  mockExistsSync.mockImplementation((path) => {
+  mockExistsSync.mockImplementation(path => {
     if (path === '.nvmrc') return true;
     if (path === '/home/test/.nvm/nvm.sh') return true;
     if (path.includes('/coverage/')) return true;
@@ -254,12 +246,7 @@ export function createBasicMockState({
 }
 
 // Helper for command execution states
-export function createCommandState({
-  command,
-  output = '',
-  error = null,
-  exitCode = 0,
-} = {}) {
+export function createCommandState({ command, output = '', error = null, exitCode = 0 } = {}) {
   return {
     command,
     output,
@@ -270,28 +257,19 @@ export function createCommandState({
 
 // Common assertion patterns
 export function expectCommandExecuted(mockExec, command, options = {}) {
-  expect(mockExec).toHaveBeenCalledWith(
-    command,
-    expect.objectContaining(options)
-  );
+  expect(mockExec).toHaveBeenCalledWith(command, expect.objectContaining(options));
 }
 
 export function expectSuccessMessage(mockConsole, message) {
-  expect(mockConsole).toHaveBeenCalledWith(
-    expect.stringContaining(`✓ ${message}`)
-  );
+  expect(mockConsole).toHaveBeenCalledWith(expect.stringContaining(`✓ ${message}`));
 }
 
 export function expectErrorMessage(mockConsole, message) {
-  expect(mockConsole).toHaveBeenCalledWith(
-    expect.stringContaining(`Error: ${message}`)
-  );
+  expect(mockConsole).toHaveBeenCalledWith(expect.stringContaining(`Error: ${message}`));
 }
 
 export function expectWarningMessage(mockConsole, message) {
-  expect(mockConsole).toHaveBeenCalledWith(
-    expect.stringContaining(`⚠️ ${message}`)
-  );
+  expect(mockConsole).toHaveBeenCalledWith(expect.stringContaining(`⚠️ ${message}`));
 }
 
 // Setup and teardown helpers
@@ -303,7 +281,7 @@ export function setupTestEnvironment() {
   };
 
   beforeEach(() => {
-    Object.values(mocks).forEach((mock) => mock.mockClear());
+    Object.values(mocks).forEach(mock => mock.mockClear());
   });
 
   return mocks;

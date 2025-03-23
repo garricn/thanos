@@ -65,7 +65,7 @@ Here's an example of adding a new behavioral test:
 describe('getCurrentNodeVersion', () => {
   it('returns the current Node.js version', () => {
     // Arrange
-    mockExecSync.mockImplementation((command) => {
+    mockExecSync.mockImplementation(command => {
       if (command === 'node -v') {
         return 'v18.15.0';
       }

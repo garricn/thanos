@@ -24,7 +24,7 @@ export function ensureTestDirectories(type) {
     dirs.push('coverage/web/snapshot');
   }
 
-  dirs.forEach((dir) => {
+  dirs.forEach(dir => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
@@ -35,7 +35,7 @@ export function ensureTestDirectories(type) {
 export function ensureCombineDirectories() {
   const dirs = ['coverage/combined'];
 
-  dirs.forEach((dir) => {
+  dirs.forEach(dir => {
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
@@ -52,18 +52,9 @@ export function cleanCoverage() {
 export function moveSonarReports(reportType) {
   const apiReportSource = path.join(projectRoot, 'apps/api/test-report.xml');
   const webReportSource = path.join(projectRoot, 'apps/web/test-report.xml');
-  const apiReportDest = path.join(
-    projectRoot,
-    'coverage/api/unit/sonar-report.xml'
-  );
-  const webUnitReportDest = path.join(
-    projectRoot,
-    'coverage/web/unit/sonar-report.xml'
-  );
-  const webSnapshotReportDest = path.join(
-    projectRoot,
-    'coverage/web/snapshot/sonar-report.xml'
-  );
+  const apiReportDest = path.join(projectRoot, 'coverage/api/unit/sonar-report.xml');
+  const webUnitReportDest = path.join(projectRoot, 'coverage/web/unit/sonar-report.xml');
+  const webSnapshotReportDest = path.join(projectRoot, 'coverage/web/snapshot/sonar-report.xml');
 
   function moveFile(source, destination) {
     if (fs.existsSync(source)) {
@@ -95,9 +86,7 @@ export function moveSonarReports(reportType) {
     case 'web-snapshot':
       return moveFile(webReportSource, webSnapshotReportDest);
     default:
-      console.error(
-        chalk.red('❌ Invalid report type. Use: api, web-unit, or web-snapshot')
-      );
+      console.error(chalk.red('❌ Invalid report type. Use: api, web-unit, or web-snapshot'));
       return false;
   }
 }
@@ -146,11 +135,8 @@ function copyRecursiveSync(src, dest) {
     if (!fs.existsSync(dest)) {
       fs.mkdirSync(dest, { recursive: true });
     }
-    fs.readdirSync(src).forEach((childItemName) => {
-      copyRecursiveSync(
-        path.join(src, childItemName),
-        path.join(dest, childItemName)
-      );
+    fs.readdirSync(src).forEach(childItemName => {
+      copyRecursiveSync(path.join(src, childItemName), path.join(dest, childItemName));
     });
   } else {
     fs.copyFileSync(src, dest);
@@ -161,11 +147,7 @@ function copyRecursiveSync(src, dest) {
 export function combineCoverage() {
   console.log(chalk.blue('🔄 Combining coverage reports...'));
 
-  const covDirs = [
-    'coverage/api/unit',
-    'coverage/web/unit',
-    'coverage/web/snapshot',
-  ];
+  const covDirs = ['coverage/api/unit', 'coverage/web/unit', 'coverage/web/snapshot'];
 
   // Combine LCOV files
   let combinedLcov = '';
@@ -192,8 +174,8 @@ export function combineCoverage() {
 
   // Combine Sonar XML reports
   const inputFiles = covDirs
-    .map((dir) => path.join(dir, 'sonar-report.xml'))
-    .filter((file) => fs.existsSync(file));
+    .map(dir => path.join(dir, 'sonar-report.xml'))
+    .filter(file => fs.existsSync(file));
 
   if (inputFiles.length > 0) {
     const outputFile = path.join('coverage/combined/sonar-report.xml');
@@ -205,7 +187,7 @@ export function combineCoverage() {
     const baseRoot = baseDoc.documentElement;
 
     // Process additional files
-    inputFiles.slice(1).forEach((file) => {
+    inputFiles.slice(1).forEach(file => {
       const content = fs.readFileSync(file, 'utf8');
       const doc = parser.parseFromString(content, 'text/xml');
       const root = doc.documentElement;
@@ -282,11 +264,7 @@ export function generateReport(detailed = false) {
           );
         }
       } else {
-        console.log(
-          chalk.yellow(
-            'No coverage data found. Please run tests with coverage first.'
-          )
-        );
+        console.log(chalk.yellow('No coverage data found. Please run tests with coverage first.'));
       }
     } catch (error) {
       console.error(chalk.red('Error generating coverage report:'), error);
@@ -309,7 +287,7 @@ export function openReports() {
     'coverage/web/unit/lcov-report/index.html',
     'coverage/web/snapshot/lcov-report/index.html',
     'coverage/combined/lcov-report/index.html',
-  ].filter((file) => fs.existsSync(file));
+  ].filter(file => fs.existsSync(file));
 
   if (reports.length > 0) {
     execSync(`open ${reports.join(' ')}`, { stdio: 'inherit' });
@@ -321,9 +299,7 @@ export function openReports() {
 // Save coverage trend
 export function saveCoverageTrend() {
   const trendFile = 'coverage/trend.json';
-  const trend = fs.existsSync(trendFile)
-    ? JSON.parse(fs.readFileSync(trendFile, 'utf8'))
-    : [];
+  const trend = fs.existsSync(trendFile) ? JSON.parse(fs.readFileSync(trendFile, 'utf8')) : [];
 
   // Extract coverage from lcov.info
   const lcovPath = 'coverage/combined/lcov.info';
@@ -333,10 +309,7 @@ export function saveCoverageTrend() {
     const linesCovered = lcov.match(/LH:(\d+)/g);
 
     if (lines && linesCovered) {
-      const totalLines = lines.reduce(
-        (sum, line) => sum + parseInt(line.split(':')[1]),
-        0
-      );
+      const totalLines = lines.reduce((sum, line) => sum + parseInt(line.split(':')[1]), 0);
       const totalCovered = linesCovered.reduce(
         (sum, line) => sum + parseInt(line.split(':')[1]),
         0
@@ -377,8 +350,7 @@ export async function main() {
     .option('detailed', {
       type: 'boolean',
       default: false,
-      description:
-        'Show detailed coverage report with line-by-line information',
+      description: 'Show detailed coverage report with line-by-line information',
     })
     .option('clean', {
       type: 'boolean',
@@ -426,9 +398,7 @@ export async function main() {
       cleanCoverage();
       // Only exit early if this is the clean command
       if (isCleanCommand) {
-        console.log(
-          chalk.green('✨ Coverage directories cleaned successfully!')
-        );
+        console.log(chalk.green('✨ Coverage directories cleaned successfully!'));
         return;
       }
     }

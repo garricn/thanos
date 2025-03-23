@@ -1,10 +1,10 @@
-import { execSync as defaultExecSync } from "child_process";
+import { execSync as defaultExecSync } from 'child_process';
 
 const colors = {
-  red: "\x1b[31m",
-  green: "\x1b[32m",
-  yellow: "\x1b[33m",
-  reset: "\x1b[0m",
+  red: '\x1b[31m',
+  green: '\x1b[32m',
+  yellow: '\x1b[33m',
+  reset: '\x1b[0m',
 };
 
 /**
@@ -16,8 +16,8 @@ const colors = {
  */
 function exec(execSync, command, options = {}) {
   const defaultOptions = {
-    stdio: "inherit",
-    encoding: "utf-8",
+    stdio: 'inherit',
+    encoding: 'utf-8',
     ...options,
   };
 
@@ -31,57 +31,36 @@ function exec(execSync, command, options = {}) {
  */
 function getStagedTypeScriptFiles(execSync) {
   try {
-    return execSync(
-      "git diff --cached --name-only --diff-filter=ACMR | grep -E \\.tsx?$",
-      { stdio: "pipe", encoding: "utf-8" },
-    ).trim();
+    return execSync('git diff --cached --name-only --diff-filter=ACMR | grep -E \\.tsx?$', {
+      stdio: 'pipe',
+      encoding: 'utf-8',
+    }).trim();
   } catch (error) {
     // grep returns 1 if no matches are found
-    return "";
+    return '';
   }
 }
 
 /**
- * Runs pre-commit checks including lint-staged and type checking
+ * Runs pre-commit checks including formatting, linting, and type checking
  * @param {Function} execSync Function to execute commands (optional, defaults to child_process.execSync)
  */
 export async function runPreCommitChecks(execSync = defaultExecSync) {
   console.log(`${colors.yellow}Running pre-commit checks...${colors.reset}`);
 
-  // Run lint-staged
-  console.log(`${colors.yellow}\nRunning lint-staged...${colors.reset}`);
-  exec(execSync, "npx lint-staged");
+  // Run full format check
+  console.log(`${colors.yellow}\nRunning format check...${colors.reset}`);
+  exec(execSync, 'npm run format');
 
-  // Get staged TypeScript files
-  const stagedTsFiles = getStagedTypeScriptFiles(execSync);
+  // Run full lint check
+  console.log(`${colors.yellow}\nRunning lint check...${colors.reset}`);
+  exec(execSync, 'npm run lint');
 
-  // Type check staged files if any
-  if (stagedTsFiles) {
-    console.log(
-      `${colors.yellow}\nType checking staged TypeScript files...${colors.reset}`,
-    );
-    // Create a temporary tsconfig that extends the base config but only includes staged files
-    const tempTsConfig = {
-      extends: "./tsconfig.json",
-      include: ["**/*.ts", "**/*.tsx"], // Include all TypeScript files to handle imports
-      exclude: ["node_modules", "dist", "coverage"],
-    };
-    const tempTsConfigPath = "./tsconfig.staged.json";
-    exec(
-      execSync,
-      `echo '${JSON.stringify(tempTsConfig)}' > ${tempTsConfigPath}`,
-    );
-    try {
-      exec(execSync, `npx tsc --noEmit --project ${tempTsConfigPath}`);
-    } finally {
-      // Clean up the temporary config
-      exec(execSync, `rm ${tempTsConfigPath}`);
-    }
-  }
+  // Run full type check
+  console.log(`${colors.yellow}\nRunning type check...${colors.reset}`);
+  exec(execSync, 'npm run type-check');
 
-  console.log(
-    `${colors.green}\n✅ All pre-commit checks passed${colors.reset}`,
-  );
+  console.log(`${colors.green}\n✅ All pre-commit checks passed${colors.reset}`);
 }
 
 /**
@@ -94,23 +73,21 @@ export async function runPrePushChecks(execSync = defaultExecSync) {
   try {
     // Check Node.js version
     console.log(`${colors.yellow}\nChecking Node.js version...${colors.reset}`);
-    exec(execSync, "npm run node:version");
+    exec(execSync, 'npm run node:version');
 
     // Run type checking
     console.log(`${colors.yellow}\nRunning type check...${colors.reset}`);
-    exec(execSync, "npm run type-check");
+    exec(execSync, 'npm run type-check');
 
     // Run linting
     console.log(`${colors.yellow}\nRunning linters...${colors.reset}`);
-    exec(execSync, "npm run lint");
+    exec(execSync, 'npm run lint');
 
     // Run unit tests
     console.log(`${colors.yellow}\nRunning unit tests...${colors.reset}`);
-    exec(execSync, "npm run test:unit");
+    exec(execSync, 'npm run test:unit');
 
-    console.log(
-      `${colors.green}\n✅ All pre-push checks passed${colors.reset}`,
-    );
+    console.log(`${colors.green}\n✅ All pre-push checks passed${colors.reset}`);
   } catch (error) {
     console.error(`${colors.red}\n❌ ${error.message}${colors.reset}`);
     throw error;

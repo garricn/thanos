@@ -57,7 +57,7 @@ describe('git-hooks', () => {
 
     it('should skip type checking if no TypeScript files are staged', async () => {
       // Arrange - simulate finding no TS files
-      mockExecSync.mockImplementationOnce((command) => {
+      mockExecSync.mockImplementationOnce(command => {
         if (command.includes('grep -E \\.tsx?$')) {
           return '';
         }
@@ -80,7 +80,7 @@ describe('git-hooks', () => {
 
     it('should handle grep returning non-zero when no TypeScript files are found', async () => {
       // Arrange - simulate grep command failing
-      mockExecSync.mockImplementationOnce((command) => {
+      mockExecSync.mockImplementationOnce(command => {
         if (command.includes('grep -E \\.tsx?$')) {
           throw new Error('No files match pattern');
         }
@@ -99,7 +99,7 @@ describe('git-hooks', () => {
 
     it('should handle errors during pre-commit checks', async () => {
       // Arrange - simulate lint-staged failing
-      mockExecSync.mockImplementationOnce((command) => {
+      mockExecSync.mockImplementationOnce(command => {
         if (command.includes('lint-staged')) {
           throw new Error('Lint errors found');
         }
@@ -118,7 +118,7 @@ describe('git-hooks', () => {
 
     it('should pass when there are no linting or type errors', async () => {
       // Arrange
-      mockExecSync.mockImplementationOnce((command) => {
+      mockExecSync.mockImplementationOnce(command => {
         if (command.includes('grep -E \\.tsx?$')) {
           return 'file1.ts\nfile2.tsx';
         }
@@ -145,27 +145,15 @@ describe('git-hooks', () => {
       }
 
       // Assert
-      expect(mockExecSync).toHaveBeenCalledWith(
-        'npm run node:version',
-        expect.any(Object)
-      );
-      expect(mockExecSync).toHaveBeenCalledWith(
-        'npm run type-check',
-        expect.any(Object)
-      );
-      expect(mockExecSync).toHaveBeenCalledWith(
-        'npm run lint',
-        expect.any(Object)
-      );
-      expect(mockExecSync).toHaveBeenCalledWith(
-        'npm run test:unit',
-        expect.any(Object)
-      );
+      expect(mockExecSync).toHaveBeenCalledWith('npm run node:version', expect.any(Object));
+      expect(mockExecSync).toHaveBeenCalledWith('npm run type-check', expect.any(Object));
+      expect(mockExecSync).toHaveBeenCalledWith('npm run lint', expect.any(Object));
+      expect(mockExecSync).toHaveBeenCalledWith('npm run test:unit', expect.any(Object));
     });
 
     it('should handle errors during pre-push checks', async () => {
       // Arrange - simulate test failure
-      mockExecSync.mockImplementation((command) => {
+      mockExecSync.mockImplementation(command => {
         if (command === 'npm run test:unit') {
           const error = new Error('Tests failed');
           error.stdout = 'Some test output';
@@ -195,19 +183,13 @@ describe('git-hooks', () => {
       }
 
       // Assert
-      const calls = mockExecSync.mock.calls.map((call) => call[0]);
+      const calls = mockExecSync.mock.calls.map(call => call[0]);
 
       // Check if node:version comes before type-check, which comes before lint, which comes before test:unit
-      const nodeVersionIndex = calls.findIndex(
-        (call) => call === 'npm run node:version'
-      );
-      const typeCheckIndex = calls.findIndex(
-        (call) => call === 'npm run type-check'
-      );
-      const lintIndex = calls.findIndex((call) => call === 'npm run lint');
-      const testUnitIndex = calls.findIndex(
-        (call) => call === 'npm run test:unit'
-      );
+      const nodeVersionIndex = calls.findIndex(call => call === 'npm run node:version');
+      const typeCheckIndex = calls.findIndex(call => call === 'npm run type-check');
+      const lintIndex = calls.findIndex(call => call === 'npm run lint');
+      const testUnitIndex = calls.findIndex(call => call === 'npm run test:unit');
 
       expect(nodeVersionIndex).toBeLessThan(typeCheckIndex);
       expect(typeCheckIndex).toBeLessThan(lintIndex);

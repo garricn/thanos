@@ -8,6 +8,12 @@
     "declaration": true,
     "emitDeclarationOnly": true
   },
-  "include": ["src/**/*", "tests/**/*"],
+  "include": [
+    "src/**/*",
+    "tests/**/*",
+    "e2e/**/*",
+    "*.config.ts",
+    "*.config.js"
+  ],
   "exclude": ["node_modules", "dist", "coverage"]
 }

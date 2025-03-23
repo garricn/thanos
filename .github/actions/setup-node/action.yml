@@ -1,8 +1,8 @@
-name: "Setup Node.js and Dependencies"
-description: "Sets up Node.js and installs dependencies with caching"
+name: 'Setup Node.js and Dependencies'
+description: 'Sets up Node.js and installs dependencies with caching'
 
 runs:
-  using: "composite"
+  using: 'composite'
   steps:
     - name: Read .nvmrc
       id: nvmrc

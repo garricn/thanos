@@ -9,7 +9,7 @@
     "preview": "vite preview --config ../../vite.config.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "lint": "eslint --config ../../eslint.config.mjs .",
+    "lint": "eslint --config ../../eslint.config.mjs . e2e/",
     "typecheck": "tsc --noEmit --project ./tsconfig.json"
   },
   "dependencies": {

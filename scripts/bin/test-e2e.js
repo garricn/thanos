@@ -58,13 +58,13 @@ export function killProcessesOnPorts(ports) {
     // Different commands for different platforms
     if (process.platform === 'win32') {
       // Windows
-      ports.forEach((port) => {
+      ports.forEach(port => {
         try {
           const output = execSync(`netstat -ano | findstr :${port}`, {
             stdio: 'pipe',
           }).toString();
           const lines = output.split('\n');
-          lines.forEach((line) => {
+          lines.forEach(line => {
             const match = line.match(/(\d+)$/);
             if (match) {
               const pid = match[1];
@@ -84,10 +84,7 @@ export function killProcessesOnPorts(ports) {
       }
     }
   } catch (error) {
-    console.error(
-      `${colors.red}Error killing processes:${colors.reset}`,
-      error.message
-    );
+    console.error(`${colors.red}Error killing processes:${colors.reset}`, error.message);
     // Continue execution even if this fails
   }
 }
@@ -112,19 +109,16 @@ export function startServer(command, name) {
   childProcesses.push(childProcess);
 
   // Capture and forward output
-  childProcess.stdout.on('data', (data) => {
+  childProcess.stdout.on('data', data => {
     process.stdout.write(`[${name}] ${data}`);
   });
 
-  childProcess.stderr.on('data', (data) => {
+  childProcess.stderr.on('data', data => {
     process.stderr.write(`[${name}] ${data}`);
   });
 
-  childProcess.on('error', (error) => {
-    console.error(
-      `${colors.red}Failed to start ${name}:${colors.reset}`,
-      error.message
-    );
+  childProcess.on('error', error => {
+    console.error(`${colors.red}Failed to start ${name}:${colors.reset}`, error.message);
   });
 
   return childProcess;
@@ -137,7 +131,7 @@ export function cleanup() {
   console.log(`${colors.yellow}Shutting down servers...${colors.reset}`);
 
   // Send SIGTERM to all child processes
-  childProcesses.forEach((proc) => {
+  childProcesses.forEach(proc => {
     if (!proc.killed) {
       proc.kill('SIGTERM');
     }
@@ -149,15 +143,13 @@ export function cleanup() {
     killProcessesOnPorts([4200, 3000]);
 
     // Force kill any remaining child processes
-    childProcesses.forEach((proc) => {
+    childProcesses.forEach(proc => {
       if (!proc.killed) {
         proc.kill('SIGKILL');
       }
     });
 
-    console.log(
-      `${colors.green}All servers have been shut down.${colors.reset}`
-    );
+    console.log(`${colors.green}All servers have been shut down.${colors.reset}`);
     process.exit(0);
   }, 2000);
 }
@@ -178,16 +170,14 @@ export async function runE2ETests() {
     process.on('SIGINT', cleanup);
     process.on('SIGTERM', cleanup);
     process.on('exit', cleanup);
-    process.on('uncaughtException', (error) => {
+    process.on('uncaughtException', error => {
       console.error(`${colors.red}Uncaught exception:${colors.reset}`, error);
       cleanup();
       process.exit(1);
     });
 
     // Wait for servers to be ready
-    console.log(
-      `${colors.yellow}Waiting for servers to be ready...${colors.reset}`
-    );
+    console.log(`${colors.yellow}Waiting for servers to be ready...${colors.reset}`);
     await waitOn({
       resources: ['http://localhost:4200', 'http://localhost:3000'],
       timeout: 60000,
@@ -206,9 +196,7 @@ export async function runE2ETests() {
     // Run API E2E tests
     console.log(`${colors.yellow}Running API E2E tests...${colors.reset}`);
     try {
-      execCmd(
-        'vitest run --config configs/test/vitest.config.ts apps/api/e2e/src/api/api.test.ts'
-      );
+      execCmd('vitest run --config configs/test/vitest.config.ts apps/api/e2e/src/api/api.test.ts');
       apiExitCode = 0;
     } catch (error) {
       console.error(`${colors.red}API E2E tests failed${colors.reset}`);
@@ -221,22 +209,15 @@ export async function runE2ETests() {
     // Determine final exit code
     if (webExitCode !== 0 || apiExitCode !== 0) {
       console.error(`${colors.red}E2E tests failed!${colors.reset}`);
-      console.error(
-        `${colors.red}Web E2E exit code: ${webExitCode}${colors.reset}`
-      );
-      console.error(
-        `${colors.red}API E2E exit code: ${apiExitCode}${colors.reset}`
-      );
+      console.error(`${colors.red}Web E2E exit code: ${webExitCode}${colors.reset}`);
+      console.error(`${colors.red}API E2E exit code: ${apiExitCode}${colors.reset}`);
       process.exit(1);
     } else {
       console.log(`${colors.green}All E2E tests passed!${colors.reset}`);
       process.exit(0);
     }
   } catch (error) {
-    console.error(
-      `${colors.red}Error running E2E tests:${colors.reset}`,
-      error
-    );
+    console.error(`${colors.red}Error running E2E tests:${colors.reset}`, error);
     cleanup();
     process.exit(1);
   }

@@ -58,10 +58,10 @@ describe('Coverage Script', () => {
 
     it('creates new trend file when none exists', () => {
       // Arrange
-      mockExistsSync.mockImplementation((path) => {
+      mockExistsSync.mockImplementation(path => {
         return path.includes('lcov.info');
       });
-      mockReadFileSync.mockImplementation((path) => {
+      mockReadFileSync.mockImplementation(path => {
         if (path.includes('lcov.info')) {
           return 'LF:10\nLH:5\nend_of_record';
         }
@@ -89,10 +89,10 @@ describe('Coverage Script', () => {
 
     it('appends to existing trend file', () => {
       // Arrange
-      mockExistsSync.mockImplementation((path) => {
+      mockExistsSync.mockImplementation(path => {
         return path.includes('lcov.info') || path.includes('trend.json');
       });
-      mockReadFileSync.mockImplementation((path) => {
+      mockReadFileSync.mockImplementation(path => {
         if (path.includes('lcov.info')) {
           return 'LF:10\nLH:5\nend_of_record';
         }
@@ -184,12 +184,12 @@ describe('Coverage Script', () => {
   describe('generateReport', () => {
     it('generates coverage report', () => {
       // Arrange
-      mockExistsSync.mockImplementation((path) => {
+      mockExistsSync.mockImplementation(path => {
         return path.includes('lcov.info') || path.includes('lcov-report');
       });
 
       // Mock the existence of the coverage reports
-      mockReadFileSync.mockImplementation((path) => {
+      mockReadFileSync.mockImplementation(path => {
         if (path.includes('lcov.info')) {
           return 'SF:file.js\nLF:10\nLH:5\nend_of_record';
         }
@@ -203,17 +203,13 @@ describe('Coverage Script', () => {
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('Generating coverage report')
       );
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Coverage Summary')
-      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('Coverage Summary'));
     });
 
     it('generates detailed coverage report', () => {
       // Arrange
-      mockExistsSync.mockImplementation((path) => {
-        return (
-          path.includes('lcov.info') || path.includes('coverage-final.json')
-        );
+      mockExistsSync.mockImplementation(path => {
+        return path.includes('lcov.info') || path.includes('coverage-final.json');
       });
 
       const mockCoverageData = {
@@ -231,7 +227,7 @@ describe('Coverage Script', () => {
         },
       };
 
-      mockReadFileSync.mockImplementation((path) => {
+      mockReadFileSync.mockImplementation(path => {
         if (path.includes('coverage-final.json')) {
           return JSON.stringify(mockCoverageData);
         }
@@ -248,15 +244,11 @@ describe('Coverage Script', () => {
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('Generating coverage report')
       );
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('src/file1.js')
-      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('src/file1.js'));
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('Statements: 2/3 (66.67%)')
       );
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('src/file2.js')
-      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('src/file2.js'));
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('Statements: 3/3 (100.00%)')
       );
@@ -266,29 +258,20 @@ describe('Coverage Script', () => {
   describe('combineCoverage', () => {
     it('combines LCOV files from all coverage directories', () => {
       // Arrange
-      const mockLcovContent1 =
-        'TN:\nSF:src/file1.js\nFNF:1\nFNH:1\nLF:1\nLH:1\nend_of_record\n';
-      const mockLcovContent2 =
-        'TN:\nSF:src/file2.js\nFNF:2\nFNH:2\nLF:2\nLH:2\nend_of_record\n';
-      const mockSonarXml =
-        '<?xml version="1.0" encoding="UTF-8"?><coverage></coverage>';
+      const mockLcovContent1 = 'TN:\nSF:src/file1.js\nFNF:1\nFNH:1\nLF:1\nLH:1\nend_of_record\n';
+      const mockLcovContent2 = 'TN:\nSF:src/file2.js\nFNF:2\nFNH:2\nLF:2\nLH:2\nend_of_record\n';
+      const mockSonarXml = '<?xml version="1.0" encoding="UTF-8"?><coverage></coverage>';
 
-      mockExistsSync.mockImplementation((path) => {
-        if (
-          path.includes('coverage/api/unit') ||
-          path.includes('coverage/web/unit')
-        )
-          return true;
+      mockExistsSync.mockImplementation(path => {
+        if (path.includes('coverage/api/unit') || path.includes('coverage/web/unit')) return true;
         if (path.includes('lcov.info')) return true;
         if (path.includes('sonar-report.xml')) return true;
         return false;
       });
 
-      mockReadFileSync.mockImplementation((path) => {
-        if (path.includes('coverage/api/unit/lcov.info'))
-          return mockLcovContent1;
-        if (path.includes('coverage/web/unit/lcov.info'))
-          return mockLcovContent2;
+      mockReadFileSync.mockImplementation(path => {
+        if (path.includes('coverage/api/unit/lcov.info')) return mockLcovContent1;
+        if (path.includes('coverage/web/unit/lcov.info')) return mockLcovContent2;
         if (path.includes('sonar-report.xml')) return mockSonarXml;
         return '';
       });
@@ -330,9 +313,7 @@ describe('Coverage Script', () => {
 
       // Verify snapshot test command
       expect(mockExecSync).toHaveBeenCalledWith(
-        expect.stringContaining(
-          'npm run test --workspace=apps/web -- --testPathPattern=snapshot'
-        ),
+        expect.stringContaining('npm run test --workspace=apps/web -- --testPathPattern=snapshot'),
         { stdio: 'inherit' }
       );
     });
@@ -344,9 +325,7 @@ describe('Coverage Script', () => {
       runUnitTests();
 
       // Assert
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Running unit tests')
-      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('Running unit tests'));
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('Running API unit tests')
       );
@@ -460,9 +439,7 @@ describe('Coverage Script', () => {
   describe('moveSonarReports', () => {
     it('should move API report correctly', () => {
       // Arrange
-      mockExistsSync.mockImplementation((path) =>
-        path.includes('apps/api/test-report.xml')
-      );
+      mockExistsSync.mockImplementation(path => path.includes('apps/api/test-report.xml'));
 
       // Act
       const result = moveSonarReports('api');
@@ -474,16 +451,12 @@ describe('Coverage Script', () => {
       );
       expect(mockCopyFileSync).toHaveBeenCalled();
       expect(mockUnlinkSync).toHaveBeenCalled();
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Moved file')
-      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('Moved file'));
     });
 
     it('should move web unit report correctly', () => {
       // Arrange
-      mockExistsSync.mockImplementation((path) =>
-        path.includes('apps/web/test-report.xml')
-      );
+      mockExistsSync.mockImplementation(path => path.includes('apps/web/test-report.xml'));
 
       // Act
       const result = moveSonarReports('web-unit');
@@ -495,16 +468,12 @@ describe('Coverage Script', () => {
       );
       expect(mockCopyFileSync).toHaveBeenCalled();
       expect(mockUnlinkSync).toHaveBeenCalled();
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Moved file')
-      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('Moved file'));
     });
 
     it('should move web snapshot report correctly', () => {
       // Arrange
-      mockExistsSync.mockImplementation((path) =>
-        path.includes('apps/web/test-report.xml')
-      );
+      mockExistsSync.mockImplementation(path => path.includes('apps/web/test-report.xml'));
 
       // Act
       const result = moveSonarReports('web-snapshot');
@@ -516,9 +485,7 @@ describe('Coverage Script', () => {
       );
       expect(mockCopyFileSync).toHaveBeenCalled();
       expect(mockUnlinkSync).toHaveBeenCalled();
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Moved file')
-      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('Moved file'));
     });
 
     it('should handle missing source file', () => {
@@ -530,9 +497,7 @@ describe('Coverage Script', () => {
 
       // Assert
       expect(result).toBe(false);
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Source file not found')
-      );
+      expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('Source file not found'));
     });
 
     it('should handle invalid report type', () => {
@@ -541,9 +506,7 @@ describe('Coverage Script', () => {
 
       // Assert
       expect(result).toBe(false);
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Invalid report type')
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith(expect.stringContaining('Invalid report type'));
     });
 
     it('should handle file operation errors', () => {
@@ -558,9 +521,7 @@ describe('Coverage Script', () => {
 
       // Assert
       expect(result).toBe(false);
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        expect.stringContaining('Error moving file')
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith(expect.stringContaining('Error moving file'));
     });
   });
 });
@@ -581,12 +542,8 @@ describe('main', () => {
     await main();
 
     // Assert
-    expect(mockConsoleLog).toHaveBeenCalledWith(
-      '🧹 Cleaning coverage directories...'
-    );
-    expect(mockConsoleLog).toHaveBeenCalledWith(
-      '✨ Coverage operation completed successfully!'
-    );
+    expect(mockConsoleLog).toHaveBeenCalledWith('🧹 Cleaning coverage directories...');
+    expect(mockConsoleLog).toHaveBeenCalledWith('✨ Coverage operation completed successfully!');
     expect(mockExecSync).toHaveBeenCalledWith('rm -rf coverage', {
       stdio: 'inherit',
     });
@@ -604,12 +561,8 @@ describe('main', () => {
     expect(mockConsoleLog).toHaveBeenCalledWith('🧪 Running unit tests...');
     expect(mockConsoleLog).toHaveBeenCalledWith('Running API unit tests...');
     expect(mockConsoleLog).toHaveBeenCalledWith('Running Web unit tests...');
-    expect(mockConsoleLog).toHaveBeenCalledWith(
-      '🔄 Combining coverage reports...'
-    );
-    expect(mockConsoleLog).toHaveBeenCalledWith(
-      '✨ Coverage operation completed successfully!'
-    );
+    expect(mockConsoleLog).toHaveBeenCalledWith('🔄 Combining coverage reports...');
+    expect(mockConsoleLog).toHaveBeenCalledWith('✨ Coverage operation completed successfully!');
 
     // Verify directories were created
     expect(mockMkdirSync).toHaveBeenCalledWith('coverage/api/unit', {
