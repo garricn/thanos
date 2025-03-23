@@ -3,8 +3,9 @@ import { defineConfig } from 'cypress';
 export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:4200',
-    specPattern: 'apps/web/e2e/**/*.cy.{js,jsx,ts,tsx}', // Adjusted path
-    supportFile: 'apps/web/e2e/support/e2e.ts', // Adjusted path
+    specPattern: 'apps/web/cypress/e2e/**/*.cy.{js,jsx,ts,tsx}',
+    supportFile: 'apps/web/cypress/support/e2e.ts',
+    fixturesFolder: 'apps/web/cypress/fixtures',
     setupNodeEvents(on, config) {
       config.defaultCommandTimeout = 120000;
       config.pageLoadTimeout = 120000;

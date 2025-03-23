@@ -186,7 +186,7 @@ export async function runE2ETests() {
     // Run Web E2E tests
     console.log(`${colors.yellow}Running Web E2E tests...${colors.reset}`);
     try {
-      execCmd('cd apps/web/e2e && npx cypress run');
+      execCmd('cd apps/web && npm run test:e2e');
       webExitCode = 0;
     } catch (error) {
       console.error(`${colors.red}Web E2E tests failed${colors.reset}`);
@@ -196,7 +196,7 @@ export async function runE2ETests() {
     // Run API E2E tests
     console.log(`${colors.yellow}Running API E2E tests...${colors.reset}`);
     try {
-      execCmd('vitest run --config configs/test/vitest.config.ts apps/api/e2e/src/api/api.test.ts');
+      execCmd('cd apps/api && npm run test:e2e');
       apiExitCode = 0;
     } catch (error) {
       console.error(`${colors.red}API E2E tests failed${colors.reset}`);

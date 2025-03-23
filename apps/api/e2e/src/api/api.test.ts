@@ -5,8 +5,10 @@ import type { Server } from 'http';
 
 describe('API', () => {
   let server: Server;
+  const TEST_PORT = 3001;
 
   beforeAll(async () => {
+    process.env.PORT = TEST_PORT.toString();
     server = createServer();
   });
 
@@ -17,7 +19,7 @@ describe('API', () => {
   });
 
   it('should return Hello World from the root endpoint', async () => {
-    const response = await axios.get('http://localhost:3000/');
+    const response = await axios.get(`http://localhost:${TEST_PORT}/`);
     expect(response.status).toBe(200);
     expect(response.data).toBe('Hello World');
   });

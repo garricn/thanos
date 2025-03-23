@@ -65,7 +65,7 @@ export default [
         project: [
           './tsconfig.json',
           './apps/*/tsconfig.json',
-          './apps/*/e2e/tsconfig.json',
+          './apps/*/cypress/tsconfig.json',
           './scripts/tsconfig.json',
         ],
       },
@@ -101,7 +101,7 @@ export default [
   },
   // Test file overrides
   {
-    files: ['**/*.{spec,test}.{ts,tsx}', '**/e2e/**/*.{ts,tsx}'],
+    files: ['**/*.{spec,test}.{ts,tsx}', '**/e2e/**/*.{ts,tsx}', '**/cypress/**/*.{ts,tsx}'],
     languageOptions: {
       globals: {
         ...globals.jest, // For test globals

@@ -9,8 +9,9 @@
     "preview": "vite preview --config ../../vite.config.ts",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",
-    "lint": "eslint --config ../../eslint.config.mjs . e2e/",
-    "typecheck": "tsc --noEmit --project ./tsconfig.json"
+    "lint": "eslint --config ../../eslint.config.mjs . cypress/",
+    "typecheck": "tsc --noEmit --project ./tsconfig.json",
+    "test:e2e": "cd ../.. && cypress run"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -42,6 +43,8 @@
     "@babel/preset-typescript": "^7.22.5",
     "@babel/preset-env": "^7.22.5",
     "babel-jest": "^29.7.0",
-    "identity-obj-proxy": "^3.0.0"
+    "identity-obj-proxy": "^3.0.0",
+    "cypress": "^13.6.6",
+    "@types/cypress": "^1.1.3"
   }
 }
