@@ -6,8 +6,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 describe('API Database Structure', () => {
-  // Mark tests as skipped for now until we resolve the path issue
-  it.skip('should have a valid database file', () => {
+  it('should have a valid database file', () => {
     // Get the path to the database file
     const dbPath = path.join(__dirname, '..', 'db', 'database.db');
 
@@ -19,14 +18,13 @@ describe('API Database Structure', () => {
 
     // Log the result for clarity
     if (dbExists) {
-      // eslint-disable-next-line no-console
       console.log(`Database file found at: ${dbPath}`);
     } else {
       console.error(`Database file not found at: ${dbPath}`);
     }
   });
 
-  it.skip('should have the correct database directory structure', () => {
+  it('should have the correct database directory structure', () => {
     // Check if the models directory exists
     const modelsPath = path.join(__dirname, '..', 'db', 'models');
     const modelsExist = fs.existsSync(modelsPath);

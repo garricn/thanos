@@ -15,6 +15,11 @@ export default [
       '**/dist/**',
       '**/node_modules/**',
       '**/coverage/**',
+      '**/coverage/**/*.js',
+      '**/apps/web/coverage/**',
+      '**/apps/web/coverage/**/*.js',
+      '**/apps/api/coverage/**',
+      '**/apps/api/coverage/**/*.js',
       '**/*.json',
       '**/*.md',
       '**/*.css',
@@ -62,12 +67,7 @@ export default [
       parser: tsParser,
       parserOptions: {
         ecmaFeatures: { jsx: true },
-        project: [
-          './tsconfig.json',
-          './apps/*/tsconfig.json',
-          './apps/*/cypress/tsconfig.json',
-          './scripts/tsconfig.json',
-        ],
+        projectService: true,
       },
     },
     plugins: {
@@ -127,7 +127,7 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
-        project: ['./tsconfig.json', './tsconfig.eslint.json'],
+        projectService: true,
       },
     },
   },

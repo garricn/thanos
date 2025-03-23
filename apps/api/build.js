@@ -30,13 +30,11 @@ async function runBuild() {
       overwrite: true,
     });
 
-    // eslint-disable-next-line no-console
     console.log('Assets copied successfully.');
   } catch (err) {
     console.error('Error copying assets:', err);
   }
 
-  // eslint-disable-next-line no-console
   console.log('Build completed successfully.');
 }
 
