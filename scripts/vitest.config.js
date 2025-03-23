@@ -8,13 +8,13 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['__tests__/**/*.test.js'],
+    include: ['scripts/__tests__/**/*.test.js'],
     exclude: ['node_modules', 'dist', 'coverage'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
-      include: ['bin/**/*.js', 'hooks/**/*.js'],
-      exclude: ['node_modules', 'dist', 'coverage', '__tests__/**/*.test.js'],
+      include: ['scripts/bin/**/*.js', 'scripts/hooks/**/*.js'],
+      exclude: ['node_modules', 'dist', 'coverage', 'scripts/__tests__/**/*.test.js'],
       reportsDirectory: path.resolve(__dirname, 'coverage'),
       all: true,
     },
