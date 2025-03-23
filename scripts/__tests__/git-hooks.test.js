@@ -24,13 +24,10 @@ describe('git-hooks', () => {
       await runPreCommitChecks(mockExecSync);
 
       // Assert
-      expect(mockExecSync).toHaveBeenCalledWith(
-        'npx lint-staged --config configs/lint/.lintstagedrc.json',
-        {
-          stdio: 'inherit',
-          encoding: 'utf-8',
-        }
-      );
+      expect(mockExecSync).toHaveBeenCalledWith('npx lint-staged', {
+        stdio: 'inherit',
+        encoding: 'utf-8',
+      });
     });
 
     it('should type check staged TypeScript files', async () => {

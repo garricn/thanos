@@ -18,7 +18,7 @@ export function ensureTestDirectories(type) {
   const dirs = [];
 
   if (type === 'all' || type === 'unit') {
-    dirs.push('coverage/api/unit', 'coverage/web/unit');
+    dirs.push('coverage/api/unit', 'coverage/web/unit', 'coverage/scripts/unit');
   }
   if (type === 'all' || type === 'snapshot') {
     dirs.push('coverage/web/snapshot');
@@ -52,9 +52,11 @@ export function cleanCoverage() {
 export function moveSonarReports(reportType) {
   const apiReportSource = path.join(projectRoot, 'apps/api/test-report.xml');
   const webReportSource = path.join(projectRoot, 'apps/web/test-report.xml');
+  const scriptsReportSource = path.join(projectRoot, 'scripts/test-report.xml');
   const apiReportDest = path.join(projectRoot, 'coverage/api/unit/sonar-report.xml');
   const webUnitReportDest = path.join(projectRoot, 'coverage/web/unit/sonar-report.xml');
   const webSnapshotReportDest = path.join(projectRoot, 'coverage/web/snapshot/sonar-report.xml');
+  const scriptsReportDest = path.join(projectRoot, 'coverage/scripts/unit/sonar-report.xml');
 
   function moveFile(source, destination) {
     if (fs.existsSync(source)) {
@@ -85,10 +87,25 @@ export function moveSonarReports(reportType) {
       return moveFile(webReportSource, webUnitReportDest);
     case 'web-snapshot':
       return moveFile(webReportSource, webSnapshotReportDest);
+    case 'scripts':
+      return moveFile(scriptsReportSource, scriptsReportDest);
     default:
-      console.error(chalk.red('❌ Invalid report type. Use: api, web-unit, or web-snapshot'));
+      console.error(
+        chalk.red('❌ Invalid report type. Use: api, web-unit, web-snapshot, or scripts')
+      );
       return false;
   }
+}
+
+// Run scripts tests with coverage
+export function runScriptsTests() {
+  console.log(chalk.blue('📜 Running scripts tests...'));
+  execSync(
+    `npm run test:scripts:coverage -- --coverage.reportsDirectory="${process.cwd()}/coverage/scripts/unit" --coverage.reporter=text-summary --coverage.reporter=text --coverage.reporter=html --coverage.reporter=lcov --coverage.reporter=json --coverage.reporter=json-summary`,
+    { stdio: 'inherit' }
+  );
+  // Move Scripts report immediately after scripts tests
+  moveSonarReports('scripts');
 }
 
 // Run unit tests with coverage
@@ -98,7 +115,7 @@ export function runUnitTests() {
   // API unit tests
   console.log(chalk.yellow('Running API unit tests...'));
   execSync(
-    `npm run test --workspace=apps/api -- --coverage --coverageDirectory="${process.cwd()}/coverage/api/unit" --coverageReporters=text-summary --coverageReporters=text --coverageReporters=html --coverageReporters=lcov --coverageReporters=json --coverageReporters=json-summary --testResultsProcessor=jest-sonar-reporter`,
+    `npm run test --workspace=apps/api -- --coverage --coverage.reportsDirectory="${process.cwd()}/coverage/api/unit" --coverage.reporter=text-summary --coverage.reporter=text --coverage.reporter=html --coverage.reporter=lcov --coverage.reporter=json --coverage.reporter=json-summary`,
     { stdio: 'inherit' }
   );
   // Move API report immediately after API tests
@@ -107,21 +124,25 @@ export function runUnitTests() {
   // Web unit tests
   console.log(chalk.yellow('Running Web unit tests...'));
   execSync(
-    `npm run test --workspace=apps/web -- --coverage --coverageDirectory="${process.cwd()}/coverage/web/unit" --coverageReporters=text-summary --coverageReporters=text --coverageReporters=html --coverageReporters=lcov --coverageReporters=json --coverageReporters=json-summary --testResultsProcessor=jest-sonar-reporter`,
+    `npm run test --workspace=apps/web -- --coverage --coverage.reportsDirectory="${process.cwd()}/coverage/web/unit" --coverage.reporter=text-summary --coverage.reporter=text --coverage.reporter=html --coverage.reporter=lcov --coverage.reporter=json --coverage.reporter=json-summary`,
     { stdio: 'inherit' }
   );
   // Move Web unit report immediately after web unit tests
   moveSonarReports('web-unit');
+
+  // Scripts tests
+  console.log(chalk.yellow('Running Scripts tests...'));
+  runScriptsTests();
 }
 
 // Run snapshot tests with coverage
 export function runSnapshotTests() {
   console.log(chalk.blue('📸 Running snapshot tests...'));
   execSync(
-    `npm run test --workspace=apps/web -- --testPathPattern=snapshot --coverage --coverageDirectory="${process.cwd()}/coverage/web/snapshot" --coverageReporters=text-summary --coverageReporters=text --coverageReporters=html --coverageReporters=lcov --coverageReporters=json --coverageReporters=json-summary --testResultsProcessor=jest-sonar-reporter`,
+    `npm run test --workspace=apps/web -- --testNamePattern=snapshot --coverage --coverage.reportsDirectory="${process.cwd()}/coverage/web/snapshot" --coverage.reporter=text-summary --coverage.reporter=text --coverage.reporter=html --coverage.reporter=lcov --coverage.reporter=json --coverage.reporter=json-summary`,
     { stdio: 'inherit' }
   );
-  // Move Web snapshot report immediately after snapshot tests
+  // Move Web snapshot report immediately after web snapshot tests
   moveSonarReports('web-snapshot');
 }
 
@@ -147,7 +168,12 @@ function copyRecursiveSync(src, dest) {
 export function combineCoverage() {
   console.log(chalk.blue('🔄 Combining coverage reports...'));
 
-  const covDirs = ['coverage/api/unit', 'coverage/web/unit', 'coverage/web/snapshot'];
+  const covDirs = [
+    'coverage/api/unit',
+    'coverage/web/unit',
+    'coverage/web/snapshot',
+    'coverage/scripts/unit',
+  ];
 
   // Combine LCOV files
   let combinedLcov = '';
@@ -219,6 +245,7 @@ export function generateReport(detailed = false) {
     'API Unit': 'coverage/api/unit/lcov-report/index.html',
     'Web Unit': 'coverage/web/unit/lcov-report/index.html',
     'Web Snapshot': 'coverage/web/snapshot/lcov-report/index.html',
+    'Scripts Unit': 'coverage/scripts/unit/lcov-report/index.html',
     Combined: 'coverage/combined/lcov-report/index.html',
   };
 
@@ -286,6 +313,7 @@ export function openReports() {
     'coverage/api/unit/lcov-report/index.html',
     'coverage/web/unit/lcov-report/index.html',
     'coverage/web/snapshot/lcov-report/index.html',
+    'coverage/scripts/unit/lcov-report/index.html',
     'coverage/combined/lcov-report/index.html',
   ].filter(file => fs.existsSync(file));
 
