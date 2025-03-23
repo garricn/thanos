@@ -1,15 +1,18 @@
-const { defineConfig } = require('vitest/config');
-const path = require('path');
+import { defineConfig } from 'vitest/config';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-module.exports = defineConfig({
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['bin/**/*.js', 'hooks/**/*.js', '__tests__/**/*.test.js'],
+    include: ['__tests__/**/*.test.js'],
     exclude: ['node_modules', 'dist', 'coverage'],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html'],
+      reporter: ['text', 'json', 'html', 'lcov'],
       include: ['bin/**/*.js', 'hooks/**/*.js'],
       exclude: ['node_modules', 'dist', 'coverage', '__tests__/**/*.test.js'],
       reportsDirectory: path.resolve(__dirname, 'coverage'),
