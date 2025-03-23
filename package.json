@@ -55,7 +55,7 @@
     "start:web": "npm run dev --workspace=apps/web",
     "test:e2e": "node scripts/bin/test-e2e.js",
     "test": "npm run test --workspace=apps/web && npm run test --workspace=apps/api",
-    "test:all": "vitest run && cypress run --project apps/web/e2e",
+    "test:all": "npm-run-all --parallel test:unit test:snapshot test:scripts test:e2e",
     "test:api": "vitest run --dir apps/api/tests",
     "test:web": "vitest run --dir apps/web/tests",
     "test:coverage": "vitest run --coverage",
