@@ -37,7 +37,7 @@ export default defineConfig(() => ({
     react(),
     {
       name: 'tsconfig-paths',
-      configResolved(config) {
+      configResolved(_config) {
         // Custom path resolution logic can be added here if needed
       },
     },

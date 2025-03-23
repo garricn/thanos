@@ -49,7 +49,12 @@ export default [
       parser: tsParser,
       parserOptions: {
         ecmaFeatures: { jsx: true },
-        project: ['./tsconfig.json', './apps/*/tsconfig.json', './apps/*/e2e/tsconfig.json'],
+        project: [
+          './tsconfig.json',
+          './apps/*/tsconfig.json',
+          './apps/*/e2e/tsconfig.json',
+          './scripts/tsconfig.json',
+        ],
       },
     },
     plugins: {
@@ -102,9 +107,15 @@ export default [
   },
   // Config file overrides
   {
-    files: ['**/*.config.{js,ts}', '**/vite.config.{js,ts}', '**/vitest.config.{js,ts}'],
+    files: ['**/*.config.{js,ts}', '**/vite.config.{js,ts}', '**/vitest.config.{js,ts}', 'vitest.workspace.ts'],
     rules: {
       'import/no-default-export': 'off',
+    },
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        project: ['./tsconfig.json', './tsconfig.eslint.json'],
+      },
     },
   },
   // Sub-project specific overrides (optional)
