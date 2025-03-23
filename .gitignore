@@ -63,3 +63,7 @@ VERIFICATION.md
 
 # Binaries and executables
 actionlint
+
+# Playwright test results and reports
+**/playwright-report
+**/test-results
