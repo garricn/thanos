@@ -1,4 +1,4 @@
-import test from '@playwright/test';
+import { devices } from '@playwright/test';
 
 const config = {
   testDir: './e2e',
@@ -16,7 +16,7 @@ const config = {
   projects: [
     {
       name: 'chromium',
-      use: { ...test.devices['Desktop Chrome'] },
+      use: { ...devices['Desktop Chrome'] },
     },
   ],
 };

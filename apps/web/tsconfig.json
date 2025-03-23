@@ -9,6 +9,6 @@
     "declaration": true,
     "emitDeclarationOnly": true
   },
-  "include": ["src/**/*", "tests/**/*", "cypress/**/*", "*.config.ts", "*.config.js"],
+  "include": ["src/**/*", "tests/**/*", "cypress/**/*", "e2e/**/*", "*.config.ts", "*.config.js"],
   "exclude": ["node_modules", "dist", "coverage"]
 }
