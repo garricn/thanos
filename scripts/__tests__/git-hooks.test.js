@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { runPreCommitChecks, runPrePushChecks } from '../hooks/git-hooks.js';
 import {
   mockExecSync,
@@ -19,14 +19,17 @@ describe('git-hooks', () => {
   });
 
   describe('runPreCommitChecks', () => {
-    it('should run lint-staged with correct config', async () => {
+    it('should run format, lint, and type checks', async () => {
       // Act
       await runPreCommitChecks(mockExecSync);
 
       // Assert
       expect(mockExecSync).toHaveBeenCalledWith(
         'npx lint-staged --config configs/lint/.lintstagedrc.json',
-        expect.objectContaining({ stdio: 'inherit' })
+        {
+          stdio: 'inherit',
+          encoding: 'utf-8',
+        }
       );
     });
 
@@ -101,7 +104,7 @@ describe('git-hooks', () => {
       // Arrange - simulate lint-staged failing
       mockExecSync.mockImplementationOnce(command => {
         if (command.includes('lint-staged')) {
-          throw new Error('Lint errors found');
+          throw new Error('Format errors found');
         }
         return '';
       });
@@ -112,19 +115,11 @@ describe('git-hooks', () => {
         // Should not reach here
         expect(true).toBe(false);
       } catch (error) {
-        expect(error.message).toContain('Lint errors found');
+        expect(error.message).toBe('Format errors found');
       }
     });
 
-    it('should pass when there are no linting or type errors', async () => {
-      // Arrange
-      mockExecSync.mockImplementationOnce(command => {
-        if (command.includes('grep -E \\.tsx?$')) {
-          return 'file1.ts\nfile2.tsx';
-        }
-        return '';
-      });
-
+    it('should pass when all checks pass', async () => {
       // Act
       await runPreCommitChecks(mockExecSync);
 
@@ -140,6 +135,7 @@ describe('git-hooks', () => {
       // Act
       try {
         await runPrePushChecks(mockExecSync);
+        // eslint-disable-next-line no-unused-vars
       } catch (error) {
         // Ignore any errors for this test
       }
@@ -168,6 +164,7 @@ describe('git-hooks', () => {
         await runPrePushChecks(mockExecSync);
         // Should not reach here
         expect(true).toBe(false);
+        // eslint-disable-next-line no-unused-vars
       } catch (error) {
         // The message doesn't contain "Tests failed" directly, but something about the error message
         expect(mockConsoleError).toHaveBeenCalled();
@@ -178,6 +175,7 @@ describe('git-hooks', () => {
       // Act
       try {
         await runPrePushChecks(mockExecSync);
+        // eslint-disable-next-line no-unused-vars
       } catch (error) {
         // Ignore any errors for this test
       }

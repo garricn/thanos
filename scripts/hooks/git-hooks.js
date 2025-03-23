@@ -35,6 +35,7 @@ function getStagedTypeScriptFiles(execSync) {
       stdio: 'pipe',
       encoding: 'utf-8',
     }).trim();
+    // eslint-disable-next-line no-unused-vars
   } catch (error) {
     // grep returns 1 if no matches are found
     return '';
@@ -48,19 +49,23 @@ function getStagedTypeScriptFiles(execSync) {
 export async function runPreCommitChecks(execSync = defaultExecSync) {
   console.log(`${colors.yellow}Running pre-commit checks...${colors.reset}`);
 
-  // Run full format check
-  console.log(`${colors.yellow}\nRunning format check...${colors.reset}`);
-  exec(execSync, 'npm run format');
+  try {
+    // Run lint-staged
+    console.log(`${colors.yellow}\nRunning lint-staged...${colors.reset}`);
+    exec(execSync, 'npx lint-staged');
 
-  // Run full lint check
-  console.log(`${colors.yellow}\nRunning lint check...${colors.reset}`);
-  exec(execSync, 'npm run lint');
+    // Get staged TypeScript files
+    const files = getStagedTypeScriptFiles(execSync);
+    if (files) {
+      console.log(`${colors.yellow}\nType checking staged TypeScript files...${colors.reset}`);
+      exec(execSync, `npx tsc --noEmit ${files}`);
+    }
 
-  // Run full type check
-  console.log(`${colors.yellow}\nRunning type check...${colors.reset}`);
-  exec(execSync, 'npm run type-check');
-
-  console.log(`${colors.green}\n✅ All pre-commit checks passed${colors.reset}`);
+    console.log(`${colors.green}\n✅ All pre-commit checks passed${colors.reset}`);
+  } catch (error) {
+    console.error(`${colors.red}\n❌ ${error.message}${colors.reset}`);
+    throw error;
+  }
 }
 
 /**
