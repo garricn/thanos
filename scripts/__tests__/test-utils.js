@@ -86,54 +86,141 @@ export const mockExit = vi.spyOn(process, 'exit').mockImplementation(() => {});
  */
 export function setupMockDefaults() {
   // Reset all mocks
-  vi.clearAllMocks();
+  mockExecSync.mockReset();
+  mockReadFileSync.mockReset();
+  mockExistsSync.mockReset();
+  mockMkdirSync.mockReset();
+  mockWriteFileSync.mockReset();
+  mockCopyFileSync.mockReset();
+  mockUnlinkSync.mockReset();
+  mockConsoleLog.mockReset();
+  mockConsoleError.mockReset();
+  mockParseFromString.mockReset();
+  mockSerializeToString.mockReset();
 
-  // Setup execSync defaults
+  // Mock execSync for various commands
   mockExecSync.mockImplementation(command => {
-    if (command === 'node -v') return 'v20.0.0';
+    if (command === 'rm -rf coverage') return '';
+    if (command === 'rm -rf node_modules') return '';
     if (command === 'npm -v') return '9.0.0';
-    return '';
+    if (command === 'npm cache clean --force') return '';
+    if (command === 'npx jest --clearCache') return '';
+    if (command === 'npm install') return '';
+    if (command.includes('test:scripts:coverage')) return '';
+    if (command.includes('test --workspace=apps/api')) return '';
+    if (command.includes('test --workspace=apps/web')) return '';
+    if (command.includes('testNamePattern=snapshot')) return '';
+    if (command.includes('open')) return '';
+    if (command.includes('npm run node:version')) return '';
+    if (command.includes('npm run type-check')) return '';
+    if (command.includes('npm run lint')) return '';
+    if (command.includes('npm run test:unit')) return '';
+    if (command.includes('npx lint-staged')) return '';
+    if (command.includes('npx tsc --noEmit')) return '';
+    if (
+      command === 'rm -rf node_modules package-lock.json dist tmp coverage .nyc_output ./*.log logs'
+    )
+      return '';
+    throw new Error(`Unexpected command: ${command}`);
   });
 
-  // Setup readFileSync defaults
+  // Mock readFileSync for various file paths
   mockReadFileSync.mockImplementation(path => {
-    if (path === '.nvmrc') return '20.0.0\n';
-    return '';
+    if (path.includes('lcov.info')) {
+      return 'LF:10\nLH:5\nend_of_record';
+    }
+    if (path.includes('trend.json')) {
+      return JSON.stringify([
+        {
+          date: '2023-12-31T00:00:00.000Z',
+          coverage: 40.0,
+          totalLines: 10,
+          linesCovered: 4,
+        },
+      ]);
+    }
+    if (path.includes('coverage-final.json')) {
+      return JSON.stringify({});
+    }
+    if (path.includes('sonar-report.xml') || path.includes('test-report.xml')) {
+      return '<?xml version="1.0"?><coverage><file path="test.js"><line number="1" hits="1"/></file></coverage>';
+    }
+    throw new Error(`Unexpected file read: ${path}`);
   });
 
-  // Setup existsSync defaults
+  // Mock existsSync for various paths
   mockExistsSync.mockImplementation(path => {
-    if (path === '.nvmrc') return true;
-    if (path === '/home/test/.nvm/nvm.sh') return true;
-    if (path.includes('/coverage/')) return true;
-    return false;
+    return (
+      path.includes('lcov.info') ||
+      path.includes('lcov-report') ||
+      path.includes('trend.json') ||
+      path.includes('coverage-final.json') ||
+      path.includes('sonar-report.xml') ||
+      path.includes('test-report.xml') ||
+      path.includes('coverage/api/unit') ||
+      path.includes('coverage/web/unit') ||
+      path.includes('coverage/web/snapshot') ||
+      path.includes('coverage/scripts/unit') ||
+      path.includes('coverage/combined') ||
+      path.includes('apps/api/test-report.xml') ||
+      path.includes('apps/web/test-report.xml') ||
+      path.includes('scripts/test-report.xml')
+    );
   });
 
-  // Setup XML parser defaults
+  // Mock mkdirSync to track calls
+  mockMkdirSync.mockImplementation(() => undefined);
+
+  // Mock writeFileSync to track calls
+  mockWriteFileSync.mockImplementation(() => undefined);
+
+  // Mock copyFileSync to track calls
+  mockCopyFileSync.mockImplementation(() => undefined);
+
+  // Mock unlinkSync to track calls
+  mockUnlinkSync.mockImplementation(() => undefined);
+
+  // Mock console.log to track calls
+  mockConsoleLog.mockImplementation(() => undefined);
+
+  // Mock console.error to track calls
+  mockConsoleError.mockImplementation(() => undefined);
+
+  // Mock XML parser
   mockParseFromString.mockImplementation(() => ({
     documentElement: {
-      getElementsByTagName: vi.fn().mockReturnValue({
-        length: 0,
-        item: vi.fn(),
+      getElementsByTagName: () => ({
+        length: 1,
+        item: () => ({
+          getAttribute: () => 'test.js',
+          getElementsByTagName: () => ({
+            length: 1,
+            item: () => ({
+              getAttribute: () => '1',
+            }),
+          }),
+        }),
       }),
+      appendChild: () => undefined,
     },
   }));
 
-  mockSerializeToString.mockReturnValue(
-    '<?xml version="1.0" encoding="UTF-8"?><coverage></coverage>'
+  // Mock XML serializer
+  mockSerializeToString.mockImplementation(
+    () =>
+      '<?xml version="1.0"?><coverage><file path="test.js"><line number="1" hits="1"/></file></coverage>'
   );
 
   return {
     mockExecSync,
     mockReadFileSync,
     mockExistsSync,
+    mockMkdirSync,
+    mockWriteFileSync,
     mockCopyFileSync,
     mockUnlinkSync,
-    mockReaddirSync,
     mockConsoleLog,
     mockConsoleError,
-    mockExit,
-    mockWriteFileSync,
     mockParseFromString,
     mockSerializeToString,
   };
