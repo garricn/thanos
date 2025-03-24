@@ -14,8 +14,8 @@ export default defineConfig({
     exclude: ['**/node_modules/**', '**/dist/**', '**/coverage/**', '**/e2e/**'],
     coverage: {
       enabled: true,
-      provider: 'custom',
-      customProviderModule: 'vitest-monocart-coverage',
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'lcov'],
       include: ['src/**/*.{ts,tsx}'],
       exclude: [
         '**/*.{test,spec}.{ts,tsx}',
@@ -24,22 +24,11 @@ export default defineConfig({
         '**/e2e/**',
         '**/*.d.ts',
         '**/*.config.{js,ts}',
+        'playwright.config.ts',
         '**/vite-env.d.ts',
       ],
-      reportsDirectory: path.resolve(__dirname, '../../coverage/web'),
-      all: true,
-      reporter: ['text', 'lcov'],
     },
-    reporters: [
-      'default',
-      [
-        'vitest-sonar-reporter',
-        {
-          outputFile: path.resolve(__dirname, '../../coverage/web/sonar-report.xml'),
-          testFilePath: '<absolute>',
-        },
-      ],
-    ],
+    reporters: ['default'],
     testTimeout: 30000,
   },
 });

@@ -7,36 +7,15 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   test: {
     globals: true,
-    environment: 'node',
-    include: ['scripts/__tests__/**/*.test.js'],
-    exclude: ['node_modules', 'dist', 'coverage'],
+    include: ['__tests__/**/*.test.js'],
+    exclude: ['**/node_modules/**', '**/dist/**', '**/coverage/**'],
     coverage: {
       enabled: true,
-      provider: 'custom',
-      customProviderModule: 'vitest-monocart-coverage',
-      include: ['scripts/bin/**/*.js', 'scripts/hooks/**/*.js'],
-      exclude: [
-        'node_modules',
-        'dist',
-        'coverage',
-        'scripts/__tests__/**/*.test.js',
-        '**/*.config.js',
-      ],
-      reportsDirectory: path.resolve(__dirname, '../coverage/scripts'),
-      all: true,
-      reporter: ['text', 'lcov'],
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'lcov'],
+      include: ['bin/**/*.js', 'hooks/**/*.js'],
+      exclude: ['**/*.test.js', 'coverage/**', 'dist/**', '**/*.config.js'],
     },
-    setupFiles: [path.resolve(__dirname, '__tests__/setup.js')],
-    reporters: [
-      'default',
-      [
-        'vitest-sonar-reporter',
-        {
-          outputFile: path.resolve(__dirname, '../coverage/scripts/sonar-report.xml'),
-          testFilePath: '<absolute>',
-        },
-      ],
-    ],
-    testTimeout: 30000,
+    reporters: ['default'],
   },
 });

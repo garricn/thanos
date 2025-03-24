@@ -34,7 +34,6 @@ export default defineConfig({
         'apps/web/playwright.config.ts',
         '**/vite-env.d.ts',
       ],
-      reportsDirectory: 'coverage',
       all: true,
       reporter: ['text', 'lcov'],
     },
