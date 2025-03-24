@@ -12,7 +12,7 @@ export default defineConfig({
     exclude: ['node_modules', 'dist', 'coverage'],
     coverage: {
       provider: 'v8',
-      reporter: ['text', 'json', 'html', 'lcov'],
+      reporter: ['text', 'json', 'lcov'],
       include: ['scripts/bin/**/*.js', 'scripts/hooks/**/*.js'],
       exclude: [
         'node_modules',
