@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 export default defineConfig({
   test: {
     globals: true,
-    include: ['__tests__/**/*.test.js'],
+    include: [path.resolve(__dirname, '__tests__/**/*.test.js')],
     exclude: ['**/node_modules/**', '**/dist/**', '**/coverage/**'],
     coverage: {
       enabled: true,
@@ -15,6 +15,7 @@ export default defineConfig({
       reporter: ['text', 'json', 'html', 'lcov'],
       include: ['bin/**/*.js', 'hooks/**/*.js'],
       exclude: ['**/*.test.js', 'coverage/**', 'dist/**', '**/*.config.js'],
+      reportsDirectory: './coverage/scripts',
     },
     reporters: ['default'],
   },
