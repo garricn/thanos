@@ -104,7 +104,7 @@ export function setupMockDefaults() {
     if (command === 'rm -rf node_modules') return '';
     if (command === 'npm -v') return '9.0.0';
     if (command === 'npm cache clean --force') return '';
-    if (command === 'npx jest --clearCache') return '';
+    if (command === 'npx vitest --clearCache') return '';
     if (command === 'npm install') return '';
     if (command.includes('test:scripts:coverage')) return '';
     if (command.includes('test --workspace=apps/api')) return '';
