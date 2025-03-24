@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "workspaces": [
     "apps/*"
@@ -36,7 +36,7 @@
     "coverage:report": "node scripts/bin/coverage.js --report",
     "coverage:snapshot": "node scripts/bin/coverage.js --type=snapshot",
     "coverage:unit": "node scripts/bin/coverage.js --type=unit",
-    "fix-node-version": "echo 'To switch to Node.js '$(cat .nvmrc)', please run: source scripts/bin/switch-node.js'",
+    "fix-node-version": "echo 'To switch to Node.js '$(node -e 'console.log(require(\"./package.json\").engines.node)')', please run: source scripts/bin/switch-node.js'",
     "format": "prettier --write \"**/*.{js,jsx,mjs,ts,tsx}\" && npm run format:md && npm run format:sh && npm run format:yaml",
     "format:md": "prettier --write \"**/*.md\"",
     "format:sh": "find scripts -name \"*.sh\" -type f -exec shfmt -i 2 -ci -w {} \\; && [ -f ci_helper.sh ] && shfmt -i 2 -ci -w ci_helper.sh || true",
