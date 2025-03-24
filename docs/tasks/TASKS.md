@@ -715,3 +715,5 @@ Current status:
 - [ ] Dependency Injection
 - [ ] Shut servers down gracefully to avoid errors when running test:e2e
 - [ ] Get Github actions workflow local runner 'act' working
+
+**Task Statement**: Synchronize dependencies across the monorepo by moving shared dev dependencies (e.g., `vitest`, `@vitest/coverage-v8`) to the root `package.json`, removing duplicates from workspace packages like `@thanos/web`, adding a `resolutions` field to enforce version consistency (e.g., `"vitest": "^3.0.9"`), and verifying with `npm install` and `npm ls`.

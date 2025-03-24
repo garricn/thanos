@@ -11,8 +11,9 @@ export default defineConfig({
     include: ['scripts/__tests__/**/*.test.js'],
     exclude: ['node_modules', 'dist', 'coverage'],
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'lcov'],
+      enabled: true,
+      provider: 'custom',
+      customProviderModule: 'vitest-monocart-coverage',
       include: ['scripts/bin/**/*.js', 'scripts/hooks/**/*.js'],
       exclude: [
         'node_modules',
@@ -23,6 +24,7 @@ export default defineConfig({
       ],
       reportsDirectory: path.resolve(__dirname, '../coverage/scripts'),
       all: true,
+      reporter: ['text', 'lcov'],
     },
     setupFiles: [path.resolve(__dirname, '__tests__/setup.js')],
     reporters: [

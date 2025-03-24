@@ -1,22 +1,28 @@
 import { defineConfig } from 'vitest/config';
-import react from '@vitejs/plugin-react';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  plugins: [react()],
   test: {
     globals: true,
-    environment: 'jsdom',
-    include: ['tests/**/*.{test,spec}.{ts,tsx}', 'src/**/*.{test,spec}.{ts,tsx}'],
+    include: [
+      'apps/*/tests/**/*.{test,spec}.{ts,tsx}',
+      'apps/*/src/**/*.{test,spec}.{ts,tsx}',
+      'scripts/__tests__/**/*.test.js',
+    ],
     exclude: ['**/node_modules/**', '**/dist/**', '**/coverage/**', '**/e2e/**'],
     coverage: {
       enabled: true,
       provider: 'custom',
       customProviderModule: 'vitest-monocart-coverage',
-      include: ['src/**/*.{ts,tsx}'],
+      include: [
+        'apps/api/src/**/*.ts',
+        'apps/web/src/**/*.{ts,tsx}',
+        'scripts/bin/**/*.js',
+        'scripts/hooks/**/*.js',
+      ],
       exclude: [
         '**/*.{test,spec}.{ts,tsx}',
         'coverage/**',
@@ -25,21 +31,12 @@ export default defineConfig({
         '**/*.d.ts',
         '**/*.config.{js,ts}',
         '**/vite-env.d.ts',
+        'apps/web/playwright.config.ts',
       ],
-      reportsDirectory: path.resolve(__dirname, '../../coverage/web'),
+      reportsDirectory: 'coverage', // Base dir, mcr will append /combined/lcov-report
       all: true,
       reporter: ['text', 'lcov'],
     },
-    reporters: [
-      'default',
-      [
-        'vitest-sonar-reporter',
-        {
-          outputFile: path.resolve(__dirname, '../../coverage/web/sonar-report.xml'),
-          testFilePath: '<absolute>',
-        },
-      ],
-    ],
-    testTimeout: 30000,
+    reporters: ['default'],
   },
 });

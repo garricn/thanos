@@ -11,8 +11,9 @@ export default defineConfig({
     include: ['tests/**/*.test.ts'],
     exclude: ['**/node_modules/**', '**/dist/**', '**/coverage/**', '**/e2e/**'],
     coverage: {
-      provider: 'v8',
-      reporter: ['text', 'json', 'lcov'],
+      enabled: true, // Explicitly enable coverage
+      provider: 'custom',
+      customProviderModule: 'vitest-monocart-coverage',
       include: ['src/**/*.ts'],
       exclude: [
         '**/*.test.ts',
@@ -24,6 +25,7 @@ export default defineConfig({
       ],
       reportsDirectory: path.resolve(__dirname, '../../coverage/api'),
       all: true,
+      reporter: ['text', 'lcov'], // Keep for now, adjust later if needed
     },
     reporters: [
       'default',
