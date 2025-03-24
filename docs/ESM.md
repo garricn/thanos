@@ -11,25 +11,25 @@ This document outlines how ECMAScript Modules (ESM) are supported across the mon
 
 ## Workspace Configuration
 
-### API Workspace
+### API Workspace Configuration
 
 - Uses `.mjs` for config files
 - Node.js native ESM support
 
-### Web Workspace
+### Web Workspace Configuration
 
 - Uses `.ts` for config files
 - Vite handles ESM bundling
 
 ## Testing Configuration
 
-### API Workspace
+### API Workspace Testing
 
 - Uses Vitest for unit and E2E tests
 - Config file: `apps/api/vitest.config.ts`
 - E2E config file: `apps/api/vitest.config.e2e.js`
 
-### Web Workspace
+### Web Workspace Testing
 
 - Uses Vitest for unit tests
 - Config file: `apps/web/vitest.config.ts`
