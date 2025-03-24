@@ -28,14 +28,18 @@ export function exec(execSync, command, options = {}) {
 }
 
 /**
- * Gets the Node.js version from .nvmrc
+ * Gets the Node.js version from package.json engines field
  * @returns {string} Node.js version number
  */
 export function getRequiredNodeVersion() {
   try {
-    return readFileSync('.nvmrc', 'utf-8').trim();
+    const packageJson = JSON.parse(readFileSync('package.json', 'utf-8'));
+    if (!packageJson.engines?.node) {
+      throw new Error('No Node.js version specified in package.json engines field');
+    }
+    return packageJson.engines.node;
   } catch (err) {
-    console.error(`${colors.red}Error: Could not read .nvmrc file: ${err.message}${colors.reset}`);
+    console.error(`${colors.red}Error: ${err.message}${colors.reset}`);
     process.exit(1);
   }
 }
@@ -223,7 +227,7 @@ export function checkNodeVersion() {
 }
 
 /**
- * Switches to the Node.js version specified in .nvmrc
+ * Switches to the Node.js version specified in package.json
  * @param {Function} execSync Function to execute commands
  */
 export function switchNodeVersion(execSync = defaultExecSync) {

@@ -144,16 +144,16 @@ describe('shell-utils', () => {
   });
 
   describe('getRequiredNodeVersion', () => {
-    it('returns the Node.js version from .nvmrc', () => {
+    it('returns the Node.js version from package.json', () => {
       // Arrange
-      mockReadFileSync.mockReturnValue('20.0.0\n');
+      mockReadFileSync.mockReturnValue(JSON.stringify({ engines: { node: '20.0.0' } }));
 
       // Act
       const version = getRequiredNodeVersion();
 
       // Assert
       expect(version).toBe('20.0.0');
-      expect(mockReadFileSync).toHaveBeenCalledWith('.nvmrc', 'utf-8');
+      expect(mockReadFileSync).toHaveBeenCalledWith('package.json', 'utf-8');
     });
   });
 
@@ -195,17 +195,12 @@ describe('shell-utils', () => {
   describe('checkNodeVersion', () => {
     it('checks if Node.js version is consistent', () => {
       // Arrange
-      mockReadFileSync.mockImplementation(path => {
-        if (path === '.nvmrc') return '20.0.0\n';
-        if (path === 'package.json') return JSON.stringify({ engines: { node: '20.0.0' } });
-        return '';
-      });
+      mockReadFileSync.mockReturnValue(JSON.stringify({ engines: { node: '20.0.0' } }));
 
       // Act
       checkNodeVersion(mockExecSync);
 
       // Assert
-      expect(mockReadFileSync).toHaveBeenCalledWith('.nvmrc', 'utf-8');
       expect(mockReadFileSync).toHaveBeenCalledWith('package.json', 'utf-8');
       expect(mockConsoleLog).toHaveBeenCalledWith(
         expect.stringContaining('Checking Node.js version consistency')
