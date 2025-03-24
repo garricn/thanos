@@ -8,8 +8,9 @@ export default defineConfig({
   test: {
     globals: true,
     include: [
-      'apps/*/tests/**/*.{test,spec}.{ts,tsx}',
-      'apps/*/src/**/*.{test,spec}.{ts,tsx}',
+      'apps/api/tests/**/*.test.ts',
+      'apps/web/tests/**/*.{test,spec}.{ts,tsx}',
+      'apps/web/src/**/*.{test,spec}.{ts,tsx}',
       'scripts/__tests__/**/*.test.js',
     ],
     exclude: ['**/node_modules/**', '**/dist/**', '**/coverage/**', '**/e2e/**'],
@@ -30,10 +31,10 @@ export default defineConfig({
         '**/e2e/**',
         '**/*.d.ts',
         '**/*.config.{js,ts}',
-        '**/vite-env.d.ts',
         'apps/web/playwright.config.ts',
+        '**/vite-env.d.ts',
       ],
-      reportsDirectory: 'coverage', // Base dir, mcr will append /combined/lcov-report
+      reportsDirectory: 'coverage',
       all: true,
       reporter: ['text', 'lcov'],
     },
