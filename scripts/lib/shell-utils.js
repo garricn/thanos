@@ -34,8 +34,8 @@ export function exec(execSync, command, options = {}) {
 export function getRequiredNodeVersion() {
   try {
     return readFileSync('.nvmrc', 'utf-8').trim();
-  } catch (error) {
-    console.error(`${colors.red}Error: Could not read .nvmrc file.${colors.reset}`);
+  } catch (err) {
+    console.error(`${colors.red}Error: Could not read .nvmrc file: ${err.message}${colors.reset}`);
     process.exit(1);
   }
 }
@@ -52,9 +52,9 @@ export function getCurrentNodeVersion(execSync) {
       encoding: 'utf-8',
     }).trim();
     return nodeVersion.replace('v', '').split('.')[0]; // Extract major version
-  } catch (error) {
+  } catch (err) {
     console.error(
-      `${colors.red}Error: Could not determine current Node.js version.${colors.reset}`
+      `${colors.red}Error: Could not determine current Node.js version: ${err.message}${colors.reset}`
     );
     process.exit(1);
   }
@@ -95,118 +95,48 @@ export function checkNodeVersionMatch(requiredVersion, currentVersion, force = f
  * @param {string[]} args Command line arguments
  * @param {Function} execSync Function to execute commands
  */
-export function cleanDeep(args = [], execSync = defaultExecSync) {
-  // Parse command line arguments
-  let dryRun = false;
-  let force = false;
+export async function cleanDeep(options = {}) {
+  const {
+    execSync = defaultExecSync,
+    console = defaultConsole,
+    colors = defaultColors,
+    dryRun = false,
+  } = options;
 
-  for (const arg of args) {
-    if (arg === '--help') {
-      console.log(`${colors.green}Thanos Deep Clean Script${colors.reset}`);
-      console.log(
-        'This script performs a deep clean of the project, removing all generated files and reinstalling dependencies.'
-      );
-      console.log();
-      console.log('Usage: npm run clean:deep [options]');
-      console.log();
-      console.log('Options:');
-      console.log('  --help      Show this help message');
-      console.log('  --dry-run   Show what would be done without making any changes');
-      console.log('  --force     Bypass the Node.js version check (not recommended)');
-      console.log();
-      console.log('Example:');
-      console.log('  npm run clean:deep -- --dry-run');
-      console.log();
-      process.exit(0);
-    } else if (arg === '--dry-run') {
-      dryRun = true;
-      console.log(
-        `${colors.yellow}Running in dry-run mode. No changes will be made.${colors.reset}`
-      );
-    } else if (arg === '--force') {
-      force = true;
-      console.log(
-        `${colors.yellow}Force mode enabled. Will bypass Node.js version check.${colors.reset}`
-      );
-    }
-  }
-
-  // Check Node.js version
-  console.log(`${colors.yellow}Checking Node.js version...${colors.reset}`);
-  const requiredNodeVersion = getRequiredNodeVersion();
-  const currentNodeVersion = getCurrentNodeVersion(execSync);
-  checkNodeVersionMatch(requiredNodeVersion, currentNodeVersion, force);
-
-  // Start deep clean
-  console.log(`\n${colors.yellow}🧹 Starting deep clean...${colors.reset}`);
-
-  // Step 1: Remove directories and files
-  console.log(
-    `\n${colors.yellow}Step 1: Removing generated files and directories...${colors.reset}`
-  );
+  // Step 1: Clean node_modules
+  console.log(`\n${colors.yellow}Step 1: Cleaning node_modules...${colors.reset}`);
   if (dryRun) {
-    console.log(
-      'Would remove: node_modules package-lock.json dist tmp coverage .nyc_output ./*.log logs'
-    );
+    console.log('Would run: rm -rf node_modules');
   } else {
-    exec(
-      execSync,
-      'rm -rf node_modules package-lock.json dist tmp coverage .nyc_output ./*.log logs'
-    );
-    console.log(`${colors.green}✓ Removed generated files and directories${colors.reset}`);
+    exec(execSync, 'rm -rf node_modules');
   }
+  console.log(`${colors.green}✓ Cleaned node_modules${colors.reset}`);
 
-  // Step 2: Clean npm cache
-  console.log(`\n${colors.yellow}Step 2: Cleaning npm cache...${colors.reset}`);
+  // Step 2: Clean build artifacts
+  console.log(`\n${colors.yellow}Step 2: Cleaning build artifacts...${colors.reset}`);
+  if (dryRun) {
+    console.log('Would run: rm -rf dist tmp coverage');
+  } else {
+    exec(execSync, 'rm -rf dist tmp coverage');
+  }
+  console.log(`${colors.green}✓ Cleaned build artifacts${colors.reset}`);
+
+  // Step 3: Clean npm cache
+  console.log(`\n${colors.yellow}Step 3: Cleaning npm cache...${colors.reset}`);
   if (dryRun) {
     console.log('Would run: npm cache clean --force');
   } else {
     exec(execSync, 'npm cache clean --force');
-    console.log(`${colors.green}✓ Cleaned npm cache${colors.reset}`);
   }
+  console.log(`${colors.green}✓ Cleaned npm cache${colors.reset}`);
 
-  // Step 3: Clear Jest cache
-  console.log(`\n${colors.yellow}Step 3: Clearing Jest cache...${colors.reset}`);
-  if (dryRun) {
-    console.log('Would run: npx jest --clearCache');
-  } else {
-    try {
-      exec(execSync, 'npx jest --clearCache');
-    } catch (error) {
-      // Jest cache clear might fail if Jest is not installed
-      console.log(
-        `${colors.yellow}⚠️ Jest cache clear might have failed, continuing...${colors.reset}`
-      );
-    }
-    console.log(`${colors.green}✓ Cleared Jest cache${colors.reset}`);
-  }
-
-  // Step 4: Display Node.js and npm versions
-  console.log(`\n${colors.yellow}Step 4: Checking environment...${colors.reset}`);
-  console.log(
-    `Using Node.js v${currentNodeVersion} and npm ${exec(execSync, 'npm -v', { stdio: 'pipe' }).trim()}`
-  );
-
-  // Step 5: Install dependencies
-  console.log(`\n${colors.yellow}Step 5: Installing dependencies...${colors.reset}`);
-  if (dryRun) {
-    console.log('Would run: npm install');
-  } else {
-    exec(execSync, 'npm install');
-    console.log(`${colors.green}✓ Installed dependencies${colors.reset}`);
-  }
-
-  // Step 6: Completion
-  console.log(
-    `\n${colors.green}✅ Deep cleaning complete. Environment reset to a clean state.${colors.reset}`
-  );
+  console.log(`\n${colors.green}✓ Deep clean completed successfully${colors.reset}`);
 }
 
 /**
  * Checks that Node.js version is consistent across configuration files
- * @param {Function} execSync Function to execute commands
  */
-export function checkNodeVersion(execSync = defaultExecSync) {
+export function checkNodeVersion() {
   console.log(`${colors.yellow}Checking Node.js version consistency...${colors.reset}`);
 
   // Get required Node.js version from .nvmrc
@@ -311,10 +241,11 @@ export function switchNodeVersion(execSync = defaultExecSync) {
           encoding: 'utf-8',
         }).trim();
         if (existsSync(`${brewPrefix}/nvm.sh`)) {
-          nvmSource = `$(brew --prefix nvm)/nvm.sh`;
+          nvmSource = '$(brew --prefix nvm)/nvm.sh';
         }
-      } catch (error) {
+      } catch (err) {
         // Brew not found or nvm not installed via brew
+        console.log(`${colors.yellow}Note: Brew command failed: ${err.message}${colors.reset}`);
       }
     }
 

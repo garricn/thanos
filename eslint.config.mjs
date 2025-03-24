@@ -38,7 +38,6 @@ export default [
       globals: {
         ...globals.node,
         ...globals.browser,
-        ...globals.jest, // For test globals like describe, it, expect
       },
     },
     rules: {
@@ -101,16 +100,18 @@ export default [
   },
   // Test file overrides
   {
-    files: ['**/*.{spec,test}.{ts,tsx}', '**/e2e/**/*.{ts,tsx}', '**/cypress/**/*.{ts,tsx}'],
+    files: ['**/*.{spec,test}.{ts,tsx}', '**/e2e/**/*.{ts,tsx}'],
+    rules: {
+      // ... existing rules ...
+    },
     languageOptions: {
       globals: {
-        ...globals.jest, // For test globals
-        cy: true, // For Cypress
-        Cypress: true,
-        expect: true,
-        vi: true, // For Vitest
+        ...globals.node,
+        ...globals.browser,
+        vi: true,
         describe: true,
         it: true,
+        expect: true,
         beforeEach: true,
         afterEach: true,
         beforeAll: true,
