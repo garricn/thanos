@@ -259,6 +259,22 @@ Current status:
 
 ## Database Management
 
+### API Infrastructure Improvements
+
+- [ ] Replace structure.test.ts with modern infrastructure checks:
+  - [ ] Implement `/health` endpoint for runtime monitoring
+    - [ ] Add database connectivity check
+    - [ ] Add file structure verification
+    - [ ] Add service dependencies health check
+  - [ ] Set up proper database migration system
+    - [ ] Evaluate and choose migration tool (Prisma/TypeORM)
+    - [ ] Create initial migration from current schema
+    - [ ] Document migration process
+  - [ ] Create setup script for first-time initialization
+    - [ ] Move file structure checks to setup
+    - [ ] Add to npm prepare script
+    - [ ] Add validation and error reporting
+
 ### Current SQLite Optimization
 
 - [ ] Implement Database Abstraction Layer
