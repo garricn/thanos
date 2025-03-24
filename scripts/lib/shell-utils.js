@@ -102,38 +102,38 @@ export async function cleanDeep(options = {}) {
   const {
     execSync = defaultExecSync,
     console = globalThis.console,
-    colors = defaultColors,
+    colors: customColors = colors,
     dryRun = false,
   } = options;
 
   // Step 1: Clean node_modules
-  console.log(`\n${colors.yellow}Step 1: Cleaning node_modules...${colors.reset}`);
+  console.log(`\n${customColors.yellow}Step 1: Cleaning node_modules...${customColors.reset}`);
   if (dryRun) {
     console.log('Would run: rm -rf node_modules');
   } else {
     exec(execSync, 'rm -rf node_modules');
   }
-  console.log(`${colors.green}✓ Cleaned node_modules${colors.reset}`);
+  console.log(`${customColors.green}✓ Cleaned node_modules${customColors.reset}`);
 
   // Step 2: Clean build artifacts
-  console.log(`\n${colors.yellow}Step 2: Cleaning build artifacts...${colors.reset}`);
+  console.log(`\n${customColors.yellow}Step 2: Cleaning build artifacts...${customColors.reset}`);
   if (dryRun) {
     console.log('Would run: rm -rf dist tmp coverage');
   } else {
     exec(execSync, 'rm -rf dist tmp coverage');
   }
-  console.log(`${colors.green}✓ Cleaned build artifacts${colors.reset}`);
+  console.log(`${customColors.green}✓ Cleaned build artifacts${customColors.reset}`);
 
   // Step 3: Clean npm cache
-  console.log(`\n${colors.yellow}Step 3: Cleaning npm cache...${colors.reset}`);
+  console.log(`\n${customColors.yellow}Step 3: Cleaning npm cache...${customColors.reset}`);
   if (dryRun) {
     console.log('Would run: npm cache clean --force');
   } else {
     exec(execSync, 'npm cache clean --force');
   }
-  console.log(`${colors.green}✓ Cleaned npm cache${colors.reset}`);
+  console.log(`${customColors.green}✓ Cleaned npm cache${customColors.reset}`);
 
-  console.log(`\n${colors.green}✓ Deep clean completed successfully${colors.reset}`);
+  console.log(`\n${customColors.green}✓ Deep clean completed successfully${customColors.reset}`);
 }
 
 /**

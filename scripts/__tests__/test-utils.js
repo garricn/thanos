@@ -1,7 +1,30 @@
 import { vi, expect, beforeEach } from 'vitest';
 
 // Global mock functions that tests can access directly
-export const mockExecSync = vi.fn();
+export const mockExecSync = vi.fn().mockImplementation(command => {
+  if (command === 'node -v') return 'v20.0.0';
+  if (command === 'npm -v') return '9.0.0';
+  if (command === 'npm cache clean --force') return '';
+  if (command === 'rm -rf node_modules') return '';
+  if (command === 'rm -rf dist tmp coverage') return '';
+  if (command === 'npm install') return '';
+  if (command.includes('test:scripts:coverage')) return '';
+  if (command.includes('test --workspace=apps/api')) return '';
+  if (command.includes('test --workspace=apps/web')) return '';
+  if (command.includes('testNamePattern=snapshot')) return '';
+  if (command.includes('open')) return '';
+  if (command.includes('npm run node:version')) return '';
+  if (command.includes('npm run type-check')) return '';
+  if (command.includes('npm run lint')) return '';
+  if (command.includes('npm run test:unit')) return '';
+  if (command.includes('npx lint-staged')) return '';
+  if (command.includes('npx tsc --noEmit')) return '';
+  if (
+    command === 'rm -rf node_modules package-lock.json dist tmp coverage .nyc_output ./*.log logs'
+  )
+    return '';
+  throw new Error(`Unexpected command: ${command}`);
+});
 export const mockReadFileSync = vi.fn();
 export const mockExistsSync = vi.fn();
 export const mockCopyFileSync = vi.fn();
@@ -438,14 +461,4 @@ export function createGitState({
     typePass,
     testPass,
   };
-}
-
-export function mockExecSync(command) {
-  if (command === 'node -v') return 'v20.0.0';
-  if (command === 'npm -v') return '10.0.0';
-  if (command === 'npm cache clean --force') return '';
-  if (command === 'rm -rf node_modules') return '';
-  if (command === 'rm -rf dist tmp coverage') return '';
-  if (command === 'npm install') return '';
-  throw new Error(`Unexpected command: ${command}`);
 }

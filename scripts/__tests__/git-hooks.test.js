@@ -1,21 +1,17 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { runPreCommitChecks, runPrePushChecks } from '../hooks/git-hooks.js';
-import {
-  mockExecSync,
-  mockConsoleLog,
-  mockConsoleError,
-  mockExit,
-  setupMockDefaults,
-} from './test-utils.js';
+import { setupMockDefaults } from './test-utils.js';
+
+// Mock execSync and console methods
+const mockExecSync = vi.fn();
+const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
+const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 describe('git-hooks', () => {
   beforeEach(() => {
     setupMockDefaults();
     // Clear specific mocks for these tests
-    mockExecSync.mockClear();
-    mockConsoleLog.mockClear();
-    mockConsoleError.mockClear();
-    mockExit.mockClear();
+    vi.clearAllMocks();
   });
 
   describe('runPreCommitChecks', () => {
@@ -192,6 +188,9 @@ describe('git-hooks', () => {
     });
 
     it('should log success message when all checks pass', async () => {
+      // Arrange - mock successful executions
+      mockExecSync.mockImplementation(() => '');
+
       // Act
       await runPrePushChecks(mockExecSync);
 
