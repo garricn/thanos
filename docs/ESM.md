@@ -60,6 +60,7 @@ import { bar } from '@app/bar';
 ## Troubleshooting
 
 1. **ESM Support**:
+
    - Node.js 14+ required for ESM support
    - Use `.js` extension in imports
    - Configure TypeScript for ESM
