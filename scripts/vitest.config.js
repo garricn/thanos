@@ -25,5 +25,16 @@ export default defineConfig({
       all: true,
     },
     setupFiles: [path.resolve(__dirname, '__tests__/setup.js')],
+    reporters: [
+      'default',
+      [
+        'vitest-sonar-reporter',
+        {
+          outputFile: path.resolve(__dirname, '../coverage/scripts/sonar-report.xml'),
+          testFilePath: '<absolute>',
+        },
+      ],
+    ],
+    testTimeout: 30000,
   },
 });

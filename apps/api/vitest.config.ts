@@ -25,6 +25,16 @@ export default defineConfig({
       reportsDirectory: path.resolve(__dirname, '../../coverage/api'),
       all: true,
     },
+    reporters: [
+      'default',
+      [
+        'vitest-sonar-reporter',
+        {
+          outputFile: path.resolve(__dirname, '../../coverage/api/sonar-report.xml'),
+          testFilePath: '<absolute>',
+        },
+      ],
+    ],
     testTimeout: 30000,
   },
 });
