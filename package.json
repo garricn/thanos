@@ -22,8 +22,7 @@
   "scripts": {
     "act": "node scripts/bin/act.js",
     "build": "npm run build --workspace=apps/api && npm run build --workspace=apps/web",
-    "check": "npm-run-all --parallel lint type-check test:unit",
-    "check:all": "npm-run-all check test:e2e coverage:all security:check check:deps",
+    "check": "npm-run-all node:version format --parallel lint type-check security:check check:deps --serial test",
     "check:deps": "npm ci --dry-run && npm ls --depth=0",
     "check:outdated": "npm outdated || true",
     "clean": "rm -rf dist apps/*/dist tmp node_modules/.cache",
