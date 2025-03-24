@@ -1,136 +1,75 @@
-# ESM Strategy
+# ESM Support
 
-This document outlines our strategy for ES Modules (ESM) in the Thanos project.
+This document outlines how ECMAScript Modules (ESM) are supported across the monorepo.
 
 ## Overview
 
-The project uses ES Modules as its primary module system, migrated from CommonJS in [commit 2eca358](https://github.com/garricn/thanos/commit/2eca358094e666143172c6268f119c428dbe9cd8). This decision aligns with modern JavaScript practices and provides better tree-shaking, static analysis, and future compatibility.
+- All workspaces use ESM by default
+- Package.json has `"type": "module"`
+- Import/export statements use ESM syntax
+- Config files use `.mjs` or `.ts` extensions
 
-## Implementation Details
-
-### Package Configuration
-
-All workspaces use ESM by default through the `"type": "module"` setting in their `package.json`:
-
-```json
-{
-  "type": "module"
-}
-```
-
-### File Extensions
-
-- **Source Files**: Use `.ts`/`.tsx` for TypeScript files
-- **Configuration Files**:
-  - API workspace: Uses `.mjs` for Jest and other configs
-  - Web workspace: Uses `.ts` for better type safety
-  - Root level: Supports both `.mjs` and `.ts`
-
-### Jest Configuration
-
-- API workspace uses `.mjs` for Jest configs:
-
-  ```
-  apps/api/configs/test/jest.config.mjs
-  apps/api/e2e/configs/test/jest.config.mjs
-  ```
-
-- Web workspace uses `.ts` for Jest config:
-
-  ```
-  apps/web/configs/test/jest.config.ts
-  ```
-
-- Root Jest config supports both:
-
-  ```typescript
-  projects: [
-    '<rootDir>/apps/*/configs/test/jest.config.{ts,mjs}',
-    '<rootDir>/apps/*/e2e/configs/test/jest.config.{ts,mjs}',
-    '<rootDir>/apps/*/tests/configs/test/jest.config.{ts,mjs}',
-  ];
-  ```
-
-### Import/Export Syntax
-
-Use ES Module syntax consistently:
-
-```typescript
-// ✅ Do this
-import { something } from './module.js';
-export const thing = {};
-export default thing;
-
-// ❌ Don't do this
-const something = require('./module');
-module.exports = thing;
-```
-
-### Node.js Configuration
-
-- API uses `--experimental-vm-modules` for Jest tests
-- Uses `tsx` for running TypeScript files directly
-- Development uses `nodemon` with ESM support
-
-## Workspace-Specific Details
+## Workspace Configuration
 
 ### API Workspace
 
-- Uses `.mjs` for configuration files to ensure Node.js treats them as ES Modules
-- Test setup includes:
-
-  ```bash
-  NODE_OPTIONS='--experimental-vm-modules' jest
-  ```
-
-- Development uses:
-
-  ```bash
-  nodemon --exec 'npx tsx --tsconfig path/to/tsconfig.json'
-  ```
+- Uses `.mjs` for config files
+- Node.js native ESM support
 
 ### Web Workspace
 
-- Uses `.ts` for configuration files for better TypeScript integration
-- Vite handles ESM transpilation automatically
-- Jest configured with TypeScript and React presets
+- Uses `.ts` for config files
+- Vite handles ESM bundling
 
-## Migration Guidelines
+## Testing Configuration
 
-When adding new files or configurations:
+### API Workspace
 
-1. Always use ES Module syntax for imports/exports
-2. For the API workspace:
-   - Use `.mjs` for configuration files
-   - Ensure Node.js flags are set for ESM compatibility
-3. For the Web workspace:
-   - Use `.ts` for configuration files
-   - Leverage TypeScript for type safety
+- Uses Vitest for unit and E2E tests
+- Config file: `apps/api/vitest.config.ts`
+- E2E config file: `apps/api/vitest.config.e2e.js`
 
-## Testing
+### Web Workspace
 
-- Run `npm run test:all` to verify all tests work with ESM configuration
-- E2E tests use ESM-compatible configurations
-- Coverage reporting works with both `.mjs` and `.ts` config files
+- Uses Vitest for unit tests
+- Config file: `apps/web/vitest.config.ts`
+- Playwright for E2E tests
 
-## Common Issues
+## Node.js Configuration
 
-1. **Jest ESM Support**:
+- ESM is enabled by default
+- No special flags needed for running tests
+- TypeScript configured for ESM
 
-   - Solution: Use `--experimental-vm-modules` flag
-   - Example: `NODE_OPTIONS='--experimental-vm-modules' jest`
+## Common Patterns
 
-2. **TypeScript Path Resolution**:
+### Import Statements
 
-   - Solution: Use `.js` extensions in imports
-   - Example: `import { thing } from './module.js'`
+```js
+// ESM imports
+import { foo } from './foo.js';
+import { bar } from '@app/bar';
+```
 
-3. **Configuration File Loading**:
-   - Solution: Use `.mjs` for Node.js configs that must run directly
-   - Solution: Use `.ts` where TypeScript support is more important
+### Config Files
 
-## Future Considerations
+- Use `.mjs` for Node.js config files
+- Use `.ts` for TypeScript config files
+- Vitest configured with TypeScript and React presets
 
-1. Monitor Node.js ESM support status
-2. Consider migrating remaining `.ts` configs to `.mjs` when TypeScript ESM support improves
-3. Keep dependencies updated for best ESM compatibility
+## Troubleshooting
+
+1. **ESM Support**:
+   - Node.js 14+ required for ESM support
+   - Use `.js` extension in imports
+   - Configure TypeScript for ESM
+
+2. **TypeScript**:
+   - Set `module: "ESNext"` in tsconfig
+   - Use `moduleResolution: "Node16"` or `"Bundler"`
+
+## Resources
+
+- [Node.js ESM Documentation](https://nodejs.org/api/esm.html)
+- [TypeScript ESM Support](https://www.typescriptlang.org/docs/handbook/esm-node.html)
+- [Vitest Documentation](https://vitest.dev)

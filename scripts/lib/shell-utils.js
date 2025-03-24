@@ -92,13 +92,16 @@ export function checkNodeVersionMatch(requiredVersion, currentVersion, force = f
 
 /**
  * Performs a deep clean of the project
- * @param {string[]} args Command line arguments
- * @param {Function} execSync Function to execute commands
+ * @param {object} options Options for the clean operation
+ * @param {Function} options.execSync Function to execute commands
+ * @param {object} options.console Console object for logging
+ * @param {object} options.colors Color codes for console output
+ * @param {boolean} options.dryRun Whether to perform a dry run
  */
 export async function cleanDeep(options = {}) {
   const {
     execSync = defaultExecSync,
-    console = defaultConsole,
+    console = globalThis.console,
     colors = defaultColors,
     dryRun = false,
   } = options;

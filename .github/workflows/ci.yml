@@ -141,20 +141,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node
-      - name: Run unit tests with coverage
-        run: npm run test:unit:coverage
-      - name: Upload test coverage
+      - name: Run tests
+        run: npm test
+      - name: Upload test artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: api-unit-coverage
-          path: coverage/api/unit/
-          retention-days: 7
-      - name: Upload web unit coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-unit-coverage
-          path: coverage/web/unit/
-          retention-days: 7
+          name: test-results
+          path: |
+            coverage/**/*
+            test-results/**/*
+            playwright-report/**/*
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
@@ -199,39 +196,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node
-      - name: Install system dependencies for Cypress
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            xvfb \
-            libgtk2.0-0 \
-            libgtk-3-0 \
-            libgbm-dev \
-            libnotify-dev \
-            libnss3 \
-            libxss1 \
-            libasound2-dev \
-            libxtst6 \
-            xauth \
-            # Optional/legacy dependencies
-            libgconf-2-4 || true
-          # Install additional dependencies
-          sudo apt-get install -y \
-            libatk1.0-0 \
-            libatk-bridge2.0-0 \
-            libcups2 \
-            libdrm2 \
-            libxcomposite1 \
-            libxdamage1 \
-            libxfixes3 \
-            libxrandr2 \
-            libgbm1 \
-            libpango-1.0-0 \
-            libcairo2
       - name: Build API and Web
         run: npm run build
       - name: Run E2E tests
         run: npm run test:e2e
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-results
+          path: |
+            test-results/**/*
+            playwright-report/**/*
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
@@ -240,8 +216,6 @@ jobs:
           path: |
             ./**/*.log
             ./npm-debug.log*
-            ./cypress/screenshots/**/*
-            ./cypress/videos/**/*
           retention-days: 7
 
   coverage:

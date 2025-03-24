@@ -19,27 +19,22 @@ async function replaceAbsolutePaths(targetDir, projectName) {
   console.log('Replacing absolute paths in files...');
 
   // Files that might contain absolute paths
-  const filesToCheck = [
-    // Vite config files
+  const configFiles = [
+    'apps/api/vitest.config.ts',
+    'apps/web/vitest.config.ts',
+    'apps/web/playwright.config.ts',
+    'scripts/vitest.config.js',
     'vite.config.ts',
-    'apps/web/vite.config.ts',
-    // Cypress config files
-    'apps/web/e2e/cypress.config.ts',
-    // Any JSON files that might have paths
-    'package.json',
-    // TypeScript config files
-    'tsconfig.json',
-    'apps/web/tsconfig.json',
-    'apps/api/tsconfig.json',
+    'vitest.workspace.ts',
   ];
 
-  for (const file of filesToCheck) {
+  for (const file of configFiles) {
     const filePath = path.join(targetDir, file);
     if (fs.existsSync(filePath)) {
       let content = fs.readFileSync(filePath, 'utf8');
 
       // Replace the project name in any paths
-      const projectRegex = new RegExp(`/thanos/`, 'g');
+      const projectRegex = new RegExp('/thanos/', 'g');
       if (content.match(projectRegex)) {
         console.log(`  Replacing project name in ${file}`);
         content = content.replace(projectRegex, `/${projectName}/`);
@@ -47,7 +42,7 @@ async function replaceAbsolutePaths(targetDir, projectName) {
       }
 
       // Replace "Thanos" with project name
-      const nameRegex = new RegExp(`Thanos`, 'g');
+      const nameRegex = new RegExp('Thanos', 'g');
       if (content.match(nameRegex)) {
         console.log(`  Replacing "Thanos" with "${projectName}" in ${file}`);
         content = content.replace(nameRegex, projectName);
@@ -98,7 +93,7 @@ async function updateAppTitle(targetDir, projectName) {
     // Replace "Web App" with project name
     const titleRegex = /<h1[^>]*>Web App<\/h1>/;
     if (content.match(titleRegex)) {
-      console.log(`  Updating title in app.tsx`);
+      console.log('  Updating title in app.tsx');
       content = content.replace(
         titleRegex,
         `<h1 className="text-3xl font-bold mb-6">${projectName}</h1>`
@@ -115,7 +110,7 @@ async function updateAppTitle(targetDir, projectName) {
     // Replace "Thanos" with project name in title tag
     const titleRegex = /<title>Thanos<\/title>/;
     if (content.match(titleRegex)) {
-      console.log(`  Updating title in index.html`);
+      console.log('  Updating title in index.html');
       content = content.replace(titleRegex, `<title>${projectName}</title>`);
       fs.writeFileSync(indexHtmlPath, content);
     }
@@ -160,7 +155,7 @@ async function main() {
   ]);
 
   // Copy files from thanos template to current directory
-  console.log(`Copying files from template to current directory...`);
+  console.log('Copying files from template to current directory...');
   fs.copySync(thanosDir, targetDir, {
     filter: src => {
       const relativePath = path.relative(thanosDir, src);

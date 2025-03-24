@@ -1,1 +1,2 @@
-import '@testing-library/jest-dom';
+// Test setup file
+// Add any global test setup here

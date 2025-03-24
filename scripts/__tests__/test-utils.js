@@ -439,3 +439,13 @@ export function createGitState({
     testPass,
   };
 }
+
+export function mockExecSync(command) {
+  if (command === 'node -v') return 'v20.0.0';
+  if (command === 'npm -v') return '10.0.0';
+  if (command === 'npm cache clean --force') return '';
+  if (command === 'rm -rf node_modules') return '';
+  if (command === 'rm -rf dist tmp coverage') return '';
+  if (command === 'npm install') return '';
+  throw new Error(`Unexpected command: ${command}`);
+}

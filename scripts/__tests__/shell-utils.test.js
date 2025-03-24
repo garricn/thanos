@@ -214,109 +214,32 @@ describe('shell-utils', () => {
   });
 
   describe('cleanDeep', () => {
-    it('displays help message and exits with --help flag', () => {
-      // Act
-      cleanDeep(['--help'], mockExecSync);
-
-      // Assert
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Thanos Deep Clean Script')
-      );
-      expect(mockExit).toHaveBeenCalledWith(0);
-    });
-
-    it('runs in dry-run mode when --dry-run flag is used', () => {
-      // Act
-      cleanDeep(['--dry-run'], mockExecSync);
-
-      // Assert
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Running in dry-run mode')
-      );
-      // Should show "Would remove" instead of actually removing
-      expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('Would remove:'));
-      // Should not execute rm command
-      expect(mockExecSync).not.toHaveBeenCalledWith(
-        expect.stringContaining('rm -rf node_modules'),
-        expect.any(Object)
-      );
-    });
-
-    it('bypasses Node.js version check with --force flag', () => {
-      // Arrange - setup different versions
-      mockReadFileSync.mockReturnValue('20.0.0\n'); // .nvmrc
-      mockExecSync.mockImplementation(cmd => {
-        if (cmd === 'node -v') return 'v18.0.0'; // Current version
-        return '';
-      });
-
-      // Act
-      cleanDeep(['--force'], mockExecSync);
-
-      // Assert
-      expect(mockConsoleLog).toHaveBeenCalledWith(expect.stringContaining('Force mode enabled'));
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Warning: Using Node.js v18')
-      );
-      // Should continue with cleaning despite version mismatch
-      expect(mockExecSync).toHaveBeenCalledWith(
-        expect.stringContaining('rm -rf'),
-        expect.any(Object)
-      );
-    });
-
-    it('removes generated files and cleans npm cache', () => {
+    it('performs deep clean with default options', () => {
       // Arrange
-      mockReadFileSync.mockReturnValue('20.0.0\n');
-      mockExecSync.mockImplementation(cmd => {
-        if (cmd === 'node -v') return 'v20.0.0';
-        if (cmd === 'npm -v') return '9.0.0';
-        return '';
-      });
+      const mockExecSync = vi.fn();
 
       // Act
-      cleanDeep([], mockExecSync);
+      cleanDeep({ execSync: mockExecSync });
 
       // Assert
-      // Should execute rm command
-      expect(mockExecSync).toHaveBeenCalledWith(
-        expect.stringContaining('rm -rf node_modules'),
-        expect.any(Object)
-      );
-      // Should clean npm cache
+      expect(mockExecSync).toHaveBeenCalledWith('rm -rf node_modules', expect.any(Object));
+      expect(mockExecSync).toHaveBeenCalledWith('rm -rf dist tmp coverage', expect.any(Object));
       expect(mockExecSync).toHaveBeenCalledWith('npm cache clean --force', expect.any(Object));
-      // Should clear Jest cache
-      expect(mockExecSync).toHaveBeenCalledWith('npx jest --clearCache', expect.any(Object));
-      // Should reinstall dependencies
-      expect(mockExecSync).toHaveBeenCalledWith('npm install', expect.any(Object));
-      // Should show completion message
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Deep cleaning complete')
-      );
     });
 
-    it('handles Jest cache clear failure gracefully', () => {
+    it('handles dry run mode', () => {
       // Arrange
-      mockReadFileSync.mockReturnValue('20.0.0\n');
-      mockExecSync.mockImplementation((cmd, opts) => {
-        if (cmd === 'node -v') return 'v20.0.0';
-        if (cmd === 'npm -v') return '9.0.0';
-        if (cmd === 'npx jest --clearCache') {
-          throw new Error('Jest not installed');
-        }
-        return '';
-      });
+      const mockExecSync = vi.fn();
+      const mockConsole = { log: vi.fn() };
 
       // Act
-      cleanDeep([], mockExecSync);
+      cleanDeep({ execSync: mockExecSync, console: mockConsole, dryRun: true });
 
       // Assert
-      // Should continue despite Jest cache clear failure
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        expect.stringContaining('Jest cache clear might have failed')
-      );
-      // Should still reinstall dependencies
-      expect(mockExecSync).toHaveBeenCalledWith('npm install', expect.any(Object));
+      expect(mockExecSync).not.toHaveBeenCalled();
+      expect(mockConsole.log).toHaveBeenCalledWith('Would run: rm -rf node_modules');
+      expect(mockConsole.log).toHaveBeenCalledWith('Would run: rm -rf dist tmp coverage');
+      expect(mockConsole.log).toHaveBeenCalledWith('Would run: npm cache clean --force');
     });
   });
 });

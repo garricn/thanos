@@ -29,7 +29,6 @@
     "@babel/preset-react": "^7.22.5",
     "@babel/preset-typescript": "^7.22.5",
     "@playwright/test": "^1.51.1",
-    "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",
     "@types/react": "19.0.0",
     "@types/react-dom": "19.0.0",
