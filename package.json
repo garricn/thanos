@@ -10,15 +10,6 @@
   "workspaces": [
     "apps/*"
   ],
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": [
-      "prettier --write",
-      "eslint -c eslint.config.mjs --fix"
-    ],
-    "*.{json,md,yml,yaml}": [
-      "prettier --write"
-    ]
-  },
   "scripts": {
     "act": "node scripts/bin/act.js",
     "build": "npm run build --workspace=apps/api && npm run build --workspace=apps/web",
