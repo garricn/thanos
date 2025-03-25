@@ -16,8 +16,7 @@ export default defineConfig({
     exclude: ['**/node_modules/**', '**/dist/**', '**/coverage/**', '**/e2e/**'],
     coverage: {
       enabled: true,
-      provider: 'custom',
-      customProviderModule: 'vitest-monocart-coverage',
+      provider: 'v8',
       include: [
         'apps/api/src/**/*.ts',
         'apps/web/src/**/*.{ts,tsx}',
@@ -35,7 +34,8 @@ export default defineConfig({
         '**/vite-env.d.ts',
       ],
       all: true,
-      reporter: ['text', 'lcov'],
+      reporter: ['json'],
+      clean: true,
     },
     reporters: ['default'],
   },

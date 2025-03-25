@@ -1,5 +1,40 @@
 # HTML Coverage Generation Issue
 
+## Next Attempt: Pure V8 Coverage (March 24, 2024)
+
+After investigating various solutions, we're going to try using pure V8 coverage without Istanbul conversion:
+
+### Why V8 Coverage?
+
+- Uses Node.js/V8's built-in coverage (no instrumentation needed)
+- No path conversion issues (since we skip Istanbul conversion)
+- Better support for modern JS features
+- Additional features:
+  - Byte coverage statistics
+  - Coverage for minified/runtime code
+  - CSS coverage support
+  - Modern UI with file tree, search, filters
+
+### Implementation Plan
+
+1. Update Vitest config to use V8 coverage provider
+2. Use monocart's V8 reporter directly (skip Istanbul conversion)
+3. Configure path handling at the V8 level
+
+### Example Config
+
+```js
+// mcr.config.js
+module.exports = {
+  name: 'Thanos Coverage Report',
+  reports: ['v8', 'console-details'],  // Use V8 reporter instead of HTML/LCOV
+  include: ['**/coverage-final.json'],
+  outputDir: 'coverage/combined'
+};
+```
+
+This approach should eliminate the path resolution issues we've been facing since we're no longer converting between coverage formats.
+
 ## Status Update (March 2024)
 
 ### Current Status
@@ -7,6 +42,95 @@
 - Successfully migrated to Vitest Monocart Coverage for HTML report generation
 - Resolved initial path resolution issues that occurred with `genhtml`
 - Coverage reports are now generating correctly for all packages
+- Currently using a "generate-then-move" approach where:
+  - Coverage is generated in each package directory
+  - Files are moved to central coverage directory using `mv` commands
+  - This works but is considered a workaround rather than best practice
+
+### Latest Investigation (March 24, 2024)
+
+After extensive testing with monocart-coverage-reports, we've discovered:
+
+1. **Path Resolution Issues**
+   - Monocart has similar path resolution issues to genhtml
+   - Coverage files contain absolute paths (e.g., `/Users/garric/Developer/thanos/apps/api/src/app.ts`)
+   - When these files are combined, tools struggle to locate the source files
+
+2. **Test Findings**
+   - Basic test with a single coverage file works
+   - Test with multiple files in a flat structure fails
+   - Test with relative paths works perfectly
+   - This suggests the issue isn't with monocart specifically, but with how coverage paths are handled
+
+3. **Industry Standards vs Reality**
+   - Industry standard states coverage files should use relative paths
+   - However, many tools (Vitest, Jest, etc.) generate absolute paths by default
+   - This creates a disconnect between best practices and tool implementations
+   - The problem seems systemic across the coverage tooling ecosystem
+
+4. **Why This Happens**
+   - Tools need absolute paths during test execution to map coverage to source files
+   - These absolute paths often get persisted into coverage files
+   - Coverage report generators expect relative paths for portability
+   - No standardized approach for this translation exists
+   - Each tool (genhtml, monocart, etc.) handles this differently
+
+5. **Potential Solutions**
+   - Configure Vitest to generate relative paths (if possible)
+   - Pre-process coverage files to convert absolute to relative paths
+   - Use tool-specific path resolution options (baseDir, sourceFilter, etc.)
+   - Create a standardized path translation layer
+
+6. **Missing Feature in Coverage Tools**
+   - Coverage tools should provide a transform option during report generation
+   - This would allow:
+     - Keeping absolute paths during test execution
+     - Transforming to relative paths during report generation
+     - No modification of original coverage files needed
+   - Example of what this could look like:
+
+     ```js
+     // Hypothetical API
+     module.exports = {
+       name: 'Coverage Report',
+       reports: ['html', 'lcov'],
+       include: ['**/coverage-final.json'],
+       transformPaths: (path) => path.replace(process.cwd(), ''),
+       outputDir: 'coverage/combined'
+     }
+     ```
+
+   - This would solve the fundamental tension between:
+     - Test execution needs (absolute paths)
+     - Report generation needs (relative paths)
+   - Current workarounds all try to solve this after the fact
+
+### Investigation Findings
+
+Recent investigation revealed we can simplify our approach:
+
+1. **Vitest Workspace Approach**
+   - Use Vitest's workspace feature with root configuration
+   - Configure coverage output paths directly in Vitest
+   - Let Monocart handle report aggregation
+   - Advantages:
+     - No need for manual file moving
+     - Better path resolution
+     - Native monorepo support
+     - Built-in watch mode support
+   - Implementation:
+     - Use existing `vitest.workspace.ts`
+     - Configure coverage settings in root config
+     - Let Monocart handle report generation
+
+2. **Current Approach (for reference)**
+   - Generate coverage in each package
+   - Move files to central directory
+   - Works but adds complexity
+   - Requires extra file operations
+   - More prone to path resolution issues
+
+The Vitest Workspace approach would eliminate the need for our current move-based solution while providing better integration with our monorepo structure.
 
 ### In Progress
 
