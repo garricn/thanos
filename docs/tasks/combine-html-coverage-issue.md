@@ -1,5 +1,25 @@
 # HTML Coverage Generation Issue
 
+## Migration Complete: Pure V8 Coverage (March 2024)
+
+### Successfully Migrated
+
+We have successfully migrated to pure V8 coverage reporting, eliminating the need for Istanbul conversion and Monocart. The new setup:
+
+1. Uses `@vitest/coverage-v8` directly for coverage collection
+2. Generates coverage reports in the correct format for:
+   - Codecov integration
+   - Sonar integration
+   - Local HTML reports
+3. Maintains proper path resolution without any workarounds
+4. Simplifies the dependency tree by removing:
+   - `vitest-monocart-coverage`
+   - `monocart-coverage-reports`
+   - `lcov-result-merger`
+   - `mcr.config.cjs`
+
+The migration has resolved all path resolution issues and provides a more maintainable solution that aligns with modern JavaScript tooling practices.
+
 ## Next Attempt: Pure V8 Coverage (March 24, 2024)
 
 After investigating various solutions, we're going to try using pure V8 coverage without Istanbul conversion:
