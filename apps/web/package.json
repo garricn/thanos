@@ -7,7 +7,7 @@
     "dev": "vite --config ../../vite.config.ts",
     "build": "vite build --config ../../vite.config.ts",
     "preview": "vite preview --config ../../vite.config.ts",
-    "test": "vitest run",
+    "test": "vitest run --reporter junit --outputFile ./test-results/junit.xml",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint --config ../../eslint.config.mjs --ignore-pattern 'coverage/**' . e2e/",
     "typecheck": "tsc --noEmit --project ./tsconfig.json",
