@@ -10,7 +10,7 @@ export default defineConfig({
     include: [path.resolve(__dirname, '__tests__/**/*.test.js')],
     exclude: ['**/node_modules/**', '**/dist/**', '**/coverage/**'],
     coverage: {
-      enabled: true,
+      enabled: false,
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
       include: ['bin/**/*.js', 'hooks/**/*.js'],
