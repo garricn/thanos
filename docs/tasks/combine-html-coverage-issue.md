@@ -147,7 +147,7 @@ The Vitest Workspace approach would eliminate the need for our current move-base
   - Internal tooling (scripts) should have separate coverage metrics
   - Different stakeholders need different views of coverage data
 
-### Next Steps
+### Next Steps for Coverage Separation
 
 1. **Coverage Separation**
 
@@ -170,7 +170,36 @@ The Vitest Workspace approach would eliminate the need for our current move-base
    - Configure Sonar to handle different quality gates for different components
    - Explore Monocart's workspace configuration for better separation
 
-### Open Questions
+### Open Questions for Coverage Separation
+
+- Best approach for CI/CD integration with separated coverage
+- How to handle Sonar's expectation of a combined report while maintaining separation
+- Whether to use workspace config or separate runs for coverage generation
+
+### Next Steps for Path Resolution
+
+1. **Coverage Separation**
+
+   - Keep using Monocart for report generation
+   - Configure separate coverage thresholds for:
+     - Production code (api/web): Higher threshold
+     - Internal tooling (scripts): More flexible threshold
+   - Update CI/CD to handle different coverage requirements
+
+2. **Report Generation**
+
+   - Generate three distinct reports:
+     1. Production code combined (api/web)
+     2. Internal tooling (scripts)
+     3. Full combined report (when needed)
+   - Update Codecov and Sonar configurations to handle this separation
+
+3. **Solutions to Try**
+   - Use Codecov flags to separate production vs tooling coverage
+   - Configure Sonar to handle different quality gates for different components
+   - Explore Monocart's workspace configuration for better separation
+
+### Open Questions for Path Resolution
 
 - Best approach for CI/CD integration with separated coverage
 - How to handle Sonar's expectation of a combined report while maintaining separation
