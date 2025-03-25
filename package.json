@@ -116,10 +116,8 @@
     "inquirer": "^8.2.5",
     "jiti": "2.4.2",
     "jsdom": "~22.1.0",
-    "lcov-result-merger": "^5.0.1",
     "lint-staged": "^15.2.2",
     "markdownlint-cli2": "^0.17.2",
-    "monocart-coverage-reports": "^2.12.3",
     "nodemon": "^3.1.9",
     "npm-force-resolutions": "^0.0.10",
     "npm-run-all": "^4.1.5",
@@ -135,7 +133,6 @@
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.19.0",
     "vitest": "^3.0.9",
-    "vitest-monocart-coverage": "^3.0.1",
     "vitest-sonar-reporter": "^2.0.0",
     "wait-on": "^8.0.3",
     "yargs": "^17.7.2"
