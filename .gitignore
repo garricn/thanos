@@ -21,7 +21,7 @@ build
 # Test and coverage
 /coverage
 **/coverage
-test-report.xml
+test-results
 **/test-report.xml
 /libpeerconnection.log
 testem.log
@@ -66,4 +66,3 @@ actionlint
 
 # Playwright test results and reports
 **/playwright-report
-**/test-results

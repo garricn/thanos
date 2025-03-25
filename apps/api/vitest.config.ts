@@ -19,6 +19,9 @@ export default defineConfig({
         '**/*.config.{js,ts}',
       ],
     },
-    reporters: ['default'],
+    reporters: ['default', 'junit'],
+    outputFile: {
+      junit: './test-results/junit.xml',
+    },
   },
 });

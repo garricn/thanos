@@ -24,7 +24,10 @@ export default defineConfig({
         '**/vite-env.d.ts',
       ],
     },
-    reporters: ['default'],
+    reporters: ['default', 'junit'],
+    outputFile: {
+      junit: './test-results/junit.xml',
+    },
     testTimeout: 30000,
   },
 });

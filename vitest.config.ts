@@ -4,7 +4,7 @@ export default defineConfig({
   test: {
     globals: true,
     coverage: {
-      enabled: true,
+      enabled: false,
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],
       reportsDirectory: './coverage/combined',
@@ -18,6 +18,10 @@ export default defineConfig({
         '**/vite-env.d.ts',
         '**/*.{test,spec}.{ts,tsx}',
       ],
+    },
+    reporters: ['default', 'junit'],
+    outputFile: {
+      junit: './test-results/junit.xml',
     },
     workspace: [
       {
