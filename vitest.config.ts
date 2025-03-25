@@ -19,9 +19,9 @@ export default defineConfig({
         '**/*.{test,spec}.{ts,tsx}',
       ],
     },
-    reporters: ['default', 'junit'],
+    reporters: ['default', 'vitest-sonar-reporter'],
     outputFile: {
-      junit: './test-report.xml',
+      'vitest-sonar-reporter': './test-report.xml',
     },
     workspace: [
       {

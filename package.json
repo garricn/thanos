@@ -37,6 +37,7 @@
     "prepare": "[ -n \"$CI\" ] || [ -n \"$HUSKY\" -a \"$HUSKY\" = \"0\" ] || husky",
     "security:check": "snyk test --all-projects",
     "security:fix": "snyk wizard",
+    "sonar": "sonar-scanner -Dsonar.token=$SONAR_TOKEN",
     "start": "concurrently --kill-others-on-fail \"npm run start:api\" \"npm run start:web\"",
     "start:api": "npm run dev --workspace=apps/api",
     "start:web": "npm run dev --workspace=apps/web",

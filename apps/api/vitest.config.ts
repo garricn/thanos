@@ -19,9 +19,9 @@ export default defineConfig({
         '**/*.config.{js,ts}',
       ],
     },
-    reporters: ['default', 'junit'],
+    reporters: ['default', 'vitest-sonar-reporter'],
     outputFile: {
-      junit: './test-report.xml',
+      'vitest-sonar-reporter': './test-report.xml',
     },
   },
 });
