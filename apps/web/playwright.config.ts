@@ -1,17 +1,21 @@
-import { devices } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
 
-const config = {
+export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
-  reporter: 'html',
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: [
+    ['list'],
+    ['junit', { outputFile: './test-results/junit.xml' }],
+    ['html', { open: 'never' }],
+  ],
   use: {
     baseURL: 'http://localhost:4200',
-    trace: 'on-first-retry',
-  },
-  webServer: {
-    command: 'npm run dev',
-    url: 'http://localhost:4200',
-    reuseExistingServer: !process.env.CI,
+    trace: 'on',
+    screenshot: 'only-on-failure',
+    video: 'on',
   },
   projects: [
     {
@@ -19,6 +23,4 @@ const config = {
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-};
-
-export default config;
+});
