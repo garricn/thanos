@@ -27,9 +27,9 @@ After investigating various solutions, we're going to try using pure V8 coverage
 // mcr.config.js
 module.exports = {
   name: 'Thanos Coverage Report',
-  reports: ['v8', 'console-details'],  // Use V8 reporter instead of HTML/LCOV
+  reports: ['v8', 'console-details'], // Use V8 reporter instead of HTML/LCOV
   include: ['**/coverage-final.json'],
-  outputDir: 'coverage/combined'
+  outputDir: 'coverage/combined',
 };
 ```
 
@@ -52,23 +52,27 @@ This approach should eliminate the path resolution issues we've been facing sinc
 After extensive testing with monocart-coverage-reports, we've discovered:
 
 1. **Path Resolution Issues**
+
    - Monocart has similar path resolution issues to genhtml
    - Coverage files contain absolute paths (e.g., `/Users/garric/Developer/thanos/apps/api/src/app.ts`)
    - When these files are combined, tools struggle to locate the source files
 
 2. **Test Findings**
+
    - Basic test with a single coverage file works
    - Test with multiple files in a flat structure fails
    - Test with relative paths works perfectly
    - This suggests the issue isn't with monocart specifically, but with how coverage paths are handled
 
 3. **Industry Standards vs Reality**
+
    - Industry standard states coverage files should use relative paths
    - However, many tools (Vitest, Jest, etc.) generate absolute paths by default
    - This creates a disconnect between best practices and tool implementations
    - The problem seems systemic across the coverage tooling ecosystem
 
 4. **Why This Happens**
+
    - Tools need absolute paths during test execution to map coverage to source files
    - These absolute paths often get persisted into coverage files
    - Coverage report generators expect relative paths for portability
@@ -76,12 +80,14 @@ After extensive testing with monocart-coverage-reports, we've discovered:
    - Each tool (genhtml, monocart, etc.) handles this differently
 
 5. **Potential Solutions**
+
    - Configure Vitest to generate relative paths (if possible)
    - Pre-process coverage files to convert absolute to relative paths
    - Use tool-specific path resolution options (baseDir, sourceFilter, etc.)
    - Create a standardized path translation layer
 
 6. **Missing Feature in Coverage Tools**
+
    - Coverage tools should provide a transform option during report generation
    - This would allow:
      - Keeping absolute paths during test execution
@@ -95,9 +101,9 @@ After extensive testing with monocart-coverage-reports, we've discovered:
        name: 'Coverage Report',
        reports: ['html', 'lcov'],
        include: ['**/coverage-final.json'],
-       transformPaths: (path) => path.replace(process.cwd(), ''),
-       outputDir: 'coverage/combined'
-     }
+       transformPaths: path => path.replace(process.cwd(), ''),
+       outputDir: 'coverage/combined',
+     };
      ```
 
    - This would solve the fundamental tension between:
@@ -110,6 +116,7 @@ After extensive testing with monocart-coverage-reports, we've discovered:
 Recent investigation revealed we can simplify our approach:
 
 1. **Vitest Workspace Approach**
+
    - Use Vitest's workspace feature with root configuration
    - Configure coverage output paths directly in Vitest
    - Let Monocart handle report aggregation
