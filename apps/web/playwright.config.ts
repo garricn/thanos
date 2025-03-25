@@ -11,6 +11,12 @@ export default defineConfig({
     ['junit', { outputFile: './test-results/junit.xml' }],
     ['html', { open: 'never' }],
   ],
+  webServer: {
+    command: 'npm run dev',
+    url: 'http://localhost:4200',
+    reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000,
+  },
   use: {
     baseURL: 'http://localhost:4200',
     trace: 'on',
