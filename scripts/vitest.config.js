@@ -15,7 +15,6 @@ export default defineConfig({
       reporter: ['text', 'json', 'html', 'lcov'],
       include: ['bin/**/*.js', 'hooks/**/*.js'],
       exclude: ['**/*.test.js', 'coverage/**', 'dist/**', '**/*.config.js'],
-      reportsDirectory: './coverage/scripts',
     },
     reporters: ['default'],
   },
