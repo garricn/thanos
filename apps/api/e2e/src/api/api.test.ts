@@ -10,7 +10,11 @@ describe('API', () => {
 
   beforeAll(async () => {
     const app = createApp();
-    server = createServer(app, { port: TEST_PORT });
+    const consoleLogger = {
+      info: (message: string) => console.log(message),
+      error: (message: string) => console.error(message),
+    };
+    server = createServer(app, { port: TEST_PORT }, consoleLogger);
   });
 
   afterAll(async () => {
