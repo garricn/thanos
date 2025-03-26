@@ -1,5 +1,7 @@
 import express from 'express';
 import { vi } from 'vitest';
+import { Express } from 'express';
+import { createApp } from '../src/app.ts';
 
 // Create mock log model
 export const mockLogModel = {
@@ -17,15 +19,10 @@ export const mockLogModel = {
 // This is necessary to ensure the mock is in place before the app is loaded
 vi.mock('../db/models/log', () => mockLogModel);
 
-// We need to dynamically import here because we have to mock the module before importing it
-// Using dynamic import pattern for ES modules
-const appModule = await import('../src/app.ts');
-const { createApp } = appModule;
-
 /**
  * Creates a test Express app for testing
  * @returns {express.Application} The configured Express app for testing
  */
-export function createTestApp(): express.Application {
-  return createApp();
+export function createTestApp(): Express {
+  return createApp(express());
 }

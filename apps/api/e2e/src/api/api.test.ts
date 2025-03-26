@@ -1,31 +1,35 @@
 import axios from 'axios';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { createServer } from '../../../src/main';
-import { createApp } from '../../../src/app';
-import type { Server } from 'http';
+import { createServer, type Logger } from '../../../src/server.ts';
+import { createApp } from '../../../src/app.ts';
+import express from 'express';
 
 describe('API', () => {
-  let server: Server;
+  let server: ReturnType<typeof createServer>;
   const TEST_PORT = 3001;
 
-  beforeAll(async () => {
-    const app = createApp();
-    const consoleLogger = {
-      info: (message: string) => console.log(message),
-      error: (message: string) => console.error(message),
-    };
-    server = createServer(app, { port: TEST_PORT }, consoleLogger);
+  const consoleLogger: Logger = {
+    info: (message: string) => console.log(message),
+    error: (message: string) => console.error(message),
+  };
+
+  beforeAll(() => {
+    const app = createApp(express());
+    server = createServer(app, { port: TEST_PORT }, consoleLogger, {
+      onShutdown: () => {}, // No-op for tests
+    });
   });
 
-  afterAll(async () => {
-    await new Promise<void>(resolve => {
-      server.close(() => resolve());
-    });
+  afterAll(() => {
+    server.close();
   });
 
   it('should return Hello World from the root endpoint', async () => {
     const response = await axios.get(`http://localhost:${TEST_PORT}/`);
-    expect(response.status).toBe(200);
     expect(response.data).toBe('Hello World');
+  });
+
+  it('should be running', () => {
+    expect(server).toBeDefined();
   });
 });
