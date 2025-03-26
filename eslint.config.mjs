@@ -8,9 +8,7 @@ import jsxA11yPlugin from 'eslint-plugin-jsx-a11y';
 import prettierPlugin from 'eslint-config-prettier';
 
 export default [
-  // Base JavaScript rules
   {
-    files: ['**/*.{js,mjs,ts,tsx,cts,mts,cjs,jsx}'],
     ignores: [
       '**/dist/**',
       '**/node_modules/**',
@@ -32,6 +30,10 @@ export default [
       '**/tmp/**',
       '**/.github/**',
     ],
+  },
+  // Base JavaScript rules
+  {
+    files: ['**/*.{js,mjs,ts,tsx,cts,mts,cjs,jsx}'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
