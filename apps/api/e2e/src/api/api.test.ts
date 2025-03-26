@@ -8,8 +8,7 @@ describe('API', () => {
   const TEST_PORT = 3001;
 
   beforeAll(async () => {
-    process.env.PORT = TEST_PORT.toString();
-    server = createServer();
+    server = createServer({ port: TEST_PORT });
   });
 
   afterAll(async () => {
