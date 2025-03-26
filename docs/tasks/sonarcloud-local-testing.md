@@ -10,6 +10,19 @@ Caused by: java.lang.NullPointerException: Cannot invoke "String.startsWith(Stri
 
 This error occurs in the SonarCloud scanner's GitHub Actions integration code, specifically in the `GithubActions.extractBranchFromRef` method. The scanner is unable to properly access branch information when running locally with `act`.
 
+## Important Limitations
+
+1. **Free Tier Restrictions**
+   - Free tier only includes scans on the `main` branch
+   - Limited to 14 scans per day
+   - Only works with public repositories
+   - Private repositories require a paid plan
+
+2. **Solution Found**
+   - Make the repository public to work with the free tier
+   - Merge changes to `main` branch for scanning
+   - This bypasses the need for complex branch configuration
+
 ## Current Configuration
 
 ### Workflow File (.github/workflows/ci.yml)
