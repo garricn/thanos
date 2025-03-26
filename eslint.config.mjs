@@ -140,7 +140,7 @@ export default [
     },
   },
   {
-    files: ['apps/api/**/*.{ts}', 'scripts/**/*.{ts}'],
+    files: ['apps/api/**/*.{ts}'],
     rules: {
       // Add Node.js-specific overrides if needed
     },

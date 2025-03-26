@@ -15,8 +15,7 @@
     "baseUrl": ".",
     "paths": {
       "@thanos/api/*": ["apps/api/src/*"],
-      "@thanos/web/*": ["apps/web/src/*"],
-      "@thanos/scripts/*": ["scripts/*"]
+      "@thanos/web/*": ["apps/web/src/*"]
     },
     "jsx": "react-jsx",
     "allowJs": false,
@@ -45,14 +44,7 @@
     "apps/*/*.config.ts",
     "apps/*/*.config.e2e.ts"
   ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "coverage",
-    "**/dist/**/*",
-    "**/node_modules/**/*",
-    "scripts/**/*"
-  ],
+  "exclude": ["node_modules", "dist", "coverage", "**/dist/**/*", "**/node_modules/**/*"],
   "references": [{ "path": "./apps/api/tsconfig.json" }, { "path": "./apps/web/tsconfig.json" }],
   "compileOnSave": false
 }

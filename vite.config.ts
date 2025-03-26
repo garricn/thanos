@@ -47,7 +47,6 @@ export default defineConfig(() => ({
     alias: {
       '@app': resolve(__dirname, './apps/web/src'),
       '@api': resolve(__dirname, './apps/api/src'),
-      '@scripts': resolve(__dirname, './scripts'),
     },
   },
   root: resolve(__dirname, 'apps/web'),

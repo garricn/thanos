@@ -13,6 +13,7 @@ This error occurs in the SonarCloud scanner's GitHub Actions integration code, s
 ## Important Limitations
 
 1. **Free Tier Restrictions**
+
    - Free tier only includes scans on the `main` branch
    - Limited to 14 scans per day
    - Only works with public repositories
