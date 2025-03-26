@@ -1,5 +1,7 @@
 # Main.ts Dependency Injection Tasks
 
+This task list follows the testing patterns described in [TESTING_PATTERN.md](../TESTING_PATTERN.md).
+
 ## Current State
 
 - We've injected the Express app dependency into `createServer`
