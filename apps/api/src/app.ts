@@ -1,11 +1,9 @@
-import express from 'express';
+import { Express } from 'express';
 
-export function createApp() {
-  const app = express();
-
-  app.get('/', (req, res) => {
+export function createApp(express: Express): Express {
+  express.get('/', (req, res) => {
     res.send('Hello World');
   });
 
-  return app;
+  return express;
 }
