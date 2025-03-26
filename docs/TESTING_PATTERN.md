@@ -87,3 +87,87 @@ After this test is added, run through steps 3-5 before adding another test, even
 This pattern ensures we maintain code quality and test coverage while making incremental improvements to the test suite.
 
 Use dependency injection and direct mocking just like the other test files.
+
+## Dependency Injection Pattern
+
+When writing tests, follow these principles for dependency injection:
+
+1. **Inject Dependencies**
+
+   ```typescript
+   // Instead of creating dependencies inside functions
+   function createServer() {
+     const app = express(); // ❌ Don't do this
+     app.listen(3000);
+   }
+
+   // Inject them as parameters
+   function createServer(app: Express) { // ✅ Do this
+     app.listen(3000);
+   }
+   ```
+
+2. **Make Dependencies Required**
+   - Make core dependencies required parameters
+   - Use optional parameters for configuration
+   - This makes the dependencies explicit and testable
+
+3. **Test Both DI and Behavior**
+
+   ```typescript
+   describe('createServer', () => {
+     it('uses the provided app dependency', () => {
+       // Arrange
+       const mockApp = {
+         listen: vi.fn().mockReturnValue({ port: 3000, close: vi.fn() })
+       };
+
+       // Act
+       createServer(mockApp);
+
+       // Assert
+       expect(mockApp.listen).toHaveBeenCalledWith(3000);
+     });
+   });
+   ```
+
+## Type Safety in TDD
+
+1. **Enable Type Checking**
+   - Use `pretest` hook in package.json to run type checking before tests
+
+   ```json
+   {
+     "scripts": {
+       "pretest": "tsc --noEmit --project ./tsconfig.json",
+       "test": "vitest"
+     }
+   }
+   ```
+
+2. **Fix Type Errors First**
+   - Address type errors before running tests
+   - Type errors indicate potential runtime issues
+   - Use TypeScript's type system to catch errors early
+
+## Test Structure
+
+1. **Separate Unit and E2E Tests**
+   - Unit tests: Test individual functions with mocked dependencies
+   - E2E tests: Test the full system with real dependencies
+   - Keep test files in appropriate directories (e.g., `tests/` vs `e2e/`)
+
+2. **Mock Dependencies Effectively**
+
+   ```typescript
+   // Create focused mocks that only implement what's needed
+   const mockApp = {
+     listen: vi.fn(),
+     // Don't mock unnecessary methods
+   };
+   ```
+
+3. **Test One Behavior at a Time**
+   - Each test should verify one specific behavior
+   - Use descriptive test names that explain the scenario
+   - Keep tests focused and maintainable
