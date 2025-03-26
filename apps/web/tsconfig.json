@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist/web",
+    "jsx": "react-jsx",
+    "types": ["node", "vitest/globals"],
+    "typeRoots": ["../../node_modules/@types", "../../node_modules"],
+    "composite": true,
+    "declaration": true,
+    "emitDeclarationOnly": true
+  },
+  "include": ["src/**/*", "tests/**/*", "e2e/**/*", "*.config.ts", "*.config.js"],
+  "exclude": ["node_modules", "dist", "coverage"]
+}

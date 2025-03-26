@@ -1,1 +1,2 @@
-
+-P ubuntu-latest=node:22
+--artifact-server-path ./artifacts

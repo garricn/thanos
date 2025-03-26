@@ -1,0 +1,73 @@
+codecov:
+  require_ci_to_pass: true
+  notify:
+    wait_for_ci: true
+
+coverage:
+  precision: 2
+  round: down
+  range: '70...100'
+  status:
+    project:
+      default:
+        target: 70%
+        threshold: 5%
+    patch:
+      default:
+        target: 70%
+        threshold: 10%
+
+parsers:
+  javascript:
+    enable_partials: true
+
+comment:
+  layout: 'reach, diff, flags, files'
+  behavior: default
+  require_changes: false
+  require_base: false
+  require_head: true
+
+ignore:
+  - '**/*.spec.ts'
+  - '**/*.spec.tsx'
+  - '**/*.test.ts'
+  - '**/*.test.tsx'
+  - '**/*.d.ts'
+  - '**/*.config.js'
+  - '**/*.config.jsx'
+  - '**/*.config.ts'
+  - '**/*.config.tsx'
+  - '**/node_modules/**'
+  - '**/dist/**'
+  - '**/coverage/**'
+  - '**/*.stories.js'
+  - '**/*.stories.jsx'
+  - '**/*.stories.ts'
+  - '**/*.stories.tsx'
+  - '**/*.styles.js'
+  - '**/*.styles.jsx'
+  - '**/*.styles.ts'
+  - '**/*.styles.tsx'
+  - '**/*.constants.js'
+  - '**/*.constants.jsx'
+  - '**/*.constants.ts'
+  - '**/*.constants.tsx'
+  - '**/*.types.js'
+  - '**/*.types.jsx'
+  - '**/*.types.ts'
+  - '**/*.types.tsx'
+  - '**/*.mock.js'
+  - '**/*.mock.jsx'
+  - '**/*.mock.ts'
+  - '**/*.mock.tsx'
+  - '**/*.generated.js'
+  - '**/*.generated.jsx'
+  - '**/*.generated.ts'
+  - '**/*.generated.tsx'
+  - '**/*.module.css'
+  - '**/assets/**'
+  - '**/*.json'
+  - '**/*.md'
+  - '**/migrations/**'
+  - '**/seeds/**'

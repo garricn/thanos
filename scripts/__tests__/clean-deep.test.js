@@ -2,23 +2,20 @@
  * @vitest-environment node
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { mockExecSync, setupBeforeEach } from './test-utils.js';
-
-// The module under test will import shell-utils, so we need to mock that
-vi.mock('../lib/shell-utils.js', () => {
-  return {
-    cleanDeep: vi.fn(),
-  };
-});
+import { setupMockDefaults } from './test-utils.js';
 
 // Import the cleanDeep function directly
 import { cleanDeep } from '../lib/shell-utils.js';
 
-describe('clean-deep', () => {
-  setupBeforeEach();
+// Mock the shell-utils module
+vi.mock('../lib/shell-utils.js', () => ({
+  cleanDeep: vi.fn(),
+}));
 
+describe('clean-deep', () => {
   beforeEach(() => {
-    // Clear mock calls between tests
+    // Setup default mocks and clear them
+    setupMockDefaults();
     vi.clearAllMocks();
 
     // Mock process.argv

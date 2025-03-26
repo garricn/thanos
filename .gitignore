@@ -10,12 +10,18 @@ dist
 tmp
 out-tsc
 build
-**/build
+**/build/*
+!**/build/*.ts
+!**/build/*.json
+!**/build/*.js
+!**/build/*.mjs
+!configs/build
+!apps/*/configs/build
 
 # Test and coverage
 /coverage
 **/coverage
-test-report.xml
+test-results
 **/test-report.xml
 /libpeerconnection.log
 testem.log
@@ -26,6 +32,7 @@ vite.config.*.timestamp*
 vitest.config.*.timestamp*
 *.log
 artifacts
+*.tsbuildinfo
 
 # IDEs and editors
 .idea
@@ -56,3 +63,6 @@ VERIFICATION.md
 
 # Binaries and executables
 actionlint
+
+# Playwright test results and reports
+**/playwright-report

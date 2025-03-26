@@ -1,0 +1,58 @@
+{
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": true,
+    "moduleResolution": "bundler",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "lib": ["es2022", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@thanos/api/*": ["apps/api/src/*"],
+      "@thanos/web/*": ["apps/web/src/*"],
+      "@thanos/scripts/*": ["scripts/*"]
+    },
+    "jsx": "react-jsx",
+    "allowJs": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "types": ["node"],
+    "typeRoots": ["./node_modules/@types", "./types"],
+    "emitDeclarationOnly": true,
+    "composite": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "allowImportingTsExtensions": true
+  },
+  "include": [
+    "apps/api/src/**/*",
+    "apps/api/tests/**/*",
+    "apps/api/e2e/src/**/*",
+    "apps/web/src/**/*",
+    "apps/web/tests/**/*",
+    "apps/web/e2e/**/*",
+    "*.config.ts",
+    "*.config.mjs",
+    "vitest.workspace.ts",
+    "apps/*/*.config.ts",
+    "apps/*/*.config.e2e.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "coverage",
+    "**/dist/**/*",
+    "**/node_modules/**/*",
+    "scripts/**/*"
+  ],
+  "references": [{ "path": "./apps/api/tsconfig.json" }, { "path": "./apps/web/tsconfig.json" }],
+  "compileOnSave": false
+}

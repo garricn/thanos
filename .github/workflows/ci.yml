@@ -1,27 +1,27 @@
 name: CI
-"on":
+'on':
   push:
     branches:
       - main
     paths:
-      - "**.js"
-      - "**.jsx"
-      - "**.ts"
-      - "**.tsx"
-      - "package*.json"
-      - ".github/workflows/**"
-      - "configs/**"
+      - '**.js'
+      - '**.jsx'
+      - '**.ts'
+      - '**.tsx'
+      - 'package*.json'
+      - '.github/workflows/**'
+      - 'configs/**'
   pull_request:
     branches:
       - main
     paths:
-      - "**.js"
-      - "**.jsx"
-      - "**.ts"
-      - "**.tsx"
-      - "package*.json"
-      - ".github/workflows/**"
-      - "configs/**"
+      - '**.js'
+      - '**.jsx'
+      - '**.ts'
+      - '**.tsx'
+      - 'package*.json'
+      - '.github/workflows/**'
+      - 'configs/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -136,25 +136,21 @@ jobs:
 
   test:
     name: Unit Tests
-    needs: [setup, type-check]
+    needs: [setup]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node
-      - name: Run unit tests with coverage
-        run: npm run test:unit:coverage
-      - name: Upload test coverage
+      - name: Run tests with coverage
+        run: npm run coverage:combined
+      - name: Upload test artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: api-unit-coverage
-          path: coverage/api/unit/
-          retention-days: 7
-      - name: Upload web unit coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-unit-coverage
-          path: coverage/web/unit/
-          retention-days: 7
+          name: test-coverage-results
+          path: |
+            coverage/**/*
+            test-report.xml
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
@@ -163,140 +159,63 @@ jobs:
           path: |
             ./**/*.log
             ./npm-debug.log*
-            ./junit.xml
-          retention-days: 7
-
-  snapshot:
-    name: Snapshot Tests
-    needs: [setup, type-check]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-node
-      - name: Run snapshot tests with coverage
-        run: npm run test:snapshot:coverage
-      - name: Upload snapshot coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-snapshot-coverage
-          path: coverage/web/snapshot/
-          retention-days: 7
-      - name: Upload logs on failure
-        if: ${{ failure() }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: snapshot-test-logs
-          path: |
-            ./**/*.log
-            ./npm-debug.log*
-            ./junit.xml
           retention-days: 7
 
   e2e:
     name: E2E Tests
-    needs: [setup, type-check]
+    needs: [setup]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-node
-      - name: Install system dependencies for Cypress
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            xvfb \
-            libgtk2.0-0 \
-            libgtk-3-0 \
-            libgbm-dev \
-            libnotify-dev \
-            libnss3 \
-            libxss1 \
-            libasound2-dev \
-            libxtst6 \
-            xauth \
-            # Optional/legacy dependencies
-            libgconf-2-4 || true
-          # Install additional dependencies
-          sudo apt-get install -y \
-            libatk1.0-0 \
-            libatk-bridge2.0-0 \
-            libcups2 \
-            libdrm2 \
-            libxcomposite1 \
-            libxdamage1 \
-            libxfixes3 \
-            libxrandr2 \
-            libgbm1 \
-            libpango-1.0-0 \
-            libcairo2
+      - name: Install Playwright system dependencies
+        run: npx playwright install --with-deps
       - name: Build API and Web
         run: npm run build
       - name: Run E2E tests
         run: npm run test:e2e
+      - name: Upload test artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-results
+          path: |
+            apps/web/playwright-report/**/*
+            apps/web/test-results/**/*
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
           name: e2e-logs
           path: |
-            ./**/*.log
-            ./npm-debug.log*
-            ./cypress/screenshots/**/*
-            ./cypress/videos/**/*
+            apps/web/playwright-report/**/*
+            apps/web/test-results/**/*
+            apps/web/npm-debug.log*
+            apps/web/yarn-debug.log*
+            apps/web/yarn-error.log*
           retention-days: 7
 
   coverage:
     name: Code Coverage
-    needs: [setup, test, snapshot]
+    needs: [setup, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup-node
-      - name: Download API unit test coverage
+      - name: Download test coverage
         uses: actions/download-artifact@v4
         with:
-          name: api-unit-coverage
-          path: coverage/api/unit
-      - name: Download web unit test coverage
-        uses: actions/download-artifact@v4
-        with:
-          name: web-unit-coverage
-          path: coverage/web/unit
-      - name: Download web snapshot test coverage
-        uses: actions/download-artifact@v4
-        with:
-          name: web-snapshot-coverage
-          path: coverage/web/snapshot
-      - name: Combine coverage for SonarCloud
-        run: npm run coverage:combine
-      - name: Upload individual coverage reports to Codecov
+          name: test-coverage-results
+          path: coverage
+      - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
-          files: |
-            coverage/api/unit/lcov.info
-            coverage/web/unit/lcov.info
-            coverage/web/snapshot/lcov.info
-          flags: |
-            api-unit
-            web-unit
-            web-snapshot
+          directory: ./coverage/
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
           verbose: true
-      - name: Upload combined coverage report to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          directory: ./coverage/combined/
-          token: ${{ secrets.CODECOV_TOKEN }}
-          fail_ci_if_error: false
-          verbose: true
-      - name: Upload combined coverage
-        uses: actions/upload-artifact@v4
-        with:
-          name: combined-coverage
-          path: coverage/combined/
-          retention-days: 7
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
@@ -310,49 +229,23 @@ jobs:
 
   sonarcloud:
     name: SonarCloud Analysis
-    needs: [setup, coverage]
+    needs: [setup, test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup-node
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: "17"
-          distribution: "temurin"
-      - name: Install SonarScanner
-        run: |
-          SONAR_SCANNER_VERSION="5.0.1.3006"
-          SONAR_SCANNER_URL="https://binaries.sonarsource.com/Distribution/sonar-scanner-cli"
-          curl -sSLo sonar-scanner.zip \
-            "$SONAR_SCANNER_URL/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip"
-          unzip -o sonar-scanner.zip
-          sudo mv sonar-scanner-$SONAR_SCANNER_VERSION-linux /opt/sonar-scanner
-          sudo ln -sf /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner
-      - name: Download combined coverage
+      - name: Download test coverage
         uses: actions/download-artifact@v4
         with:
-          name: combined-coverage
-          path: coverage/combined
-      - name: Run SonarCloud Analysis
+          name: test-coverage-results
+          path: coverage
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: |
-          # Determine branch name
-          BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
-          echo "Running analysis on branch: $BRANCH_NAME"
-
-          # Run SonarScanner with debug logging
-          sonar-scanner -X \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.projectKey=garricn_thanos \
-            -Dsonar.organization=garricn \
-            -Dsonar.branch.name=$BRANCH_NAME \
-            -Dsonar.scm.provider=git \
-            -Dsonar.config=configs/quality/sonar-project.properties
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4

@@ -1,2 +1,4 @@
 #!/bin/sh
-node ./scripts/hooks/pre-push.js
+. "$(dirname "$0")/_/husky.sh"
+
+npm run check

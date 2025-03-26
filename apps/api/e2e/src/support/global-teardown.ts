@@ -1,4 +1,3 @@
-/* eslint-disable */
 // Reuse type declaration from global-setup
 declare global {
   var __TEARDOWN_MESSAGE__: string;

@@ -18,9 +18,7 @@ import runAct from '../bin/act.js';
 
 // Mock for console
 const mockConsoleLog = vi.spyOn(console, 'log').mockImplementation(() => {});
-const mockConsoleError = vi
-  .spyOn(console, 'error')
-  .mockImplementation(() => {});
+const mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {});
 
 // Mock for execSync
 vi.mock('node:child_process', () => ({
@@ -122,9 +120,7 @@ describe('ensureArtifactsDir', () => {
   it('should create artifacts directory if it does not exist', () => {
     // Arrange
     const mockExistsSync = vi.spyOn(fs, 'existsSync').mockReturnValue(false);
-    const mockMkdirSync = vi
-      .spyOn(fs, 'mkdirSync')
-      .mockImplementation(() => {});
+    const mockMkdirSync = vi.spyOn(fs, 'mkdirSync').mockImplementation(() => {});
     const rootDir = '/fake/root/dir';
 
     // Act
@@ -132,13 +128,10 @@ describe('ensureArtifactsDir', () => {
 
     // Assert
     expect(artifactsDir).toBe(path.join(rootDir, 'artifacts'));
-    expect(mockExistsSync).toHaveBeenCalledWith(
-      path.join(rootDir, 'artifacts')
-    );
-    expect(mockMkdirSync).toHaveBeenCalledWith(
-      path.join(rootDir, 'artifacts'),
-      { recursive: true }
-    );
+    expect(mockExistsSync).toHaveBeenCalledWith(path.join(rootDir, 'artifacts'));
+    expect(mockMkdirSync).toHaveBeenCalledWith(path.join(rootDir, 'artifacts'), {
+      recursive: true,
+    });
     expect(mockConsoleLog).toHaveBeenCalledWith(
       expect.stringContaining('Created artifacts directory')
     );
@@ -147,9 +140,7 @@ describe('ensureArtifactsDir', () => {
   it('should not create artifacts directory if it already exists', () => {
     // Arrange
     const mockExistsSync = vi.spyOn(fs, 'existsSync').mockReturnValue(true);
-    const mockMkdirSync = vi
-      .spyOn(fs, 'mkdirSync')
-      .mockImplementation(() => {});
+    const mockMkdirSync = vi.spyOn(fs, 'mkdirSync').mockImplementation(() => {});
     const rootDir = '/fake/root/dir';
 
     // Act
@@ -157,9 +148,7 @@ describe('ensureArtifactsDir', () => {
 
     // Assert
     expect(artifactsDir).toBe(path.join(rootDir, 'artifacts'));
-    expect(mockExistsSync).toHaveBeenCalledWith(
-      path.join(rootDir, 'artifacts')
-    );
+    expect(mockExistsSync).toHaveBeenCalledWith(path.join(rootDir, 'artifacts'));
     expect(mockMkdirSync).not.toHaveBeenCalled();
     expect(mockConsoleLog).not.toHaveBeenCalledWith(
       expect.stringContaining('Created artifacts directory')
@@ -190,9 +179,7 @@ describe('createTempDir', () => {
 
     // Assert
     expect(tempDir).toBe(fakeFullPath);
-    expect(fakeFs.mkdtempSync).toHaveBeenCalledWith(
-      path.join(fakeTmpDir, 'act-workspace-')
-    );
+    expect(fakeFs.mkdtempSync).toHaveBeenCalledWith(path.join(fakeTmpDir, 'act-workspace-'));
     expect(mockConsoleLog).toHaveBeenCalledWith(
       expect.stringContaining('Creating temporary workspace')
     );
@@ -289,10 +276,7 @@ describe('copyFilesToTempDir', () => {
 
     // Assert
     expect(hasCommandMock).toHaveBeenCalledWith('robocopy');
-    expect(mockExecSync).toHaveBeenCalledWith(
-      expect.stringContaining('xcopy'),
-      expect.anything()
-    );
+    expect(mockExecSync).toHaveBeenCalledWith(expect.stringContaining('xcopy'), expect.anything());
 
     // Restore
     Object.defineProperty(process, 'platform', {
@@ -331,8 +315,6 @@ describe('runAct', () => {
 
     // Assert
     expect(result).toBe(false);
-    expect(mockConsoleError).toHaveBeenCalledWith(
-      expect.stringContaining('Error running act')
-    );
+    expect(mockConsoleError).toHaveBeenCalledWith(expect.stringContaining('Error running act'));
   });
 });

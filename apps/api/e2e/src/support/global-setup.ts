@@ -1,4 +1,3 @@
-/* eslint-disable */
 // Add type declaration to global scope
 declare global {
   var __TEARDOWN_MESSAGE__: string;

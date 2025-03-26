@@ -1,0 +1,34 @@
+I want to remove all Jest configurations from my monorepo project, replace them with a single Vitest config, and migrate all tests to use Vitest, ensuring npm run test:all passes. My project has two apps (apps/api and apps/web) with unit tests (apps/api/tests/, apps/web/tests/), API E2E tests (apps/api/e2e/), script tests (scripts/, already using Vitest), and Cypress E2E tests (apps/web/e2e/). My tsconfig files (configs/build/tsconfig.json, apps/api/tsconfig.json, apps/api/e2e/tsconfig.json, apps/web/tsconfig.json, apps/web/e2e/tsconfig.json) are already consolidated and should not be modified. Use my actual project files to perform these actions:
+
+Delete all Jest-related configs and dependencies:
+Remove apps/api/tests/configs/test/jest.config.ts, apps/api/e2e/configs/test/jest.config.mjs, apps/web/configs/test/jest.config.ts, scripts/jest.config.js.
+Remove Jest dependencies from package.json: jest, ts-jest, @types/jest.
+Create a single configs/test/vitest.config.ts:
+Base it on scripts/configs/vitest.config.js (since scripts/ already uses Vitest).
+Use defineProject or inline suite configs for separate test suites:
+For api unit tests: test: { dir: "apps/api/tests", environment: "node", include: ["**/*.(spec|test).ts"] }.
+For api E2E tests: test: { dir: "apps/api/e2e/src", environment: "node", include: ["**/*.(spec|test).ts"] }.
+For web unit tests: test: { dir: "apps/web/tests", environment: "jsdom", include: ["**/*.(spec|test).ts"], setupFiles: ["<rootDir>/apps/web/tests/test-setup.ts"] }.
+For scripts: Merge settings from scripts/configs/vitest.config.js (e.g., test: { dir: "scripts/__tests__", include: ["**/*.(spec|test).ts"] }).
+Add React support for web tests: Include @vitejs/plugin-react (e.g., plugins: [react()]).
+Include shared settings: test: { globals: true, coverage: { provider: "c8", reportsDirectory: "<rootDir>/coverage" } }.
+Delete scripts/configs/vitest.config.js after merging.
+Update test files for Vitest compatibility:
+Replace jest.mock with vi.mock, jest.spyOn with vi.spyOn, etc., in test files (apps/api/tests/, apps/api/e2e/, apps/web/tests/).
+Ensure imports use ESM syntax (e.g., import { vi } from 'vitest').
+Remove any Jest-specific setup (e.g., jest.setup.js) if not needed by Vitest.
+Update package.json:
+Ensure Vitest dependencies are installed: vitest, @vitejs/plugin-react.
+Update scripts:
+"test:all": "vitest run --config configs/test/vitest.config.ts && cypress run --project apps/web/e2e".
+"test:api": "vitest run --config configs/test/vitest.config.ts --dir apps/api/tests".
+"test:e2e": "vitest run --config configs/test/vitest.config.ts".
+"test:e2e:api": "vitest run --config configs/test/vitest.config.ts --dir apps/api/e2e/src".
+"test:e2e:web": "vitest run --config configs/test/vitest.config.ts --dir apps/api/e2e/src".
+"test:web": "vitest run --config configs/test/vitest.config.ts --dir apps/web/tests".
+"test:scripts": "vitest run --config configs/test/vitest.config.ts --dir scripts/__tests__".
+Verify Cypress integration:
+Ensure apps/web/e2e/cypress.config.ts still points to tsconfig: "../tsconfig.json" (resolving to apps/web/e2e/tsconfig.json).
+Confirm npm run test:all runs Vitest and Cypress separately without interference.
+Test after each step: Run npm run test:all and fix any failures (e.g., adjust dir, environment, or plugin settings if tests fail).
+Perform these changes directly in my project. Ensure all tests pass with npm run test:all before finishing.

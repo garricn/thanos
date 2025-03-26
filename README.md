@@ -32,13 +32,13 @@ Thanos is a scaffolding template for creating new monorepo projects with a pre-c
 
 ## Features
 
-- Pre-configured monorepo structure with frontend and backend
-- Comprehensive test setup with Jest and Cypress
-- Code quality tools including ESLint, Prettier, and TypeScript
-- CI/CD workflow with GitHub Actions
-- Code coverage reporting with Codecov integration
-- Validation scripts for linting, testing, and type checking
-- Automated quality checks for pull requests
+- Modern React application with TypeScript
+- Express.js API with TypeScript
+- Monorepo setup with npm workspaces
+- Comprehensive test setup with Vitest and Playwright
+- Code quality tools (ESLint, Prettier)
+- GitHub Actions CI/CD
+- Sonar integration for code quality
 
 ## Tech Stack
 
@@ -50,8 +50,8 @@ Thanos is a scaffolding template for creating new monorepo projects with a pre-c
 - Node.js
 - Express
 - SQLite (for database storage)
-- Jest (for unit and snapshot tests)
-- Cypress (for UI tests)
+- Vitest (for unit tests)
+- Playwright (for E2E tests)
 - ESLint
 - Prettier
 
