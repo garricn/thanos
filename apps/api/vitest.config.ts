@@ -17,6 +17,7 @@ export default defineConfig({
         '**/e2e/**',
         '**/*.d.ts',
         '**/*.config.{js,ts}',
+        'src/main.ts',
       ],
     },
     reporters: ['default', 'vitest-sonar-reporter'],
