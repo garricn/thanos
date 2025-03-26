@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createServer } from '../../../src/main';
+import { createApp } from '../../../src/app';
 import type { Server } from 'http';
 
 describe('API', () => {
@@ -8,7 +9,8 @@ describe('API', () => {
   const TEST_PORT = 3001;
 
   beforeAll(async () => {
-    server = createServer({ port: TEST_PORT });
+    const app = createApp();
+    server = createServer(app, { port: TEST_PORT });
   });
 
   afterAll(async () => {
