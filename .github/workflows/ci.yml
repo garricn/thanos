@@ -236,32 +236,16 @@ jobs:
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup-node
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-      - name: Install SonarScanner
-        run: |
-          SONAR_SCANNER_VERSION="5.0.1.3006"
-          SONAR_SCANNER_URL="https://binaries.sonarsource.com/Distribution/sonar-scanner-cli"
-          curl -sSLo sonar-scanner.zip \
-            "$SONAR_SCANNER_URL/sonar-scanner-cli-$SONAR_SCANNER_VERSION-linux.zip"
-          unzip -o sonar-scanner.zip
-          sudo mv sonar-scanner-$SONAR_SCANNER_VERSION-linux /opt/sonar-scanner
-          sudo ln -sf /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner
-      - name: Download test results
+      - name: Download test coverage
         uses: actions/download-artifact@v4
         with:
           name: test-coverage-results
-          path: .
-      - name: Run SonarCloud Analysis
+          path: coverage
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-          SONAR_VERBOSE: true
-        run: npm run sonar
       - name: Upload logs on failure
         if: ${{ failure() }}
         uses: actions/upload-artifact@v4
