@@ -8,7 +8,7 @@ interface Logger {
 }
 
 describe('Server Creation', () => {
-  it('should create server with app and logger', () => {
+  it('should create server with app, logger, and correct port configuration', () => {
     const mockApp = {
       listen: vi.fn((port, callback) => {
         callback();
