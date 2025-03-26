@@ -102,12 +102,14 @@ When writing tests, follow these principles for dependency injection:
    }
 
    // Inject them as parameters
-   function createServer(app: Express) { // ✅ Do this
+   function createServer(app: Express) {
+     // ✅ Do this
      app.listen(3000);
    }
    ```
 
 2. **Make Dependencies Required**
+
    - Make core dependencies required parameters
    - Use optional parameters for configuration
    - This makes the dependencies explicit and testable
@@ -119,7 +121,7 @@ When writing tests, follow these principles for dependency injection:
      it('uses the provided app dependency', () => {
        // Arrange
        const mockApp = {
-         listen: vi.fn().mockReturnValue({ port: 3000, close: vi.fn() })
+         listen: vi.fn().mockReturnValue({ port: 3000, close: vi.fn() }),
        };
 
        // Act
@@ -134,6 +136,7 @@ When writing tests, follow these principles for dependency injection:
 ## Type Safety in TDD
 
 1. **Enable Type Checking**
+
    - Use `pretest` hook in package.json to run type checking before tests
 
    ```json
@@ -153,6 +156,7 @@ When writing tests, follow these principles for dependency injection:
 ## Test Structure
 
 1. **Separate Unit and E2E Tests**
+
    - Unit tests: Test individual functions with mocked dependencies
    - E2E tests: Test the full system with real dependencies
    - Keep test files in appropriate directories (e.g., `tests/` vs `e2e/`)
